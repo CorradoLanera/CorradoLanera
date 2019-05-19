@@ -1,0 +1,287 @@
+---
+title: "apply()are una funzione lungo una dimensione di un array, senza perderne la struttura"
+subtitle: "ovvero: a cosa potrebbe servire sotto-selezionare... _nulla_?"
+author: Corrado Lanera
+date: '2019-05-16'
+slug: apply identity to arrays
+categories:
+  - R
+  - peRcorsi
+  - COME
+tags:
+  - apply
+  - aaply
+  - array
+  - aperm
+  - subsetting
+  - rstats
+  - twitter
+image:
+  caption: ''
+  focal_point: ''
+bibliography: ["../biblio.bib"]
+biblio-style: "apalike"
+link-citations: true
+output: 
+  blogdown::html_page: 
+    toc: yes
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+
+## Il problema 
+
+```{r, echo=FALSE}
+blogdown::shortcode('tweet', '1128367547785588737')
+```
+
+```{r}
+apply(array(1:27, dim = c(3, 3, 3)), 3, function(x) x)
+```
+
+Come si può vedere, l'input dato alla funzione `apply()` è un array a
+tre dimensioni. Ad `apply()` chiediamo di prendere semplicemente gli 
+elementi lungo la terza dimensione (quindi 3 matrici) e lasciarle così
+come stanno :-). Come mai allora non ci viene restituito un array?
+
+Innanzitutto verifichiamo che la nostra ipotesi sul funzionamento di
+`apply()` sia corretta. Per farlo, un modo possibile, è andare a
+chiedere allo stesso `apply()` di mostrarci la struttura dei vari input 
+che riceve.
+```{r}
+arr <- array(1:27, dim = c(3, 3, 3))
+apply(arr, 3, function(x) message(str(x)))
+
+```
+
+Ok, come immaginavamo l'input è formato da tre matrici $3x3$. Quello che
+vorremmo è avere in output le stesse tre matrici $3x3$, allineate in un
+array, lungo la terza dimensione.
+
+## Primo suggerimento
+```{r, echo=FALSE}
+blogdown::shortcode('tweet', '1128711941483106306')
+```
+
+Hadley Wickham sugegrisce di usare `pryr::aapern()`. proviamo a vedere 
+come funziona (`?plyr::aapply`). La cui prima riga di descrizione sembra
+(come raramente accade con le sui funzioni...) risolvere precisamente e 
+specificatamente il nostro problema:
+
+> "For each slice of an array, apply function, keeping results as an
+   array."!
+
+E infatti
+
+```{r}
+hw_sol <- plyr::aaply(arr, 3, function(x) x)
+str(hw_sol)
+
+identical(hw_sol, arr)
+```
+
+Il problema sembra in parte risolto, in quanto l'output è coerentemente
+un array di dimensione 3 come ci aspettavamo. Ma la funzione che noi
+applichiamo al nostro array è l'identità e ci si potrebbe aspettare
+quindi di ottenre in output lo stesso identico oggetto, cosa che non
+accade. L'output inoltre è differente anche non solo riguardo i nomi
+delle dimensioni ma proprio anche nel contenuto.
+
+```{r}
+all.equal(hw_sol, arr)
+```
+
+
+
+## Opzione da Advanced-R
+Vediamo se riusciamo a farlo in un altro modo, ottenendo il risultato
+che desideriamo, _identico_.
+
+Innanzitutto, ricordiamo che un array non è altro che un vettore atomico
+a cui è stata assegnato un attributo **dim**; nel caso in cui **dim**
+sia di lunghezza $2$, verrà chiamata
+**matrix**.^[<https://adv-r.hadley.nz/vectors-chap.html#attributes>].
+Inoltre, dalla sezione
+<https://adv-r.hadley.nz/subsetting.html#subassignment> di **Advanced
+R** (@wickham2019advanced) sappiamo che sottoselezionare un oggetto con
+"nulla" ci permette di mantenerne la struttura, ovvero gli attributi, e
+questo è strautile sopratutto quando abbinato all'operatore di
+assegnamento ` <- `.
+
+Questo accorgimento potrebbe esserci utile quindi anche in questo caso.
+Proviamo.
+
+```{r}
+y <- array(dim = c(3, 3, 3))
+y[] <- apply(arr, 3, function(x) x)
+str(y)
+identical(arr, y)
+```
+
+PuffRbacco, sembra proprio di si ;-).
+
+## C'è sempre un _ma_... (generalizzazione)
+
+Siamo sicuri che la soluzione proposta valga in generale? Secondo HW, probabilmente no:
+
+```{r, echo=FALSE}
+blogdown::shortcode('tweet', '1128798436575330305')
+```
+
+```{r}
+tentative <- function(d, f) {
+    y <- array(dim = c(3, 3, 3))
+    y[] <- f(arr, d, function(x) x)
+    
+    message(str(y))
+    identical(arr, y)
+}
+
+purrr::map_lgl(1:3, tentative, apply)
+```
+
+Pare infatti che valga solo se applicato lungo la terza dimensione.
+Ma cosa è successo? (A parte che HW ha ragione, come di consueto...)
+Proviamo a guardare l'help `?apply` e vedere se ci è di aiuto.
+
+> **If each call to FUN returns a vector of length n, then apply returns
+an array of dimension c(n, dim(X)[MARGIN]) if n > 1**. If n equals 1,
+apply returns a vector if MARGIN has length 1 and an array of dimension
+dim(X)[MARGIN] otherwise. If n is 0, the result has length 0 but not
+necessarily the ‘correct’ dimension.
+
+Dunque, `apply()`, di suo, ritorna coerentemente con la sua descrizione
+una matrice $9x3$ visto che la dimensione su cui si applica `apply` ha
+lunghezza $3$, e ogni esecuzione ha come risultato un vettore (atomico)
+di lunghezza $9$.
+
+Proviamo la stessa procedura utilizzando `plyr::aaply()`.
+
+```{r}
+purrr::map_lgl(1:3, tentative, plyr::aaply)
+```
+
+Ri-puffRbacco! Qui la situazione sembra adirittura invertita,
+arrivando al risultato che immaginiamo nel primo caso ma non negli
+altri. Inoltre pare che i risultati siano propio differenti rispetto 
+a quanto ottenuto in precedenza. Il mistero si infittisce. E il problema
+pare ancora irrisolto.
+
+## Finalmente: una soluzione (fino a prova contraria... :-))
+
+Restiamo per il momento sulle funzioni _base_. Abbiamo capito che il
+problema risiede nel fatto che viene restituita una matrice $9x3$, la 
+quale, nel caso volessimo mantenere la struttura originale di array,
+viene "distribuita" in un array $3x3$ _in ordine_ ma non secondo
+l'ordine che vogliamo noi. E come potrebbe saperlo... Quello che 
+vogliamo è che tale insieme di 3 matrici (i vettori $9x1$ restituiti da
+`apply()` riconvertiti in $3x3$) vengano "disposti" seguendo la
+dimensione su cui è applicata `apply()` stessa.^[Quello che vogliamo
+è l'analogo dell'opzione **byrow** nella costruzione delle matrici, solo
+che qui vorremmo una sorta di **_bydim_** per gli array.]
+
+In pratica, la dimensione lungo la quale viene applicata `apply()`
+diventa la terza dell'array di output (se assegnato a una struttura
+array): se `apply()`chiamo lungo la prima dimensione ci vengono
+restituiti tre vettori ("lungo" la prima dimensione) lunghi $9$, che
+sono poi riarrangiati in matrici $3x3$ ("lungo" la seconda e terza
+dimensione). Il problema, è che vengono restituiti (come letto nell'
+help) in un "array of dimension c(n, dim(X)[MARGIN])", e quindi le 3
+matrici (che corrispondono alla seconda e terza dimensione) vengono
+proposti sulla prima dimensione (divenendo quindi, una volta
+ri-distribuiti in una matrice, la prima e seconda dimensione dell'array
+risultante). Lo stesso dicasi se `apply()`chiamo la nostra funzione
+lungo le altre dimensioni: la dimensione su cui lavoriamo diventa sempre
+l'ultima (la terza) del nostro risultato, mentre le altre due vengono
+ridistribuite correttamente ordinate ma all'inizio. Si tratta quindi
+solo di redistribuire l'array risultante in modo corretto.
+
+Per fare questo ci viene in aiuto la funzione di R base `aperm()`, che
+fa proprio quello che ci serve! unitamente alla funzione 
+
+```{r}
+tentative_adj <- function(d, f) {
+    y <- array(dim = c(3, 3, 3))
+    y[] <- f(arr, d, function(x) x)
+    
+    axes <- integer(3)
+    axes[[d]] <- 3
+    axes[axes != 3] <- 1:2
+    
+    adj_y <- aperm(y, axes)
+    
+    message(str(adj_y))
+    identical(arr, adj_y)
+}
+
+purrr::map_lgl(1:3, tentative_adj, apply)
+```
+
+Ok, questo funziona, ma resta il sospetto che funzioni solamente per
+array "quadrati" (senza contare che funziona solo per array a tre
+dimensioni). Proviamo con un array "rettangolare". Aggiustiamo gli
+input della funzione di prova per includere anche l'input in modo così
+da poter "catturarne" le dimensioni esatte.
+
+Creiamo inoltre una funzione di controllo generale.
+
+```{r}
+check <- function(d, f, data) {
+    y <- f(data, d, function(x) x)
+    message(str(y))
+    identical(data, y)
+}
+
+
+aapply <- function(x, d, f) {
+  # inizializzamo l'output coi metadata dell'input in modo da mantenerne
+  # sia la strutturea che le relative informazioni in fase di
+  # assegnamento.
+  y <- array(NA, dim(x), dimnames(x))
+  
+  # eseguiamo `apply()` in modo standard e ristrutturiamo le dimensioni
+  # considerando che l'output di `apply()` ha (come si legge nell'help)
+  # nell'ultima dimensione quella usata come margine, dobbiamo quindi
+  # ristrutturare il risultato con le dimensioni corrette (seppur
+  # disordinate)
+  tmp <- apply(x, d, f)
+  dim(tmp) <- c(dim(x)[-d], dim(x)[[d]])
+  
+  # dobbiamo quindi definire la permutazione che riordinerà le
+  # dimensioni correttamente, mettendo quindi quella usata nella
+  # sua posizione originale
+  size <- length(dim(x))
+  d_perm <- integer(size)
+  d_perm[[d]] <- size
+  d_perm[-d] <- seq_len(size - 1L)
+  
+  # eseguiamo infine la permutazione sfruttando `aperm()` e assegnamo il
+  # risultato al nostro output, di cui manteniamo la struttura e i
+  # metadati (cioè gli attributi) grazia a un assegnamento con
+  # sottoselezione vuota.
+  y[] <- aperm(tmp, d_perm)
+  y
+}
+```
+
+Controlliamo quindi che tutto funzioni, considerando anche un array che
+non sia "quadrato".
+
+```{r}
+purrr::map_lgl(1:3, check, aapply, arr)
+
+rect_arr <- array(1:27, c(1, 9, 3))
+purrr::map_lgl(1:3, check, aapply, rect_arr)
+```
+
+Sembra tutto a posto. Per il momento, fino all'evidenza di un nuovo 
+problema adottando questo approccio, teniamolo buono.
+
+
+## References

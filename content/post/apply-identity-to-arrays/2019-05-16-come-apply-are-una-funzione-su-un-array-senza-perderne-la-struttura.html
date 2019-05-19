@@ -1,0 +1,312 @@
+---
+title: "apply()are una funzione lungo una dimensione di un array, senza perderne la struttura"
+subtitle: "ovvero: a cosa potrebbe servire sotto-selezionare... _nulla_?"
+author: Corrado Lanera
+date: '2019-05-16'
+slug: apply identity to arrays
+categories:
+  - R
+  - peRcorsi
+  - COME
+tags:
+  - apply
+  - aaply
+  - array
+  - aperm
+  - subsetting
+  - rstats
+  - twitter
+image:
+  caption: ''
+  focal_point: ''
+bibliography: ["../biblio.bib"]
+biblio-style: "apalike"
+link-citations: true
+output: 
+  blogdown::html_page: 
+    toc: yes
+---
+
+
+<div id="TOC">
+<ul>
+<li><a href="#il-problema">Il problema</a></li>
+<li><a href="#primo-suggerimento">Primo suggerimento</a></li>
+<li><a href="#opzione-da-advanced-r">Opzione da Advanced-R</a></li>
+<li><a href="#ce-sempre-un-ma-generalizzazione">C’è sempre un <em>ma</em>… (generalizzazione)</a></li>
+<li><a href="#finalmente-una-soluzione-fino-a-prova-contraria--">Finalmente: una soluzione (fino a prova contraria… :-))</a></li>
+<li><a href="#references">References</a></li>
+</ul>
+</div>
+
+<div id="il-problema" class="section level2">
+<h2>Il problema</h2>
+{{% tweet "1128367547785588737" %}}
+<pre class="r"><code>apply(array(1:27, dim = c(3, 3, 3)), 3, function(x) x)
+#&gt;       [,1] [,2] [,3]
+#&gt;  [1,]    1   10   19
+#&gt;  [2,]    2   11   20
+#&gt;  [3,]    3   12   21
+#&gt;  [4,]    4   13   22
+#&gt;  [5,]    5   14   23
+#&gt;  [6,]    6   15   24
+#&gt;  [7,]    7   16   25
+#&gt;  [8,]    8   17   26
+#&gt;  [9,]    9   18   27</code></pre>
+<p>Come si può vedere, l’input dato alla funzione <code>apply()</code> è un array a
+tre dimensioni. Ad <code>apply()</code> chiediamo di prendere semplicemente gli
+elementi lungo la terza dimensione (quindi 3 matrici) e lasciarle così
+come stanno :-). Come mai allora non ci viene restituito un array?</p>
+<p>Innanzitutto verifichiamo che la nostra ipotesi sul funzionamento di
+<code>apply()</code> sia corretta. Per farlo, un modo possibile, è andare a
+chiedere allo stesso <code>apply()</code> di mostrarci la struttura dei vari input
+che riceve.</p>
+<pre class="r"><code>arr &lt;- array(1:27, dim = c(3, 3, 3))
+apply(arr, 3, function(x) message(str(x)))
+#&gt;  int [1:3, 1:3] 1 2 3 4 5 6 7 8 9
+#&gt; 
+#&gt;  int [1:3, 1:3] 10 11 12 13 14 15 16 17 18
+#&gt; 
+#&gt;  int [1:3, 1:3] 19 20 21 22 23 24 25 26 27
+#&gt; 
+#&gt; NULL</code></pre>
+<p>Ok, come immaginavamo l’input è formato da tre matrici <span class="math inline">\(3x3\)</span>. Quello che
+vorremmo è avere in output le stesse tre matrici <span class="math inline">\(3x3\)</span>, allineate in un
+array, lungo la terza dimensione.</p>
+</div>
+<div id="primo-suggerimento" class="section level2">
+<h2>Primo suggerimento</h2>
+{{% tweet "1128711941483106306" %}}
+<p>Hadley Wickham sugegrisce di usare <code>pryr::aapern()</code>. proviamo a vedere
+come funziona (<code>?plyr::aapply</code>). La cui prima riga di descrizione sembra
+(come raramente accade con le sui funzioni…) risolvere precisamente e
+specificatamente il nostro problema:</p>
+<blockquote>
+<p>“For each slice of an array, apply function, keeping results as an
+array.”!</p>
+</blockquote>
+<p>E infatti</p>
+<pre class="r"><code>hw_sol &lt;- plyr::aaply(arr, 3, function(x) x)
+str(hw_sol)
+#&gt;  int [1:3, 1:3, 1:3] 1 10 19 2 11 20 3 12 21 4 ...
+#&gt;  - attr(*, &quot;dimnames&quot;)=List of 3
+#&gt;   ..$ X1: chr [1:3] &quot;1&quot; &quot;2&quot; &quot;3&quot;
+#&gt;   ..$   : chr [1:3] &quot;1&quot; &quot;2&quot; &quot;3&quot;
+#&gt;   ..$   : chr [1:3] &quot;1&quot; &quot;2&quot; &quot;3&quot;
+
+identical(hw_sol, arr)
+#&gt; [1] FALSE</code></pre>
+<p>Il problema sembra in parte risolto, in quanto l’output è coerentemente
+un array di dimensione 3 come ci aspettavamo. Ma la funzione che noi
+applichiamo al nostro array è l’identità e ci si potrebbe aspettare
+quindi di ottenre in output lo stesso identico oggetto, cosa che non
+accade. L’output inoltre è differente anche non solo riguardo i nomi
+delle dimensioni ma proprio anche nel contenuto.</p>
+<pre class="r"><code>all.equal(hw_sol, arr)
+#&gt; [1] &quot;Attributes: &lt; Length mismatch: comparison on first 1 components &gt;&quot;
+#&gt; [2] &quot;Mean relative difference: 0.547619&quot;</code></pre>
+</div>
+<div id="opzione-da-advanced-r" class="section level2">
+<h2>Opzione da Advanced-R</h2>
+<p>Vediamo se riusciamo a farlo in un altro modo, ottenendo il risultato
+che desideriamo, <em>identico</em>.</p>
+<p>Innanzitutto, ricordiamo che un array non è altro che un vettore atomico
+a cui è stata assegnato un attributo <strong>dim</strong>; nel caso in cui <strong>dim</strong>
+sia di lunghezza <span class="math inline">\(2\)</span>, verrà chiamata
+<strong>matrix</strong>.<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a>.
+Inoltre, dalla sezione
+<a href="https://adv-r.hadley.nz/subsetting.html#subassignment" class="uri">https://adv-r.hadley.nz/subsetting.html#subassignment</a> di <strong>Advanced
+R</strong> (<span class="citation">Wickham (<a href="#ref-wickham2019advanced" role="doc-biblioref">2019</a>)</span>) sappiamo che sottoselezionare un oggetto con
+“nulla” ci permette di mantenerne la struttura, ovvero gli attributi, e
+questo è strautile sopratutto quando abbinato all’operatore di
+assegnamento <code>&lt;-</code>.</p>
+<p>Questo accorgimento potrebbe esserci utile quindi anche in questo caso.
+Proviamo.</p>
+<pre class="r"><code>y &lt;- array(dim = c(3, 3, 3))
+y[] &lt;- apply(arr, 3, function(x) x)
+str(y)
+#&gt;  int [1:3, 1:3, 1:3] 1 2 3 4 5 6 7 8 9 10 ...
+identical(arr, y)
+#&gt; [1] TRUE</code></pre>
+<p>PuffRbacco, sembra proprio di si ;-).</p>
+</div>
+<div id="ce-sempre-un-ma-generalizzazione" class="section level2">
+<h2>C’è sempre un <em>ma</em>… (generalizzazione)</h2>
+<p>Siamo sicuri che la soluzione proposta valga in generale? Secondo HW, probabilmente no:</p>
+{{% tweet "1128798436575330305" %}}
+<pre class="r"><code>tentative &lt;- function(d, f) {
+    y &lt;- array(dim = c(3, 3, 3))
+    y[] &lt;- f(arr, d, function(x) x)
+    
+    message(str(y))
+    identical(arr, y)
+}
+
+purrr::map_lgl(1:3, tentative, apply)
+#&gt;  int [1:3, 1:3, 1:3] 1 4 7 10 13 16 19 22 25 2 ...
+#&gt; 
+#&gt;  int [1:3, 1:3, 1:3] 1 2 3 10 11 12 19 20 21 4 ...
+#&gt; 
+#&gt;  int [1:3, 1:3, 1:3] 1 2 3 4 5 6 7 8 9 10 ...
+#&gt; 
+#&gt; [1] FALSE FALSE  TRUE</code></pre>
+<p>Pare infatti che valga solo se applicato lungo la terza dimensione.
+Ma cosa è successo? (A parte che HW ha ragione, come di consueto…)
+Proviamo a guardare l’help <code>?apply</code> e vedere se ci è di aiuto.</p>
+<blockquote>
+<p><strong>If each call to FUN returns a vector of length n, then apply returns
+an array of dimension c(n, dim(X)[MARGIN]) if n &gt; 1</strong>. If n equals 1,
+apply returns a vector if MARGIN has length 1 and an array of dimension
+dim(X)[MARGIN] otherwise. If n is 0, the result has length 0 but not
+necessarily the ‘correct’ dimension.</p>
+</blockquote>
+<p>Dunque, <code>apply()</code>, di suo, ritorna coerentemente con la sua descrizione
+una matrice <span class="math inline">\(9x3\)</span> visto che la dimensione su cui si applica <code>apply</code> ha
+lunghezza <span class="math inline">\(3\)</span>, e ogni esecuzione ha come risultato un vettore (atomico)
+di lunghezza <span class="math inline">\(9\)</span>.</p>
+<p>Proviamo la stessa procedura utilizzando <code>plyr::aaply()</code>.</p>
+<pre class="r"><code>purrr::map_lgl(1:3, tentative, plyr::aaply)
+#&gt;  int [1:3, 1:3, 1:3] 1 2 3 4 5 6 7 8 9 10 ...
+#&gt; 
+#&gt;  int [1:3, 1:3, 1:3] 1 4 7 2 5 8 3 6 9 10 ...
+#&gt; 
+#&gt;  int [1:3, 1:3, 1:3] 1 10 19 2 11 20 3 12 21 4 ...
+#&gt; 
+#&gt; [1]  TRUE FALSE FALSE</code></pre>
+<p>Ri-puffRbacco! Qui la situazione sembra adirittura invertita,
+arrivando al risultato che immaginiamo nel primo caso ma non negli
+altri. Inoltre pare che i risultati siano propio differenti rispetto
+a quanto ottenuto in precedenza. Il mistero si infittisce. E il problema
+pare ancora irrisolto.</p>
+</div>
+<div id="finalmente-una-soluzione-fino-a-prova-contraria--" class="section level2">
+<h2>Finalmente: una soluzione (fino a prova contraria… :-))</h2>
+<p>Restiamo per il momento sulle funzioni <em>base</em>. Abbiamo capito che il
+problema risiede nel fatto che viene restituita una matrice <span class="math inline">\(9x3\)</span>, la
+quale, nel caso volessimo mantenere la struttura originale di array,
+viene “distribuita” in un array <span class="math inline">\(3x3\)</span> <em>in ordine</em> ma non secondo
+l’ordine che vogliamo noi. E come potrebbe saperlo… Quello che
+vogliamo è che tale insieme di 3 matrici (i vettori <span class="math inline">\(9x1\)</span> restituiti da
+<code>apply()</code> riconvertiti in <span class="math inline">\(3x3\)</span>) vengano “disposti” seguendo la
+dimensione su cui è applicata <code>apply()</code> stessa.<a href="#fn2" class="footnote-ref" id="fnref2"><sup>2</sup></a></p>
+<p>In pratica, la dimensione lungo la quale viene applicata <code>apply()</code>
+diventa la terza dell’array di output (se assegnato a una struttura
+array): se <code>apply()</code>chiamo lungo la prima dimensione ci vengono
+restituiti tre vettori (“lungo” la prima dimensione) lunghi <span class="math inline">\(9\)</span>, che
+sono poi riarrangiati in matrici <span class="math inline">\(3x3\)</span> (“lungo” la seconda e terza
+dimensione). Il problema, è che vengono restituiti (come letto nell’
+help) in un “array of dimension c(n, dim(X)[MARGIN])”, e quindi le 3
+matrici (che corrispondono alla seconda e terza dimensione) vengono
+proposti sulla prima dimensione (divenendo quindi, una volta
+ri-distribuiti in una matrice, la prima e seconda dimensione dell’array
+risultante). Lo stesso dicasi se <code>apply()</code>chiamo la nostra funzione
+lungo le altre dimensioni: la dimensione su cui lavoriamo diventa sempre
+l’ultima (la terza) del nostro risultato, mentre le altre due vengono
+ridistribuite correttamente ordinate ma all’inizio. Si tratta quindi
+solo di redistribuire l’array risultante in modo corretto.</p>
+<p>Per fare questo ci viene in aiuto la funzione di R base <code>aperm()</code>, che
+fa proprio quello che ci serve! unitamente alla funzione</p>
+<pre class="r"><code>tentative_adj &lt;- function(d, f) {
+    y &lt;- array(dim = c(3, 3, 3))
+    y[] &lt;- f(arr, d, function(x) x)
+    
+    axes &lt;- integer(3)
+    axes[[d]] &lt;- 3
+    axes[axes != 3] &lt;- 1:2
+    
+    adj_y &lt;- aperm(y, axes)
+    
+    message(str(adj_y))
+    identical(arr, adj_y)
+}
+
+purrr::map_lgl(1:3, tentative_adj, apply)
+#&gt;  int [1:3, 1:3, 1:3] 1 2 3 4 5 6 7 8 9 10 ...
+#&gt; 
+#&gt;  int [1:3, 1:3, 1:3] 1 2 3 4 5 6 7 8 9 10 ...
+#&gt; 
+#&gt;  int [1:3, 1:3, 1:3] 1 2 3 4 5 6 7 8 9 10 ...
+#&gt; 
+#&gt; [1] TRUE TRUE TRUE</code></pre>
+<p>Ok, questo funziona, ma resta il sospetto che funzioni solamente per
+array “quadrati” (senza contare che funziona solo per array a tre
+dimensioni). Proviamo con un array “rettangolare”. Aggiustiamo gli
+input della funzione di prova per includere anche l’input in modo così
+da poter “catturarne” le dimensioni esatte.</p>
+<p>Creiamo inoltre una funzione di controllo generale.</p>
+<pre class="r"><code>check &lt;- function(d, f, data) {
+    y &lt;- f(data, d, function(x) x)
+    message(str(y))
+    identical(data, y)
+}
+
+
+aapply &lt;- function(x, d, f) {
+  # inizializzamo l&#39;output coi metadata dell&#39;input in modo da mantenerne
+  # sia la strutturea che le relative informazioni in fase di
+  # assegnamento.
+  y &lt;- array(NA, dim(x), dimnames(x))
+  
+  # eseguiamo `apply()` in modo standard e ristrutturiamo le dimensioni
+  # considerando che l&#39;output di `apply()` ha (come si legge nell&#39;help)
+  # nell&#39;ultima dimensione quella usata come margine, dobbiamo quindi
+  # ristrutturare il risultato con le dimensioni corrette (seppur
+  # disordinate)
+  tmp &lt;- apply(x, d, f)
+  dim(tmp) &lt;- c(dim(x)[-d], dim(x)[[d]])
+  
+  # dobbiamo quindi definire la permutazione che riordinerà le
+  # dimensioni correttamente, mettendo quindi quella usata nella
+  # sua posizione originale
+  size &lt;- length(dim(x))
+  d_perm &lt;- integer(size)
+  d_perm[[d]] &lt;- size
+  d_perm[-d] &lt;- seq_len(size - 1L)
+  
+  # eseguiamo infine la permutazione sfruttando `aperm()` e assegnamo il
+  # risultato al nostro output, di cui manteniamo la struttura e i
+  # metadati (cioè gli attributi) grazia a un assegnamento con
+  # sottoselezione vuota.
+  y[] &lt;- aperm(tmp, d_perm)
+  y
+}</code></pre>
+<p>Controlliamo quindi che tutto funzioni, considerando anche un array che
+non sia “quadrato”.</p>
+<pre class="r"><code>purrr::map_lgl(1:3, check, aapply, arr)
+#&gt;  int [1:3, 1:3, 1:3] 1 2 3 4 5 6 7 8 9 10 ...
+#&gt; 
+#&gt;  int [1:3, 1:3, 1:3] 1 2 3 4 5 6 7 8 9 10 ...
+#&gt; 
+#&gt;  int [1:3, 1:3, 1:3] 1 2 3 4 5 6 7 8 9 10 ...
+#&gt; 
+#&gt; [1] TRUE TRUE TRUE
+
+rect_arr &lt;- array(1:27, c(1, 9, 3))
+purrr::map_lgl(1:3, check, aapply, rect_arr)
+#&gt;  int [1, 1:9, 1:3] 1 2 3 4 5 6 7 8 9 10 ...
+#&gt; 
+#&gt;  int [1, 1:9, 1:3] 1 2 3 4 5 6 7 8 9 10 ...
+#&gt; 
+#&gt;  int [1, 1:9, 1:3] 1 2 3 4 5 6 7 8 9 10 ...
+#&gt; 
+#&gt; [1] TRUE TRUE TRUE</code></pre>
+<p>Sembra tutto a posto. Per il momento, fino all’evidenza di un nuovo
+problema adottando questo approccio, teniamolo buono.</p>
+</div>
+<div id="references" class="section level2 unnumbered">
+<h2>References</h2>
+<div id="refs" class="references">
+<div id="ref-wickham2019advanced">
+<p>Wickham, H. 2019. <em>Advanced R, Second Edition</em>. Chapman &amp; Hall/Crc the R Series. Taylor &amp; Francis. <a href="https://adv-r.hadley.nz">https://adv-r.hadley.nz</a>.</p>
+</div>
+</div>
+</div>
+<div class="footnotes">
+<hr />
+<ol>
+<li id="fn1"><p><a href="https://adv-r.hadley.nz/vectors-chap.html#attributes" class="uri">https://adv-r.hadley.nz/vectors-chap.html#attributes</a><a href="#fnref1" class="footnote-back">↩</a></p></li>
+<li id="fn2"><p>Quello che vogliamo
+è l’analogo dell’opzione <strong>byrow</strong> nella costruzione delle matrici, solo
+che qui vorremmo una sorta di <strong><em>bydim</em></strong> per gli array.<a href="#fnref2" class="footnote-back">↩</a></p></li>
+</ol>
+</div>
