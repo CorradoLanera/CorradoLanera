@@ -22,22 +22,10 @@ image:
 bibliography: ["../biblio.bib"]
 biblio-style: "apalike"
 link-citations: true
-output: 
-  blogdown::html_page: 
-    toc: yes
+output: blogdown::html_page
 ---
 
 
-<div id="TOC">
-<ul>
-<li><a href="#il-problema">Il problema</a></li>
-<li><a href="#primo-suggerimento">Primo suggerimento</a></li>
-<li><a href="#opzione-da-advanced-r">Opzione da Advanced-R</a></li>
-<li><a href="#ce-sempre-un-ma-generalizzazione">C’è sempre un <em>ma</em>… (generalizzazione)</a></li>
-<li><a href="#finalmente-una-soluzione-fino-a-prova-contraria--">Finalmente: una soluzione (fino a prova contraria… :-))</a></li>
-<li><a href="#references">References</a></li>
-</ul>
-</div>
 
 <div id="il-problema" class="section level2">
 <h2>Il problema</h2>
@@ -77,7 +65,7 @@ array, lungo la terza dimensione.</p>
 <div id="primo-suggerimento" class="section level2">
 <h2>Primo suggerimento</h2>
 {{% tweet "1128711941483106306" %}}
-<p>Hadley Wickham sugegrisce di usare <code>pryr::aapern()</code>. proviamo a vedere
+<p>Hadley Wickham suggerisce di usare <code>pryr::aapern()</code>. proviamo a vedere
 come funziona (<code>?plyr::aapply</code>). La cui prima riga di descrizione sembra
 (come raramente accade con le sui funzioni…) risolvere precisamente e
 specificatamente il nostro problema:</p>
@@ -99,7 +87,7 @@ identical(hw_sol, arr)
 <p>Il problema sembra in parte risolto, in quanto l’output è coerentemente
 un array di dimensione 3 come ci aspettavamo. Ma la funzione che noi
 applichiamo al nostro array è l’identità e ci si potrebbe aspettare
-quindi di ottenre in output lo stesso identico oggetto, cosa che non
+quindi di ottenere in output lo stesso identico oggetto, cosa che non
 accade. L’output inoltre è differente anche non solo riguardo i nomi
 delle dimensioni ma proprio anche nel contenuto.</p>
 <pre class="r"><code>all.equal(hw_sol, arr)
@@ -111,12 +99,12 @@ delle dimensioni ma proprio anche nel contenuto.</p>
 <p>Vediamo se riusciamo a farlo in un altro modo, ottenendo il risultato
 che desideriamo, <em>identico</em>.</p>
 <p>Innanzitutto, ricordiamo che un array non è altro che un vettore atomico
-a cui è stata assegnato un attributo <strong>dim</strong>; nel caso in cui <strong>dim</strong>
-sia di lunghezza <span class="math inline">\(2\)</span>, verrà chiamata
-<strong>matrix</strong>.<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a>.
-Inoltre, dalla sezione
+a cui è stato assegnato un attributo <strong>dim</strong>; nel caso in cui <strong>dim</strong>
+sia di lunghezza <span class="math inline">\(2\)</span>, verrà chiamato
+<strong>matrix</strong>.<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a>.</p>
+<p>Inoltre, dalla sezione
 <a href="https://adv-r.hadley.nz/subsetting.html#subassignment" class="uri">https://adv-r.hadley.nz/subsetting.html#subassignment</a> di <strong>Advanced
-R</strong> (<span class="citation">Wickham (<a href="#ref-wickham2019advanced" role="doc-biblioref">2019</a>)</span>) sappiamo che sottoselezionare un oggetto con
+R</strong> (<span class="citation">Wickham (<a href="#ref-wickham2019advanced" role="doc-biblioref">2019</a>)</span>) sappiamo che sotto-selezionare un oggetto con
 “nulla” ci permette di mantenerne la struttura, ovvero gli attributi, e
 questo è strautile sopratutto quando abbinato all’operatore di
 assegnamento <code>&lt;-</code>.</p>
@@ -173,9 +161,9 @@ di lunghezza <span class="math inline">\(9\)</span>.</p>
 #&gt;  int [1:3, 1:3, 1:3] 1 10 19 2 11 20 3 12 21 4 ...
 #&gt; 
 #&gt; [1]  TRUE FALSE FALSE</code></pre>
-<p>Ri-puffRbacco! Qui la situazione sembra adirittura invertita,
+<p>Ri-puffRbacco! Qui la situazione sembra addirittura invertita,
 arrivando al risultato che immaginiamo nel primo caso ma non negli
-altri. Inoltre pare che i risultati siano propio differenti rispetto
+altri. Inoltre pare che i risultati siano proprio differenti rispetto
 a quanto ottenuto in precedenza. Il mistero si infittisce. E il problema
 pare ancora irrisolto.</p>
 </div>
@@ -193,12 +181,12 @@ dimensione su cui è applicata <code>apply()</code> stessa.<a href="#fn2" class=
 diventa la terza dell’array di output (se assegnato a una struttura
 array): se <code>apply()</code>chiamo lungo la prima dimensione ci vengono
 restituiti tre vettori (“lungo” la prima dimensione) lunghi <span class="math inline">\(9\)</span>, che
-sono poi riarrangiati in matrici <span class="math inline">\(3x3\)</span> (“lungo” la seconda e terza
+sono poi re-arrangiatati in matrici <span class="math inline">\(3x3\)</span> (“lungo” la seconda e terza
 dimensione). Il problema, è che vengono restituiti (come letto nell’
 help) in un “array of dimension c(n, dim(X)[MARGIN])”, e quindi le 3
 matrici (che corrispondono alla seconda e terza dimensione) vengono
 proposti sulla prima dimensione (divenendo quindi, una volta
-ri-distribuiti in una matrice, la prima e seconda dimensione dell’array
+re-distribuiti in una matrice, la prima e seconda dimensione dell’array
 risultante). Lo stesso dicasi se <code>apply()</code>chiamo la nostra funzione
 lungo le altre dimensioni: la dimensione su cui lavoriamo diventa sempre
 l’ultima (la terza) del nostro risultato, mentre le altre due vengono

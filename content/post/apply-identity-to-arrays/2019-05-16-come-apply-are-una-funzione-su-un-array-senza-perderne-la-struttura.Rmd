@@ -22,9 +22,7 @@ image:
 bibliography: ["../biblio.bib"]
 biblio-style: "apalike"
 link-citations: true
-output: 
-  blogdown::html_page: 
-    toc: yes
+output: blogdown::html_page
 ---
 
 ```{r setup, include = FALSE}
@@ -69,7 +67,7 @@ array, lungo la terza dimensione.
 blogdown::shortcode('tweet', '1128711941483106306')
 ```
 
-Hadley Wickham sugegrisce di usare `pryr::aapern()`. proviamo a vedere 
+Hadley Wickham suggerisce di usare `pryr::aapern()`. proviamo a vedere 
 come funziona (`?plyr::aapply`). La cui prima riga di descrizione sembra
 (come raramente accade con le sui funzioni...) risolvere precisamente e 
 specificatamente il nostro problema:
@@ -89,7 +87,7 @@ identical(hw_sol, arr)
 Il problema sembra in parte risolto, in quanto l'output è coerentemente
 un array di dimensione 3 come ci aspettavamo. Ma la funzione che noi
 applichiamo al nostro array è l'identità e ci si potrebbe aspettare
-quindi di ottenre in output lo stesso identico oggetto, cosa che non
+quindi di ottenere in output lo stesso identico oggetto, cosa che non
 accade. L'output inoltre è differente anche non solo riguardo i nomi
 delle dimensioni ma proprio anche nel contenuto.
 
@@ -104,12 +102,13 @@ Vediamo se riusciamo a farlo in un altro modo, ottenendo il risultato
 che desideriamo, _identico_.
 
 Innanzitutto, ricordiamo che un array non è altro che un vettore atomico
-a cui è stata assegnato un attributo **dim**; nel caso in cui **dim**
-sia di lunghezza $2$, verrà chiamata
+a cui è stato assegnato un attributo **dim**; nel caso in cui **dim**
+sia di lunghezza $2$, verrà chiamato
 **matrix**.^[<https://adv-r.hadley.nz/vectors-chap.html#attributes>].
+
 Inoltre, dalla sezione
 <https://adv-r.hadley.nz/subsetting.html#subassignment> di **Advanced
-R** (@wickham2019advanced) sappiamo che sottoselezionare un oggetto con
+R** (@wickham2019advanced) sappiamo che sotto-selezionare un oggetto con
 "nulla" ci permette di mantenerne la struttura, ovvero gli attributi, e
 questo è strautile sopratutto quando abbinato all'operatore di
 assegnamento ` <- `.
@@ -167,9 +166,9 @@ Proviamo la stessa procedura utilizzando `plyr::aaply()`.
 purrr::map_lgl(1:3, tentative, plyr::aaply)
 ```
 
-Ri-puffRbacco! Qui la situazione sembra adirittura invertita,
+Ri-puffRbacco! Qui la situazione sembra addirittura invertita,
 arrivando al risultato che immaginiamo nel primo caso ma non negli
-altri. Inoltre pare che i risultati siano propio differenti rispetto 
+altri. Inoltre pare che i risultati siano proprio differenti rispetto 
 a quanto ottenuto in precedenza. Il mistero si infittisce. E il problema
 pare ancora irrisolto.
 
@@ -190,12 +189,12 @@ In pratica, la dimensione lungo la quale viene applicata `apply()`
 diventa la terza dell'array di output (se assegnato a una struttura
 array): se `apply()`chiamo lungo la prima dimensione ci vengono
 restituiti tre vettori ("lungo" la prima dimensione) lunghi $9$, che
-sono poi riarrangiati in matrici $3x3$ ("lungo" la seconda e terza
+sono poi re-arrangiatati in matrici $3x3$ ("lungo" la seconda e terza
 dimensione). Il problema, è che vengono restituiti (come letto nell'
 help) in un "array of dimension c(n, dim(X)[MARGIN])", e quindi le 3
 matrici (che corrispondono alla seconda e terza dimensione) vengono
 proposti sulla prima dimensione (divenendo quindi, una volta
-ri-distribuiti in una matrice, la prima e seconda dimensione dell'array
+re-distribuiti in una matrice, la prima e seconda dimensione dell'array
 risultante). Lo stesso dicasi se `apply()`chiamo la nostra funzione
 lungo le altre dimensioni: la dimensione su cui lavoriamo diventa sempre
 l'ultima (la terza) del nostro risultato, mentre le altre due vengono
