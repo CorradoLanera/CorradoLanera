@@ -18,7 +18,7 @@ authors:
 - Paola Berchialla
 - Ileana Baldi
 date: "2018-11-01"
-doi: ""
+doi: "10.1016/j.jclinepi.2018.06.015"
 featured: true
 image:
   caption: 'General procedure workflow'
@@ -50,11 +50,10 @@ links:
     url: "https://github.com/UBESP-DCTV/costumer"
     
   - name: "View Journal Article"
-    url: "https://www.sciencedirect.com/science/article/pii/S0895435618300854
-    "
+    url: "https://www.sciencedirect.com/science/article/pii/S0895435618300854"
 url_dataset: ""
 
-url_pdf: "pdf/2018-costumer.pdf"
+url_pdf: ""
 
 url_poster: ""
 
