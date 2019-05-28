@@ -1,0 +1,784 @@
+---
+title: "Annidare i map()"
+subtitle: "Ovvero: caccia alla definizione delle variabili"
+author: Corrado Lanera
+date: '2019-05-27'
+slug: annidare-map
+categories:
+  - COME
+  - peRcorsi
+  - R
+tags:
+  - rstats
+  - purrr
+  - lazy evaluation
+image:
+  caption: ''
+  focal_point: ''
+bibliography: ["../biblio.bib"]
+biblio-style: "apalike"
+link-citations: true
+output: blogdown::html_page
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+
+## Introduzione
+
+L'altro giorno una collega ha sentito la necessità di annidare due
+funzioni `map()` (dal pacchetto
+[**purrr**](https://purrr.tidyverse.org/)). Necessità che, con tutte le
+volte che l'ho sentita io, mette sempre quella leggera sensazione di
+disagio ambiguo tra il sentirsi _smart_ e il forte dubbio di non
+riuscire poi a controllare così bene l'effetto di uno strumento così
+potente in una modalità di lavoro così apparentemente poco più complessa
+del solito, ma di sicuro non _semplice_.
+
+Usare singolarmente funzioni `map_*()` di solito è molto conveniente in
+quanto presuppone un livello di astrazione affine al nostro pensiero
+naturale. Del resto è necessario avere la _consapevolezza_ di voler
+sfruttare una funzione che lavora in modo affine al pensiero naturale, e
+quindi in modo potenzialmente non affine rispetto alle abitudini che
+abbiamo quando programmiamo, sopratutto anche nell'uso di strumenti più
+specifici e meno flessibili rispetto alla norma.^[Meno flessibile =
+(quasi sempre) più robusto e sicuro!]
+
+Quando abbiamo bisogno di applicare una funzione a più oggetti,
+normalmente siamo abituati a scrivere un
+[_iterazione_](https://en.wikipedia.org/wiki/Iteration) (per esempio, un
+[_ciclo for_](https://en.wikipedia.org/wiki/For_loop)), che iteri la
+computazione della funzione di interesse tra gli oggetti a cui vogliamo
+applicarla. Iterazione dopo iterazione, si collezionano i risultati
+parziali aggregandoli alla fine, oppure cumulandoli mano a mano.
+
+Quando l’effetto (il risultato) ottenuto per un oggetto influenza il
+risultato ottenuto sugli oggetti seguenti, l’utilizzo di un _ciclo_ è
+più che naturale, e solitamente inevitabile.^[Per esempio se dovessimo
+scrivere esplicitamente (cioè senza usare la funzione `cumsum()` o
+simili) il vettore delle somme cumulate di un vettore dato, sarebbe
+difficile farlo senza un ciclo.] D'altra parte, quando i risultati sono
+indipendenti tra loro, ovvero il risultato dell'applicazione della
+funzione su un oggetto non dipende dal risultato ottenuto sugli oggetti
+"precedenti", allora potrebbe essere meglio sfruttare una procedura più
+simile a come pensiamo in modo naturale, cioè: "applica la funzione data
+a tutti gli oggetti considerati (_contemporaneamente_)".^[Per esempio,
+se volessimo calcolare il doppio di ciascun numero di un vettore dato
+(anche leggendo come ho espresso io stesso qui il problema) non penso
+istintivamente a un ciclo (sequenziale) ma più che altro a un processo
+_parallelo_.] Questo tipo di processo va sotto il nome di
+[_programamzione
+funzionale_](http://adv-r.had.co.nz/Functional-programming.html)
+
+In questo caso, una possibile regola del pollice per capire se siamo in
+una situazione _parallela_ è chiedersi: "posso mescolare gli oggetti
+prima di eseguire il mio processo ottenendo lo stesso risultato
+(chiaramente mescolato)?" Se la risposa è si allora probabilmente non
+sarà necessario usare un _ciclo_ in quanto il processo difficilmente
+sarà sequenziale; in caso contrario probabilmente servirà un _ciclo_
+esplicito.]
+
+Per quanto a livello di implementazione questo tipo di procedimento
+"naturale" coinvolga comunque, dietro le quinte, un _ciclo_, avere a
+disposizione uno strumento che ci permetta di non vederlo
+esplicitamente, e pensare in modo _naturalmente parallelo_, è una
+risorsa potenzialmente importante.
+
+Infatti, un procedimento "inscatolato" in questo modo, potrà essere
+maggiormente ottimizzato al suo interno nel verificare la correttezza 
+degli input, e garantire un risultato coerente con le aspettative.
+Inoltre, permette di concentrarsi sul problema da risolvere per come lo
+si pensa, e non su come risolverlo per come sia da implementare.
+
+D’altra parte, ogni semplificazione di una procedura complessa la rende
+si più _semplice_, ma dall'altro lato anche meno _facile_ da usare:
+presuppone infatti una conoscenza ulteriore rispetto alle ipotesi e i
+presupposti necessari per poterla applicare. Sopratutto se la si vuole
+usare in modo non standard (cioè non allo scopo per cui è stata
+pensata, ottimizzata e resa facile da usare), come per esempio:
+in modo annidato `r knitr::asis_output("\U1F609")`.
+
+
+
+
+## Un veloce sguardo a `map()`?
+
+Senza entrare nel dettaglio di tutto il mondo legato al pacchetto
+**purrr** e alla programmazione vettorializzata, possiamo dire che
+`map()` ha due input principali: un vettore/lista (l'insieme) di oggetti
+a cui vogliamo applicare la nostra funzione, e la funzione da
+applicare.^[Per approfondire si veda la documentazione `?map`, oltre che
+[For loops vs.
+functionals](https://r4ds.had.co.nz/iteration.html#for-loops-vs.functionals)
+[@wickham2016r] e
+[Functionals](https://adv-r.hadley.nz/functionals.html)
+[@wickham2019advanced].]
+
+
+
+
+
+## Il problema: annidare `map()`
+
+Supponiamo di avere una coppia di vettori e per ciascun elemento del
+primo vettore vogliamo applicare una funzione prefissata per ciascu
+elemento del secondo vettore.
+
+Il problema si potrebbe risolverlo annidando due cicli... o due `map()`
+:-).
+
+Prendiamo un esempio molto semplice: Dati i seguenti `x` e `y`, vogliamo
+prendere la somma di ciascuna combinazione.
+
+```{r}
+suppressPackageStartupMessages(library(dplyr))
+suppressPackageStartupMessages(library(purrr))
+
+x <- 1:2
+y <- 3:5
+```
+
+Vogliamo quindi ottenere una lista di $2$ elementi (uno per ogni
+elemento di `x`), composti ciascuno da una lista di $3$ elementi
+contenenti la somma del corrispondente elemento di `x` con i
+corrispondenti elementi di `y`. Cioè l'oggetto:
+
+```{r}
+list(
+    list(1 + 3, 1 + 4, 1 + 5),
+    list(2 + 3, 2 + 4, 2 + 5)
+)
+```
+
+
+Supopniamo quindi che ci venga voglia di usare due `map()` annidati, del
+resto il pensiero naturalmente parallelo per risolverlo è "prendi
+(separatamente) ogni elemento di `x` e sommalo (separatamente) a ogni
+elemento di `y`". Proviamo a scriverla:
+
+```{r, error=TRUE}
+map(x, map(y, sum))
+```
+
+Sembra non funzionare. Del resto ci saremmo dovuti aspettare qualcosa di
+strano visto che senza uso della `~` nella chiamata della funzione non
+possiamo passare argomenti alla stessa visto che `map()` non
+interpreterebbe la funzione come una formula ma come un nome.^[Il
+risultato ottenuto dipende dal fatto che `map(y, sum)` viene valutato e
+restituisce un valore numerico, in particolare, visto che `y` è `c(1, 2,
+3)`, restituisce `c(1, 2, 3)`. Quindi la nostra chiamata equivale a
+chiamare `map(1:2, 1:3)` il quale esegue sottoselezioni annidate, in
+particolare il risultato finale sarebbe (scritto in modo esteso)
+`list(1[[1]][[2]][[3]], 2[[1]][[2]][[3]])`, che chiaramente risulta in
+una lista di due `NULL`. Per maggiorni informazioni leggere la
+documentazione di
+[`?purrr::map`](https://www.rdocumentation.org/packages/purrr/versions/0.2.5/topics/map)),
+[`?purrr::pluck`](https://www.rdocumentation.org/packages/purrr/versions/0.2.5/topics/pluck)
+e qualche approfondimento sul funzionamento degli [operatori di
+sottoselezione](http://adv-r.had.co.nz/Subsetting.html).]
+
+Usiamo allora la tilde:
+
+```{r, error=TRUE}
+map(x, ~map(y, sum))
+```
+
+E in questo caso il risultato lo da... ma sbagliato. Anche in questo
+caso però prevedere che il risultato fosse sbagliato non era difficile:
+infatti a `sum` verranno passate solo le componenti del suo input, `y`,
+ma non gli abbiamo detto da nessuna parte di prendere anche quelle di 
+`x`.
+ 
+Il problema qui sorge perché dire alla funzione passata come formula a
+un `map()` di prendere le componenti del vettore lo possiamo fare per
+esempio con il `.` o il `.x` (di più su questo nel seguito). Ma il fatto
+cruciale è:
+ 
+> Come facciamo a indicare dentro `sum` sia le componenti di `x` che
+> quelle di `y` in modo non ambiguo, visto che le due funzioni `map()`
+> annidate che usiamo hanno la stessa identica sintassi, e quindi anche
+> lo stesso modo di indicare tali componenti?
+
+
+
+## La sfida: capire gli input di `map()`
+
+Come dicevamo, `map()` prende, principalmente, due opzioni
+(obbligatorie): `.x` e `.f`. Questo può sembrare banale ma sarà
+fondamentale nell’immediato nostro futuro per capire, una parte, di
+quello che succede.
+
+`.x` è il nome/alias che `map()` assegnerà internamente all’oggetto
+vettore/lista su cui ogni componente vorremo applicare la nostra
+funzione.
+
+`.f` è il nome/alias che `map()` assegnerà, internamente, alla funzione
+che vorremo applicare. Tale funzione sarà quindi applicata a ogni
+componente dell’oggetto passato a `map()`, rappresentato internamente
+con `.x`.
+
+```{r}
+map(x, function(k) 2*k)
+map(.x = x, .f = function(k) 2*k)
+
+
+raddoppia <- function(k) 2*k
+map(x, raddoppia)
+map(.x = x, .f = raddoppia)
+```
+
+Bene, ma se allora `.f` è il nome/alias di una funzione, e questa
+funzione si applica a ogni componente di `.x`, qual’è il nome/alias di
+questo componente (definito dall’interno di `map()`) "dentro" `.f`? In
+altre parole, `.f` come chiamerà al suo interno gli oggetti che `map()`
+gli passerà in input?
+
+Leggendo l’help
+([`?map`](https://www.rdocumentation.org/packages/purrr/versions/0.2.5/topics/map))
+della funzione scopriamo che a `.f` possiamo assegnare una funzione vera
+e proprio, che verrà usata così com’è (e quindi il nome della variabile
+usata internamente sarà noto, conoscendo tale funzione) oppure con una
+formula (comprendente solo la componente a destra della `~`). In questo
+caso, quando la nostra funzione avrà un solo input, il nome della
+variabile da usare sarà `.`, quando avrà due input (per le funzioni
+della famiglia `map2_*()`) allora i nomi delle variabili che saranno
+usate internamente saranno `.x` e `.y`, quando invece gli input saranno
+molteplici, allora i nomi delle variabili saranno `..1`, `..2`, `..3`,
+eccetera.
+
+Bene, quindi abbiamo capito che possiamo scrivere, per ottenere lo
+stesso risultato di prima, anche:
+
+```{r}
+map(x, ~2*.)
+```
+
+Per capire come R si comporta di fronte a casi patologici, dobbiamo
+anche sapere che R ogni volta che viene definita una funzione crea un
+ambiente che la contiene con tutti le variabili/alias che le servono e
+gli oggetti usati per definirla.^[Per maggiori informazioni in merito
+[Environments](https://adv-r.hadley.nz/environments.html)
+[wickham2019advanced].]
+
+Quando dentro una funzione viene richiesto un oggetto tramite il suo
+nome, R cerca dentro a questo ambiente, se lo trova. Di fondamentale
+importanza è che la ricerca avviene nell'ambiente in cui è stata
+_definita_ la funzione e non in quello che la richiama! Per esempio:
+
+```{r}
+f <- function() {
+  a <- 1
+  b <- 2
+  
+  a + b
+}
+f()
+
+a <- 3
+b <- 4
+f()
+```
+
+Se invece R non trova la definizione della variabile dentro l'ambiente
+in cui è stata definita la funzione in cui ne compare la chiamata, va a
+cercarlo nell’ambiente del contesto in cui questa funzione è stata
+creata, e indietro così finché non lo trova. Sale quindi di livello, ma
+sempre "per definizione" e non "per chiamata".^[[Ambienti delle
+funzioni](http://adv-r.had.co.nz/Environments.html#function-envs).] Per
+esempio:
+
+```{r}
+f <- function() {
+  a <- 1
+  
+  g <- function() {                      # g() viene definita dentro f()
+    b <- 2
+    
+    a + b             # a non è definita dentro g(), dove viene cercata?
+  }
+  
+  g()
+}
+f()
+
+a <- 3
+f()
+
+b <- 4
+f()
+```
+
+
+Se la matriosca di ambienti considerati arriva a termine senza aver
+trovato un riferimento a tale nome, allora viene restituito un errore.
+
+```{r, error=TRUE}
+h <- function() {
+  c <- 1
+  
+  d + e
+}
+
+h()
+```
+
+
+Tutto questo da un lato spiega perché la funzione qui sotto restituisce
+lo stesso risultato delle chiamate precedenti:
+
+```{r}
+map(x, function(x) x)
+```
+
+Infatti quando R cerca il significato del(l'oggetto collegato al)la
+"terza" `x` trova il riferimento nella "seconda" `x`, creata quando la
+funzione viene definita. Come abbiamo letto dall’help di `map()`, la
+"seconda" `x` diventa/rappresenta, di volta in volta,  l’"elemento"
+dell'oggetto passato a `map()` come `.x`, e che di volta in volta sarà
+quindi passato a `.f`.
+
+In questo caso quindi `.x` assume il valore del primo "x", cioè il
+nostro oggetto `1:2`, e quindi i suoi elementi passati a `.f`, che `.f`
+al suo interno chiamerà e identificherà con il nome `x`, saranno prima
+`1` e poi `2`.
+
+D’altra parte capiamo anche perché la seguente chiamata non da errore, e
+capiamo anche perché ci restituisce il risultato che vediamo (che non è
+probabilmente quello che vorremmo ricevere...):
+
+
+```{r}
+map(x, function(k) x)
+```
+
+Infatti quando `.f` al suo interno cerca l’oggetto `x` non lo trova
+nell’ambiente creato quando è stata costruita e quindi lo cerca
+nell’ambiente che lo conteneva, ovvero quello in qui è stata costruita
+la funzione, cioè "dentro" la chiamata a `map()`. Qui, anche se nel
+codice scritto vediamo un `x` (il primo), non _esiste_ un oggetto
+chiamato `x` dentro la chiamata di `map()`. Infatti il nostro `x`, qui,
+è chiamato `.x`! Quindi R non trova `x` nemmeno qui e quindi va a
+cercarlo nell'ambiente che contene `map()` e li trova il nostro `x`
+originale, cioè proprio `1:2`, e lo usa.
+
+Quindi, a ogni chiamata di `.f` che verrà fatta dentro `map()` (che
+ricordiamo viene chiamata su, quindi "per", ogni elemento di `.x`: in
+questo caso due volte), l’`x` usato sarà quello "nostro" nell'ambiente
+di lavoro globale. Infine poi, in questo caso, la nostra funzione `.f` è
+definita con una sola variabile `k`, che non viene mai usata, e quindi
+non fa altro che restituire il primo (rispetto alla catena degli
+ambienti) `x` che riesce a trovare.
+
+Per chiarire ancora meglio proviamo a definire un altro oggetto di
+lunghezza, per esempio, $3$ e chiamiamo lo stesso `map()` ma attribuendo
+questo oggetto a `.x`, invece che `x`:
+
+```{r}
+z <- 1:3
+map(z, function(k) x)
+```
+
+Come si vede, l'`x` usato è quello definito all'inizio nell'ambiente
+globale. E nulla di quanto nelle due righe di codice sopra riportate può
+farci capire quale `x` sarà di fatto usato (se già non lo sappiamo).
+
+Da notare quindi, molto importante, che `x` non è un input della
+funzione definita _dentro_ `map()` (`.f`), ma fa proprio parte della
+definizione (il "corpo" [@wickham2019advanced, 6.2.1]) di `.f`; in altre
+parole: noi non avremo nessun controllo su di esso tramite la chiamata
+della funzione, l'unica cosa a cui dobbiamo stare attenti è di essere
+sicuri di farglielo trovare da qualche parte nella catena di ambienti in
+cui andrà a cercarlo, pena un errore. Chiaramente dobbiamo fargli
+trovare anche quello giusto!^[Da notare anche che in questo caso,
+probabilmente e spesso, questo potrebbe significare che la funzione è
+stata mal definita, in quanto il suo risultato dipende da oggetti che
+non sono controllati o decisi all’interno del campo d’azione della
+funzione stessa (o nostro) su di essa. Quindi in questo caso
+probabilmente un errore sarebbe preferibile, ma se per (s)fortuna
+abbiamo definito un oggetto con quel nome in un punto che a ritroso sia
+esplorato dalla da `.f` nella ricerca di `x`, allora `.f` lo userà, e
+potrebbe succedere che non dia errore! Questo ci porrebbe nella
+situazione di aver ottenuto un risultato, probabilmente sbagliato, e
+senza nessun segnale di aver fatto un errore. Fare molta (molta!)
+attenzione quindi a definire funzioni il cui corpo sfrutti oggetti che
+non siano né definiti all’interno della funzione stessa né passati come
+input alla funzione!!]
+
+A questo punto capiamo perché la seguente chiamata invece restituisce un
+errore (e capiamo anche perché l’errore ci segnala che ".x non si riesce
+proprio a trovarlo da nessuna parte"...):
+
+```{r, error=TRUE}
+map(x, function(k) .x)
+```
+
+Infatti anche se dentro `map()` l’oggetto `.x` esiste (e nel nostro caso
+ha valore `x`, la funzione non è definita dentro la chiamata/esecuzione
+di `map()` ma da un'altra parte: anche se la "vadiamo" dentro a `map()`
+non è l’algoritmo che definisce `map()` quello che definisce la nostra
+funzione: cioè, "l’ambiente di `map()`" in cui esiste `.x`, quando la
+nostra funzione `function(k) .x` viene costruita, ancora nemmeno
+esiste.^[Viene infatti creato quando `map()` viene chiamata] Risalendo
+gli ambienti che di volta in volta hanno portato a quello in cui è
+costruita la nostra funzione, dunque, non si riesce a trovare un oggetto
+che si chiama `.x`, e quindi ci vene restituito l’errore corrispondente.
+
+Bene, visto che abbiamo capito, ora sappiamo cosa succederà se chiamiamo
+`map(x, ~.x)`. Giusto?
+
+Proviamo.
+
+```{r}
+map(x, ~.x)
+```
+
+Per tutti i Sargassi!! Come mai non ci viene restituito un errore, ma,
+anzi, otteniamo proprio il risultato che ci saremmo
+aspettati: un componente alla volta!!
+
+Questa cosa appare inspiegabile da quanto abbiamo (o per lo meno ho...)
+capito e visto fino adesso.
+
+L’unico modo per capirla, è andare a guardare la definizione vera e
+proprio di `map()`, il suo _corpo_. Per farlo, come per ogni altra
+funzione, in R è sufficiente richiamare il nome della funzione "puro":
+senza parentesi o argomenti:
+
+```{r}
+map
+```
+
+a questo punto vediamo che `.f` viene elaborata (prima di essere eseguita
+dal misterioso `.Call`) da una funzione `as_mapper()`. Vediamo allora
+questa com’è fatta:
+
+```{r}
+as_mapper
+```
+
+Bene bene, si tratta di una funzione **generica**. Una funzione generica
+richiama semplicemente un **metodo** (cioè, nient'altro che un’altra
+funzione) che sia quella _adeguata_ alla **classe** degli oggetti
+mandati in input (in generale, il primo).^[Per approfondire come
+funziona il metodo base di selezione dei metodi in R si può guardare
+[S3](https://adv-r.hadley.nz/s3.html) [@wickham2019advanced].]
+
+Guardiamo quindi di che classe è il nostro oggetto (anche se lo dovremmo
+sapere: è una "formula" `r knitr::asis_output("\U1F609")`)
+
+```{r}
+class(~.x)
+```
+
+Precisamente. Quindi, secondo le regole di selezione base dei metodi di
+R, dovremmo cercare una funzione (che si troverà di sicuro dentro
+**purrr**) che si
+chiami `as_mapper.formula` o, se non dovesse esistere, sappiamo che (se
+c’è) verrà usata la funzione `as_mapper.default`; nel caso poi manchi
+anche questa ci verrà restituito un errore!^[Questo, nel nostro caso,
+sappiamo che non avviene visto che `map()` funziona `r knitr::asis_output("\U1F609")`]
+
+Proviamo a vedere se c’è la prima:
+
+```{r, error=TRUE}
+as_mapper.formula
+```
+
+Ci viene restituito un errore. Ma cosa vuol dire che R non la trova?!
+Non c'è o non la trova? Se c'è è di sicuro dentro il pacchetto
+**purrr**, visto che è li dentro che `map()` è stata definita e quindi
+se `map()` la usa è dentro **purrr** che ne troviamo la definizione.
+
+Del resto, resta il fatto che noi non la troviamo. Questo però potrebbe
+anche voler dire che chi ha scritto **purrr** ha ritenuto, da un lato
+che fosse utile scrivere esplicitamente una funzione/metodo
+`as_mapper.formula()`, dall’altro lato che non fosse utile renderla
+accessibile per l’utente di **purrr** e quindi, come si dice, non l’ha
+"esportata".
+
+Per accedere a una funzione non esportata da un pacchetto si usano i
+tripli due punti:^[Fare comunque sempre attenzione a usare funzioni non
+esportate, se non lo sono un motivo c'è, il più probabile dei quali è
+che tale funzione non sia stabile, o magari verrà modificata senza
+garantire la retro-compatibilità, oppure non è ben testata...
+"guardarla" va bene, usarla interattivamente per un bisogno estemporaneo
+va bene, incorporarla in un proprio progetto che abbia una prospettiva
+di utilità che vada oltre ad "adesso" potrebbe essere davvero molto
+rischioso (infatti, se fate un pacchetto il CRAN non lo accetterà se usa
+funzioni non esportate di altri pacchetti!).]
+
+```{r, error=TRUE}
+purrr:::as_mapper.formula
+```
+
+Ok, se anche così non la trova, vuol dire che proprio non c'è!
+Proviamo allora con `as_mapper.default`, incrociando relativamente
+le dita, visto che _deve_ esserci...
+
+```{r, error=TRUE}
+as_mapper.default
+```
+
+Bene, errore, quindi per forza deve essere una funzione non esportata
+(le opzioni sono infatti finite, visto che `map()` usa la funzione 
+generica `as_mapper()` e questa a sua volta deve richiamare un metodo 
+che "faccia" qualosa)!
+
+```{r}
+purrr:::as_mapper.default
+```
+
+Perfetto, eccola qui! Vediamo che anche dentro questa funzione, la
+nostra continua a chiamarsi con l’alias `.f`, che sappiamo, per noi,
+essere di classe **formula**, che non è né **special** né **builtin** e
+quindi, il primo `if` verrà saltato a piedi pari. In definitiva, la
+nostra funzione sarà elaborata da `rlang::as_function()`.
+
+Vediamo allora cosa fa `rlang::as_function()` alla nostra **formula** (o
+a un’altra, giusto per capire)!
+
+```{r}
+rlang::as_function(~.x)
+rlang::as_function(~ciao)
+```
+
+Ah bene, anche se non capisco del tutto cosa succede, sembra che
+trasformi in una funzione l'oggetto che gli passiamo.
+
+Questa "nuova" funzione ha come argomenti `...` (probabilmente per
+incorporare eventuali argomenti da passare direttamente alla nostra
+funzione), `.x` (nel qual caso, sembra di capire, verrà usato il primo
+elemento), `.y` (per il secondo elemento), oppure solo il punto `.`,
+sempre come alias per il primo elemento.
+
+
+Bene bene, sembra di capire, tra questo e quanto riportato nella
+documentazione `?map` già letta, che ci viene suggerito di usare "solo
+il `.`" quando abbiamo solo un input. Del resto, abbiamo che:
+
+  1. `.x` rappresenta anche lui il primo elemento quando abbiamo più di
+     un input
+  2. la funzione `rlang::as_function()` che, internamente a `map()`,
+     trasforma la nostra `.f` nella funzione che verrà di fatto
+     applicata, è la medesima sia che debba trasformare una funzione con
+     un solo input, sia che debba trasformarne una con più di uno.
+
+Allora, usare `.x` o il semplice solo `.` è di fatto indifferente quando
+abbiamo una funzione con un solo input da dare in pasto a `map()`; lo
+stesso vale anche riguardo all'usare `.x` o il solo semplice `.` per
+identificare, per una funzione con due o più input, il primo!
+
+
+## E il pipe??
+
+Complichiamo ora ancora un pochino le cose, e consideriamo di
+usare l’operatore pipe (`%>%`) che, come sappiamo (o altrimenti
+guardiamolo con ``` ?magrittr::`%>%` ```), usa il `.` per trasferire
+l’output di quanto alla sua sinistra come input dentro alla funzione che
+si trova alla sua sinistra.
+
+Usando semplicemente il pipe nell’ultimo esempio, non dovremo avere
+problemi a prevedere che R non darà errori né risultati inattesi:
+
+```{r}
+x %>% map(~.x)
+```
+
+Ma se usassimo il `.` dentro `map()` invece che `.x`? La questione non è
+banale in quanto se il `.` sarà interpretato come quello "di" `map()`
+(ovvero quello generato dalla modificazione di `.f` da parte di
+`rlang::as_function()`) allora il risultato sarà quello atteso: una
+lista lunga $2$ il cui primo elemento sarà il primo elemento di `x` e il
+secondo elemento sarà il secondo elemento di `x`. Se invece il `.` sarà
+interpretato come quello del pipe, allora assumerà esso stesso proprio
+il valore `x` nella sua interezza (essendo il risultato di quanto a
+sinistra del pipe) e quindi il nostro risultato sarà sempre una lista
+lunga $2$ ma in cui in entrambi gli elementi ci sarà tutto `x`.
+
+Quale sarà, da quanto visto fin'ora, l'opzione corretta?
+
+```{r}
+x %>% map( ~.)
+```
+
+Esattamente! R cercherà il significato di `.` innanzitutto dentro il
+mondo in cui viene definita `.f` o tra i suoi input. Da quanto visto,
+`rlang::as_function()` fa proprio si che `.` sia proprio un input di
+quelli che avrà la `.f` modificata per essere applicata. Quindi R sarà
+più che soddisfatto, e userà proprio quella!
+
+A titolo di completezza riportiamo anche le altre possibilità che si
+potrebbero incontrare:
+
+```{r}
+x %>% map(function(k) k)
+```
+
+Chiaramente da il risultato atteso.
+
+```{r, error=TRUE}
+x %>% map(function(k) .x)
+```
+
+Chiaramente da errore in quanto la nostra funzione ha come input solo
+`k`: in questo caso, come avevamo letto dalla documentazione `?map`, la
+funzione verrà usata _così com’è_, senza alcuna modifica; quindi non
+sarà passata sotto le sgrinfie di `rlang::as_function()`, e quindi `.x`
+non farà parte dei possibili alias input della `.f` applicata, ma la
+nostra `.f` finale applicata sarà proprio e precisamente `function(k)
+.x`.
+
+Inoltre `.x` non è definito nell’ambiente in cui viene definita `.f`
+(ovvero, il `.x` di `map()` non è disponibile) e, infine, "noi" non
+abbiamo definito nel nostro ambiente globale nessun oggetto chiamato
+`.x`. Quindi `.f` non può trovarlo da nessuna parte, e restituisce
+l’errore (atteso...).
+
+Curioso il caso seguente che, a questo punto, non dovrebbe stupire ma
+che, in generale, prima di questo approfondimento, ha colpito me per
+primom facendomi esclamare "puffRbacco!!! `r knitr::asis_output("\U1F628")`"
+
+```
+x %>% map(function(k) .)
+```
+
+Ebbene, superficialmente, all'inizio, mi sarei aspettato che il `.`
+fosse quello del `map()`, ma abbiamo capito che una funzione definita
+esplicitamente non passa sotto le sgrinfie di `rlang::as_function()` e
+quindi, né dentro `map()` né tanto meno dentro `.f`, si ha che `.` è
+definito.
+
+Si potrebbe pensare quindi che venga restituito un errore. Invece,
+sappiamo che `.` è anche il nome usato dal pipe per la variabile
+rappresentante l’oggetto preso dalla sua sinistra per passarlo a quanto
+alla sua destra. Inoltre, il pipe stesso viene eseguito (chiaramente)
+"prima" ancora di chiamare `map()` (infatti deve prima eseguire quanto
+alla sua sinistra per estrarne l’output!) e quindi _prima_ (ovvero: "in
+un ambiente contenitore") dell'ambiente in cui verrà creata la nostra
+funzione.
+
+Dunque, quando R, esegue `function(k) .`, avrà:
+
+  - come `.x` in `map()` il valore di `x`, cioè quanto passato dal pipe
+  tramite il primo `.` implicito e non scritto.
+  
+  - a `k` assegnerà il componente di `.x` (cioè del nostro `x`) su cui
+  di volta in volta verrà eseguita la funzione (e che poi non userà
+  visto che `k` non compare nel corpo della funzione...).
+
+Dentro il corpo della funzione non si troverà la definizione di `.`, e
+nemmeno tra i suoi input; quindi R comincerà a cercarlo all’esterno,
+risalendo la catena di ambienti, trovandolo nell’ambiente in cui è stato
+chiamato il pipe: che contiene quello in cui la funzione in questione
+è stata creata!
+
+Tutto si spiega quindi e ora possiamo tranquillamente padroneggiare
+l’uso, anche annidato, di `map()`, senza timore di eseguire qualcosa che
+porti a un errore o, peggio, a un risultato inatteso (quindi coerente in
+forma con quanto ci aspettiamo, ma sbagliato. Pericolosissimo!!)!
+
+
+## Test
+
+A questo punto dovremmo davvero riuscire a prevedere cosa restituiscono
+le seguenti chiamate, sapendone il perché!
+
+Quali restituiscono il risultato: "lista di $2$ elementi (relativamente a
+`x`), ciascuno che sia la lista di $3$ elementi contenenti la somma del
+corrispondente elemento di `x` con il corrispondente elementi di `y`?
+Cioè l'oggetto che volevamo all'inizio:
+
+```{r}
+list(list(1 + 3, 1 + 4, 1 + 5), list(2 + 3, 2 + 4, 2 + 5))
+```
+
+Per ora, riportiamone solo l'elenco:
+
+```{r, eval=FALSE}
+map(x, ~map(y, ~. + .))
+map(x, ~map(y, ~. + x))
+map(x, ~map(y, ~. + y))
+map(x, ~map(y, ~x + y))
+map(x, ~map(y, ~. + .x))
+map(x, ~map(y, ~.x + .x))
+# se non lo è nessuno di questi, lo si può fare usando questa struttura
+# di annidamento?
+
+map(x, function(y) map(y, ~. + .))
+map(x, function(y) map(y, ~. + x))
+map(x, function(y) map(y, ~. + y))
+map(x, function(y) map(y, ~x + y))
+map(x, function(y) map(y, ~. + .x))
+map(x, function(y) map(y, ~.x + .x))
+# se non lo è nessuno di questi, lo si può fare usando questa struttura
+# di annidamento?
+
+#...z
+map(x, function(z) map(y, ~. + .))
+map(x, function(z) map(y, ~. + x))
+map(x, function(z) map(y, ~. + z)) # ;-)
+map(x, function(z) map(y, ~x + z))
+map(x, function(z) map(y, ~. + y))
+map(x, function(z) map(y, ~x + y))
+map(x, function(z) map(y, ~. + .x))
+map(x, function(z) map(y, ~.x + .x))
+
+
+map(x, function(z) map(y, function(k) z + k))
+
+map(x, function(z) {
+  map(y, function(k) {
+    z + k
+  })
+})
+
+x %>% map(function(z) {
+  y %>% map(~. + z)
+})
+```
+
+Lascio a voi il piacere di ipotizzarlo ed eseguirlo sul vostro
+computer. Nel caso sbagliaste una previsione, fatemelo sapere: sarà
+importantissimo per me e per gli altri capire quali aspetti sono ancora
+in ombra `r knitr::asis_output("\U1F60A")`
+
+
+
+
+
+## Domandone finale: ma annidare `map()`... serve davvero?!
+
+Chiaramente la semplice “somma” è stato solo un esempio per una funzione
+che solitamente nella pratica sarà molto più complessa.
+
+Detto tutto questo, secondo me annidare i `map()` resta comunque una
+strategia un pochino contorta e che potrebbe riservare spiacevoli
+sorprese (parlo per esperienza, ne ho annidati molti... ne ho sbagliati
+molti `r knitr::asis_output("\U1F613")`.
+
+Cosa ne pensate del cercare una strategia che eviti del tutto di
+annidare i `map()`, cercando un modo di usarne comunque al più uno?
+
+Del resto, parallelizzare un operazione su ogni combinazione di un
+vettore con gli elementi di un'altro vettore... potrebbe essere fatto
+creando prima le combinazioni e poi eseguire la semplice operazione 
+parallela su di esse. 
+
+Per esempio, a me verrebbe in mente di fare cosi:
+
+```{r}
+list(x = x, y = y) %>% 
+  cross_df() %>% 
+  mutate(`x + y` = map2_dbl(x, y, sum))
+```
+
+Cosa ne pensate? Alternative facili da ricordare e usare? Esempi 
+difficili da de-annidare?
+
+Aspetto i vostri commenti!
+Saaalvé!

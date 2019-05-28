@@ -1,0 +1,802 @@
+---
+title: "Annidare i map()"
+subtitle: "Ovvero: caccia alla definizione delle variabili"
+author: Corrado Lanera
+date: '2019-05-27'
+slug: annidare-map
+categories:
+  - COME
+  - peRcorsi
+  - R
+tags:
+  - rstats
+  - purrr
+  - lazy evaluation
+image:
+  caption: ''
+  focal_point: ''
+bibliography: ["../biblio.bib"]
+biblio-style: "apalike"
+link-citations: true
+output: blogdown::html_page
+---
+
+
+
+<div id="introduzione" class="section level2">
+<h2>Introduzione</h2>
+<p>L’altro giorno una collega ha sentito la necessità di annidare due
+funzioni <code>map()</code> (dal pacchetto
+<a href="https://purrr.tidyverse.org/"><strong>purrr</strong></a>). Necessità che, con tutte le
+volte che l’ho sentita io, mette sempre quella leggera sensazione di
+disagio ambiguo tra il sentirsi <em>smart</em> e il forte dubbio di non
+riuscire poi a controllare così bene l’effetto di uno strumento così
+potente in una modalità di lavoro così apparentemente poco più complessa
+del solito, ma di sicuro non <em>semplice</em>.</p>
+<p>Usare singolarmente funzioni <code>map_*()</code> di solito è molto conveniente in
+quanto presuppone un livello di astrazione affine al nostro pensiero
+naturale. Del resto è necessario avere la <em>consapevolezza</em> di voler
+sfruttare una funzione che lavora in modo affine al pensiero naturale, e
+quindi in modo potenzialmente non affine rispetto alle abitudini che
+abbiamo quando programmiamo, sopratutto anche nell’uso di strumenti più
+specifici e meno flessibili rispetto alla norma.<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a></p>
+<p>Quando abbiamo bisogno di applicare una funzione a più oggetti,
+normalmente siamo abituati a scrivere un
+<a href="https://en.wikipedia.org/wiki/Iteration"><em>iterazione</em></a> (per esempio, un
+<a href="https://en.wikipedia.org/wiki/For_loop"><em>ciclo for</em></a>), che iteri la
+computazione della funzione di interesse tra gli oggetti a cui vogliamo
+applicarla. Iterazione dopo iterazione, si collezionano i risultati
+parziali aggregandoli alla fine, oppure cumulandoli mano a mano.</p>
+<p>Quando l’effetto (il risultato) ottenuto per un oggetto influenza il
+risultato ottenuto sugli oggetti seguenti, l’utilizzo di un <em>ciclo</em> è
+più che naturale, e solitamente inevitabile.<a href="#fn2" class="footnote-ref" id="fnref2"><sup>2</sup></a> D’altra parte, quando i risultati sono
+indipendenti tra loro, ovvero il risultato dell’applicazione della
+funzione su un oggetto non dipende dal risultato ottenuto sugli oggetti
+“precedenti”, allora potrebbe essere meglio sfruttare una procedura più
+simile a come pensiamo in modo naturale, cioè: “applica la funzione data
+a tutti gli oggetti considerati (<em>contemporaneamente</em>).”<a href="#fn3" class="footnote-ref" id="fnref3"><sup>3</sup></a> Questo tipo di processo va sotto il nome di
+<a href="http://adv-r.had.co.nz/Functional-programming.html"><em>programamzione
+funzionale</em></a></p>
+<p>In questo caso, una possibile regola del pollice per capire se siamo in
+una situazione <em>parallela</em> è chiedersi: “posso mescolare gli oggetti
+prima di eseguire il mio processo ottenendo lo stesso risultato
+(chiaramente mescolato)?” Se la risposa è si allora probabilmente non
+sarà necessario usare un <em>ciclo</em> in quanto il processo difficilmente
+sarà sequenziale; in caso contrario probabilmente servirà un <em>ciclo</em>
+esplicito.]</p>
+<p>Per quanto a livello di implementazione questo tipo di procedimento
+“naturale” coinvolga comunque, dietro le quinte, un <em>ciclo</em>, avere a
+disposizione uno strumento che ci permetta di non vederlo
+esplicitamente, e pensare in modo <em>naturalmente parallelo</em>, è una
+risorsa potenzialmente importante.</p>
+<p>Infatti, un procedimento “inscatolato” in questo modo, potrà essere
+maggiormente ottimizzato al suo interno nel verificare la correttezza
+degli input, e garantire un risultato coerente con le aspettative.
+Inoltre, permette di concentrarsi sul problema da risolvere per come lo
+si pensa, e non su come risolverlo per come sia da implementare.</p>
+<p>D’altra parte, ogni semplificazione di una procedura complessa la rende
+si più <em>semplice</em>, ma dall’altro lato anche meno <em>facile</em> da usare:
+presuppone infatti una conoscenza ulteriore rispetto alle ipotesi e i
+presupposti necessari per poterla applicare. Sopratutto se la si vuole
+usare in modo non standard (cioè non allo scopo per cui è stata
+pensata, ottimizzata e resa facile da usare), come per esempio:
+in modo annidato 😉.</p>
+</div>
+<div id="un-veloce-sguardo-a-map" class="section level2">
+<h2>Un veloce sguardo a <code>map()</code>?</h2>
+<p>Senza entrare nel dettaglio di tutto il mondo legato al pacchetto
+<strong>purrr</strong> e alla programmazione vettorializzata, possiamo dire che
+<code>map()</code> ha due input principali: un vettore/lista (l’insieme) di oggetti
+a cui vogliamo applicare la nostra funzione, e la funzione da
+applicare.<a href="#fn4" class="footnote-ref" id="fnref4"><sup>4</sup></a></p>
+</div>
+<div id="il-problema-annidare-map" class="section level2">
+<h2>Il problema: annidare <code>map()</code></h2>
+<p>Supponiamo di avere una coppia di vettori e per ciascun elemento del
+primo vettore vogliamo applicare una funzione prefissata per ciascu
+elemento del secondo vettore.</p>
+<p>Il problema si potrebbe risolverlo annidando due cicli… o due <code>map()</code>
+:-).</p>
+<p>Prendiamo un esempio molto semplice: Dati i seguenti <code>x</code> e <code>y</code>, vogliamo
+prendere la somma di ciascuna combinazione.</p>
+<pre class="r"><code>suppressPackageStartupMessages(library(dplyr))
+suppressPackageStartupMessages(library(purrr))
+
+x &lt;- 1:2
+y &lt;- 3:5</code></pre>
+<p>Vogliamo quindi ottenere una lista di <span class="math inline">\(2\)</span> elementi (uno per ogni
+elemento di <code>x</code>), composti ciascuno da una lista di <span class="math inline">\(3\)</span> elementi
+contenenti la somma del corrispondente elemento di <code>x</code> con i
+corrispondenti elementi di <code>y</code>. Cioè l’oggetto:</p>
+<pre class="r"><code>list(
+    list(1 + 3, 1 + 4, 1 + 5),
+    list(2 + 3, 2 + 4, 2 + 5)
+)
+#&gt; [[1]]
+#&gt; [[1]][[1]]
+#&gt; [1] 4
+#&gt; 
+#&gt; [[1]][[2]]
+#&gt; [1] 5
+#&gt; 
+#&gt; [[1]][[3]]
+#&gt; [1] 6
+#&gt; 
+#&gt; 
+#&gt; [[2]]
+#&gt; [[2]][[1]]
+#&gt; [1] 5
+#&gt; 
+#&gt; [[2]][[2]]
+#&gt; [1] 6
+#&gt; 
+#&gt; [[2]][[3]]
+#&gt; [1] 7</code></pre>
+<p>Supopniamo quindi che ci venga voglia di usare due <code>map()</code> annidati, del
+resto il pensiero naturalmente parallelo per risolverlo è “prendi
+(separatamente) ogni elemento di <code>x</code> e sommalo (separatamente) a ogni
+elemento di <code>y</code>”. Proviamo a scriverla:</p>
+<pre class="r"><code>map(x, map(y, sum))
+#&gt; [[1]]
+#&gt; NULL
+#&gt; 
+#&gt; [[2]]
+#&gt; NULL</code></pre>
+<p>Sembra non funzionare. Del resto ci saremmo dovuti aspettare qualcosa di
+strano visto che senza uso della <code>~</code> nella chiamata della funzione non
+possiamo passare argomenti alla stessa visto che <code>map()</code> non
+interpreterebbe la funzione come una formula ma come un nome.<a href="#fn5" class="footnote-ref" id="fnref5"><sup>5</sup></a></p>
+<p>Usiamo allora la tilde:</p>
+<pre class="r"><code>map(x, ~map(y, sum))
+#&gt; [[1]]
+#&gt; [[1]][[1]]
+#&gt; [1] 3
+#&gt; 
+#&gt; [[1]][[2]]
+#&gt; [1] 4
+#&gt; 
+#&gt; [[1]][[3]]
+#&gt; [1] 5
+#&gt; 
+#&gt; 
+#&gt; [[2]]
+#&gt; [[2]][[1]]
+#&gt; [1] 3
+#&gt; 
+#&gt; [[2]][[2]]
+#&gt; [1] 4
+#&gt; 
+#&gt; [[2]][[3]]
+#&gt; [1] 5</code></pre>
+<p>E in questo caso il risultato lo da… ma sbagliato. Anche in questo
+caso però prevedere che il risultato fosse sbagliato non era difficile:
+infatti a <code>sum</code> verranno passate solo le componenti del suo input, <code>y</code>,
+ma non gli abbiamo detto da nessuna parte di prendere anche quelle di
+<code>x</code>.</p>
+<p>Il problema qui sorge perché dire alla funzione passata come formula a
+un <code>map()</code> di prendere le componenti del vettore lo possiamo fare per
+esempio con il <code>.</code> o il <code>.x</code> (di più su questo nel seguito). Ma il fatto
+cruciale è:</p>
+<blockquote>
+<p>Come facciamo a indicare dentro <code>sum</code> sia le componenti di <code>x</code> che
+quelle di <code>y</code> in modo non ambiguo, visto che le due funzioni <code>map()</code>
+annidate che usiamo hanno la stessa identica sintassi, e quindi anche
+lo stesso modo di indicare tali componenti?</p>
+</blockquote>
+</div>
+<div id="la-sfida-capire-gli-input-di-map" class="section level2">
+<h2>La sfida: capire gli input di <code>map()</code></h2>
+<p>Come dicevamo, <code>map()</code> prende, principalmente, due opzioni
+(obbligatorie): <code>.x</code> e <code>.f</code>. Questo può sembrare banale ma sarà
+fondamentale nell’immediato nostro futuro per capire, una parte, di
+quello che succede.</p>
+<p><code>.x</code> è il nome/alias che <code>map()</code> assegnerà internamente all’oggetto
+vettore/lista su cui ogni componente vorremo applicare la nostra
+funzione.</p>
+<p><code>.f</code> è il nome/alias che <code>map()</code> assegnerà, internamente, alla funzione
+che vorremo applicare. Tale funzione sarà quindi applicata a ogni
+componente dell’oggetto passato a <code>map()</code>, rappresentato internamente
+con <code>.x</code>.</p>
+<pre class="r"><code>map(x, function(k) 2*k)
+#&gt; [[1]]
+#&gt; [1] 2
+#&gt; 
+#&gt; [[2]]
+#&gt; [1] 4
+map(.x = x, .f = function(k) 2*k)
+#&gt; [[1]]
+#&gt; [1] 2
+#&gt; 
+#&gt; [[2]]
+#&gt; [1] 4
+
+
+raddoppia &lt;- function(k) 2*k
+map(x, raddoppia)
+#&gt; [[1]]
+#&gt; [1] 2
+#&gt; 
+#&gt; [[2]]
+#&gt; [1] 4
+map(.x = x, .f = raddoppia)
+#&gt; [[1]]
+#&gt; [1] 2
+#&gt; 
+#&gt; [[2]]
+#&gt; [1] 4</code></pre>
+<p>Bene, ma se allora <code>.f</code> è il nome/alias di una funzione, e questa
+funzione si applica a ogni componente di <code>.x</code>, qual’è il nome/alias di
+questo componente (definito dall’interno di <code>map()</code>) “dentro” <code>.f</code>? In
+altre parole, <code>.f</code> come chiamerà al suo interno gli oggetti che <code>map()</code>
+gli passerà in input?</p>
+<p>Leggendo l’help
+(<a href="https://www.rdocumentation.org/packages/purrr/versions/0.2.5/topics/map"><code>?map</code></a>)
+della funzione scopriamo che a <code>.f</code> possiamo assegnare una funzione vera
+e proprio, che verrà usata così com’è (e quindi il nome della variabile
+usata internamente sarà noto, conoscendo tale funzione) oppure con una
+formula (comprendente solo la componente a destra della <code>~</code>). In questo
+caso, quando la nostra funzione avrà un solo input, il nome della
+variabile da usare sarà <code>.</code>, quando avrà due input (per le funzioni
+della famiglia <code>map2_*()</code>) allora i nomi delle variabili che saranno
+usate internamente saranno <code>.x</code> e <code>.y</code>, quando invece gli input saranno
+molteplici, allora i nomi delle variabili saranno <code>..1</code>, <code>..2</code>, <code>..3</code>,
+eccetera.</p>
+<p>Bene, quindi abbiamo capito che possiamo scrivere, per ottenere lo
+stesso risultato di prima, anche:</p>
+<pre class="r"><code>map(x, ~2*.)
+#&gt; [[1]]
+#&gt; [1] 2
+#&gt; 
+#&gt; [[2]]
+#&gt; [1] 4</code></pre>
+<p>Per capire come R si comporta di fronte a casi patologici, dobbiamo
+anche sapere che R ogni volta che viene definita una funzione crea un
+ambiente che la contiene con tutti le variabili/alias che le servono e
+gli oggetti usati per definirla.<a href="#fn6" class="footnote-ref" id="fnref6"><sup>6</sup></a></p>
+<p>Quando dentro una funzione viene richiesto un oggetto tramite il suo
+nome, R cerca dentro a questo ambiente, se lo trova. Di fondamentale
+importanza è che la ricerca avviene nell’ambiente in cui è stata
+<em>definita</em> la funzione e non in quello che la richiama! Per esempio:</p>
+<pre class="r"><code>f &lt;- function() {
+  a &lt;- 1
+  b &lt;- 2
+  
+  a + b
+}
+f()
+#&gt; [1] 3
+
+a &lt;- 3
+b &lt;- 4
+f()
+#&gt; [1] 3</code></pre>
+<p>Se invece R non trova la definizione della variabile dentro l’ambiente
+in cui è stata definita la funzione in cui ne compare la chiamata, va a
+cercarlo nell’ambiente del contesto in cui questa funzione è stata
+creata, e indietro così finché non lo trova. Sale quindi di livello, ma
+sempre “per definizione” e non “per chiamata.”<a href="#fn7" class="footnote-ref" id="fnref7"><sup>7</sup></a> Per
+esempio:</p>
+<pre class="r"><code>f &lt;- function() {
+  a &lt;- 1
+  
+  g &lt;- function() {                      # g() viene definita dentro f()
+    b &lt;- 2
+    
+    a + b             # a non è definita dentro g(), dove viene cercata?
+  }
+  
+  g()
+}
+f()
+#&gt; [1] 3
+
+a &lt;- 3
+f()
+#&gt; [1] 3
+
+b &lt;- 4
+f()
+#&gt; [1] 3</code></pre>
+<p>Se la matriosca di ambienti considerati arriva a termine senza aver
+trovato un riferimento a tale nome, allora viene restituito un errore.</p>
+<pre class="r"><code>h &lt;- function() {
+  c &lt;- 1
+  
+  d + e
+}
+
+h()
+#&gt; Error in h(): object &#39;d&#39; not found</code></pre>
+<p>Tutto questo da un lato spiega perché la funzione qui sotto restituisce
+lo stesso risultato delle chiamate precedenti:</p>
+<pre class="r"><code>map(x, function(x) x)
+#&gt; [[1]]
+#&gt; [1] 1
+#&gt; 
+#&gt; [[2]]
+#&gt; [1] 2</code></pre>
+<p>Infatti quando R cerca il significato del(l’oggetto collegato al)la
+“terza” <code>x</code> trova il riferimento nella “seconda” <code>x</code>, creata quando la
+funzione viene definita. Come abbiamo letto dall’help di <code>map()</code>, la
+“seconda” <code>x</code> diventa/rappresenta, di volta in volta, l’“elemento”
+dell’oggetto passato a <code>map()</code> come <code>.x</code>, e che di volta in volta sarà
+quindi passato a <code>.f</code>.</p>
+<p>In questo caso quindi <code>.x</code> assume il valore del primo “x”, cioè il
+nostro oggetto <code>1:2</code>, e quindi i suoi elementi passati a <code>.f</code>, che <code>.f</code>
+al suo interno chiamerà e identificherà con il nome <code>x</code>, saranno prima
+<code>1</code> e poi <code>2</code>.</p>
+<p>D’altra parte capiamo anche perché la seguente chiamata non da errore, e
+capiamo anche perché ci restituisce il risultato che vediamo (che non è
+probabilmente quello che vorremmo ricevere…):</p>
+<pre class="r"><code>map(x, function(k) x)
+#&gt; [[1]]
+#&gt; [1] 1 2
+#&gt; 
+#&gt; [[2]]
+#&gt; [1] 1 2</code></pre>
+<p>Infatti quando <code>.f</code> al suo interno cerca l’oggetto <code>x</code> non lo trova
+nell’ambiente creato quando è stata costruita e quindi lo cerca
+nell’ambiente che lo conteneva, ovvero quello in qui è stata costruita
+la funzione, cioè “dentro” la chiamata a <code>map()</code>. Qui, anche se nel
+codice scritto vediamo un <code>x</code> (il primo), non <em>esiste</em> un oggetto
+chiamato <code>x</code> dentro la chiamata di <code>map()</code>. Infatti il nostro <code>x</code>, qui,
+è chiamato <code>.x</code>! Quindi R non trova <code>x</code> nemmeno qui e quindi va a
+cercarlo nell’ambiente che contene <code>map()</code> e li trova il nostro <code>x</code>
+originale, cioè proprio <code>1:2</code>, e lo usa.</p>
+<p>Quindi, a ogni chiamata di <code>.f</code> che verrà fatta dentro <code>map()</code> (che
+ricordiamo viene chiamata su, quindi “per”, ogni elemento di <code>.x</code>: in
+questo caso due volte), l’<code>x</code> usato sarà quello “nostro” nell’ambiente
+di lavoro globale. Infine poi, in questo caso, la nostra funzione <code>.f</code> è
+definita con una sola variabile <code>k</code>, che non viene mai usata, e quindi
+non fa altro che restituire il primo (rispetto alla catena degli
+ambienti) <code>x</code> che riesce a trovare.</p>
+<p>Per chiarire ancora meglio proviamo a definire un altro oggetto di
+lunghezza, per esempio, <span class="math inline">\(3\)</span> e chiamiamo lo stesso <code>map()</code> ma attribuendo
+questo oggetto a <code>.x</code>, invece che <code>x</code>:</p>
+<pre class="r"><code>z &lt;- 1:3
+map(z, function(k) x)
+#&gt; [[1]]
+#&gt; [1] 1 2
+#&gt; 
+#&gt; [[2]]
+#&gt; [1] 1 2
+#&gt; 
+#&gt; [[3]]
+#&gt; [1] 1 2</code></pre>
+<p>Come si vede, l’<code>x</code> usato è quello definito all’inizio nell’ambiente
+globale. E nulla di quanto nelle due righe di codice sopra riportate può
+farci capire quale <code>x</code> sarà di fatto usato (se già non lo sappiamo).</p>
+<p>Da notare quindi, molto importante, che <code>x</code> non è un input della
+funzione definita <em>dentro</em> <code>map()</code> (<code>.f</code>), ma fa proprio parte della
+definizione (il “corpo” <span class="citation">(Wickham <a href="#ref-wickham2019advanced" role="doc-biblioref">2019</a>, 6.2.1)</span>) di <code>.f</code>; in altre
+parole: noi non avremo nessun controllo su di esso tramite la chiamata
+della funzione, l’unica cosa a cui dobbiamo stare attenti è di essere
+sicuri di farglielo trovare da qualche parte nella catena di ambienti in
+cui andrà a cercarlo, pena un errore. Chiaramente dobbiamo fargli
+trovare anche quello giusto!<a href="#fn8" class="footnote-ref" id="fnref8"><sup>8</sup></a></p>
+<p>A questo punto capiamo perché la seguente chiamata invece restituisce un
+errore (e capiamo anche perché l’errore ci segnala che “.x non si riesce
+proprio a trovarlo da nessuna parte”…):</p>
+<pre class="r"><code>map(x, function(k) .x)
+#&gt; Error in .f(.x[[i]], ...): object &#39;.x&#39; not found</code></pre>
+<p>Infatti anche se dentro <code>map()</code> l’oggetto <code>.x</code> esiste (e nel nostro caso
+ha valore <code>x</code>, la funzione non è definita dentro la chiamata/esecuzione
+di <code>map()</code> ma da un’altra parte: anche se la “vadiamo” dentro a <code>map()</code>
+non è l’algoritmo che definisce <code>map()</code> quello che definisce la nostra
+funzione: cioè, “l’ambiente di <code>map()</code>” in cui esiste <code>.x</code>, quando la
+nostra funzione <code>function(k) .x</code> viene costruita, ancora nemmeno
+esiste.<a href="#fn9" class="footnote-ref" id="fnref9"><sup>9</sup></a> Risalendo
+gli ambienti che di volta in volta hanno portato a quello in cui è
+costruita la nostra funzione, dunque, non si riesce a trovare un oggetto
+che si chiama <code>.x</code>, e quindi ci vene restituito l’errore corrispondente.</p>
+<p>Bene, visto che abbiamo capito, ora sappiamo cosa succederà se chiamiamo
+<code>map(x, ~.x)</code>. Giusto?</p>
+<p>Proviamo.</p>
+<pre class="r"><code>map(x, ~.x)
+#&gt; [[1]]
+#&gt; [1] 1
+#&gt; 
+#&gt; [[2]]
+#&gt; [1] 2</code></pre>
+<p>Per tutti i Sargassi!! Come mai non ci viene restituito un errore, ma,
+anzi, otteniamo proprio il risultato che ci saremmo
+aspettati: un componente alla volta!!</p>
+<p>Questa cosa appare inspiegabile da quanto abbiamo (o per lo meno ho…)
+capito e visto fino adesso.</p>
+<p>L’unico modo per capirla, è andare a guardare la definizione vera e
+proprio di <code>map()</code>, il suo <em>corpo</em>. Per farlo, come per ogni altra
+funzione, in R è sufficiente richiamare il nome della funzione “puro”:
+senza parentesi o argomenti:</p>
+<pre class="r"><code>map
+#&gt; function (.x, .f, ...) 
+#&gt; {
+#&gt;     .f &lt;- as_mapper(.f, ...)
+#&gt;     .Call(map_impl, environment(), &quot;.x&quot;, &quot;.f&quot;, &quot;list&quot;)
+#&gt; }
+#&gt; &lt;bytecode: 0x000000000eec0230&gt;
+#&gt; &lt;environment: namespace:purrr&gt;</code></pre>
+<p>a questo punto vediamo che <code>.f</code> viene elaborata (prima di essere eseguita
+dal misterioso <code>.Call</code>) da una funzione <code>as_mapper()</code>. Vediamo allora
+questa com’è fatta:</p>
+<pre class="r"><code>as_mapper
+#&gt; function (.f, ...) 
+#&gt; {
+#&gt;     UseMethod(&quot;as_mapper&quot;)
+#&gt; }
+#&gt; &lt;bytecode: 0x0000000015271d70&gt;
+#&gt; &lt;environment: namespace:purrr&gt;</code></pre>
+<p>Bene bene, si tratta di una funzione <strong>generica</strong>. Una funzione generica
+richiama semplicemente un <strong>metodo</strong> (cioè, nient’altro che un’altra
+funzione) che sia quella <em>adeguata</em> alla <strong>classe</strong> degli oggetti
+mandati in input (in generale, il primo).<a href="#fn10" class="footnote-ref" id="fnref10"><sup>10</sup></a></p>
+<p>Guardiamo quindi di che classe è il nostro oggetto (anche se lo dovremmo
+sapere: è una “formula” 😉)</p>
+<pre class="r"><code>class(~.x)
+#&gt; [1] &quot;formula&quot;</code></pre>
+<p>Precisamente. Quindi, secondo le regole di selezione base dei metodi di
+R, dovremmo cercare una funzione (che si troverà di sicuro dentro
+<strong>purrr</strong>) che si
+chiami <code>as_mapper.formula</code> o, se non dovesse esistere, sappiamo che (se
+c’è) verrà usata la funzione <code>as_mapper.default</code>; nel caso poi manchi
+anche questa ci verrà restituito un errore!<a href="#fn11" class="footnote-ref" id="fnref11"><sup>11</sup></a></p>
+<p>Proviamo a vedere se c’è la prima:</p>
+<pre class="r"><code>as_mapper.formula
+#&gt; Error in eval(expr, envir, enclos): object &#39;as_mapper.formula&#39; not found</code></pre>
+<p>Ci viene restituito un errore. Ma cosa vuol dire che R non la trova?!
+Non c’è o non la trova? Se c’è è di sicuro dentro il pacchetto
+<strong>purrr</strong>, visto che è li dentro che <code>map()</code> è stata definita e quindi
+se <code>map()</code> la usa è dentro <strong>purrr</strong> che ne troviamo la definizione.</p>
+<p>Del resto, resta il fatto che noi non la troviamo. Questo però potrebbe
+anche voler dire che chi ha scritto <strong>purrr</strong> ha ritenuto, da un lato
+che fosse utile scrivere esplicitamente una funzione/metodo
+<code>as_mapper.formula()</code>, dall’altro lato che non fosse utile renderla
+accessibile per l’utente di <strong>purrr</strong> e quindi, come si dice, non l’ha
+“esportata”.</p>
+<p>Per accedere a una funzione non esportata da un pacchetto si usano i
+tripli due punti:<a href="#fn12" class="footnote-ref" id="fnref12"><sup>12</sup></a></p>
+<pre class="r"><code>purrr:::as_mapper.formula
+#&gt; Error in get(name, envir = asNamespace(pkg), inherits = FALSE): object &#39;as_mapper.formula&#39; not found</code></pre>
+<p>Ok, se anche così non la trova, vuol dire che proprio non c’è!
+Proviamo allora con <code>as_mapper.default</code>, incrociando relativamente
+le dita, visto che <em>deve</em> esserci…</p>
+<pre class="r"><code>as_mapper.default
+#&gt; Error in eval(expr, envir, enclos): object &#39;as_mapper.default&#39; not found</code></pre>
+<p>Bene, errore, quindi per forza deve essere una funzione non esportata
+(le opzioni sono infatti finite, visto che <code>map()</code> usa la funzione
+generica <code>as_mapper()</code> e questa a sua volta deve richiamare un metodo
+che “faccia” qualosa)!</p>
+<pre class="r"><code>purrr:::as_mapper.default
+#&gt; function (.f, ...) 
+#&gt; {
+#&gt;     if (typeof(.f) %in% c(&quot;special&quot;, &quot;builtin&quot;)) {
+#&gt;         .f &lt;- rlang::as_closure(.f)
+#&gt;         if (is_reference(fn_env(.f), base_env())) {
+#&gt;             environment(.f) &lt;- global_env()
+#&gt;         }
+#&gt;         .f
+#&gt;     }
+#&gt;     else {
+#&gt;         rlang::as_function(.f)
+#&gt;     }
+#&gt; }
+#&gt; &lt;bytecode: 0x000000000eebf158&gt;
+#&gt; &lt;environment: namespace:purrr&gt;</code></pre>
+<p>Perfetto, eccola qui! Vediamo che anche dentro questa funzione, la
+nostra continua a chiamarsi con l’alias <code>.f</code>, che sappiamo, per noi,
+essere di classe <strong>formula</strong>, che non è né <strong>special</strong> né <strong>builtin</strong> e
+quindi, il primo <code>if</code> verrà saltato a piedi pari. In definitiva, la
+nostra funzione sarà elaborata da <code>rlang::as_function()</code>.</p>
+<p>Vediamo allora cosa fa <code>rlang::as_function()</code> alla nostra <strong>formula</strong> (o
+a un’altra, giusto per capire)!</p>
+<pre class="r"><code>rlang::as_function(~.x)
+#&gt; &lt;lambda&gt;
+#&gt; function (..., .x = ..1, .y = ..2, . = ..1) 
+#&gt; .x
+#&gt; attr(,&quot;class&quot;)
+#&gt; [1] &quot;rlang_lambda_function&quot;
+rlang::as_function(~ciao)
+#&gt; &lt;lambda&gt;
+#&gt; function (..., .x = ..1, .y = ..2, . = ..1) 
+#&gt; ciao
+#&gt; attr(,&quot;class&quot;)
+#&gt; [1] &quot;rlang_lambda_function&quot;</code></pre>
+<p>Ah bene, anche se non capisco del tutto cosa succede, sembra che
+trasformi in una funzione l’oggetto che gli passiamo.</p>
+<p>Questa “nuova” funzione ha come argomenti <code>...</code> (probabilmente per
+incorporare eventuali argomenti da passare direttamente alla nostra
+funzione), <code>.x</code> (nel qual caso, sembra di capire, verrà usato il primo
+elemento), <code>.y</code> (per il secondo elemento), oppure solo il punto <code>.</code>,
+sempre come alias per il primo elemento.</p>
+<p>Bene bene, sembra di capire, tra questo e quanto riportato nella
+documentazione <code>?map</code> già letta, che ci viene suggerito di usare “solo
+il <code>.</code>” quando abbiamo solo un input. Del resto, abbiamo che:</p>
+<ol style="list-style-type: decimal">
+<li><code>.x</code> rappresenta anche lui il primo elemento quando abbiamo più di
+un input</li>
+<li>la funzione <code>rlang::as_function()</code> che, internamente a <code>map()</code>,
+trasforma la nostra <code>.f</code> nella funzione che verrà di fatto
+applicata, è la medesima sia che debba trasformare una funzione con
+un solo input, sia che debba trasformarne una con più di uno.</li>
+</ol>
+<p>Allora, usare <code>.x</code> o il semplice solo <code>.</code> è di fatto indifferente quando
+abbiamo una funzione con un solo input da dare in pasto a <code>map()</code>; lo
+stesso vale anche riguardo all’usare <code>.x</code> o il solo semplice <code>.</code> per
+identificare, per una funzione con due o più input, il primo!</p>
+</div>
+<div id="e-il-pipe" class="section level2">
+<h2>E il pipe??</h2>
+<p>Complichiamo ora ancora un pochino le cose, e consideriamo di
+usare l’operatore pipe (<code>%&gt;%</code>) che, come sappiamo (o altrimenti
+guardiamolo con <code>?magrittr::`%&gt;%`</code>), usa il <code>.</code> per trasferire
+l’output di quanto alla sua sinistra come input dentro alla funzione che
+si trova alla sua sinistra.</p>
+<p>Usando semplicemente il pipe nell’ultimo esempio, non dovremo avere
+problemi a prevedere che R non darà errori né risultati inattesi:</p>
+<pre class="r"><code>x %&gt;% map(~.x)
+#&gt; [[1]]
+#&gt; [1] 1
+#&gt; 
+#&gt; [[2]]
+#&gt; [1] 2</code></pre>
+<p>Ma se usassimo il <code>.</code> dentro <code>map()</code> invece che <code>.x</code>? La questione non è
+banale in quanto se il <code>.</code> sarà interpretato come quello “di” <code>map()</code>
+(ovvero quello generato dalla modificazione di <code>.f</code> da parte di
+<code>rlang::as_function()</code>) allora il risultato sarà quello atteso: una
+lista lunga <span class="math inline">\(2\)</span> il cui primo elemento sarà il primo elemento di <code>x</code> e il
+secondo elemento sarà il secondo elemento di <code>x</code>. Se invece il <code>.</code> sarà
+interpretato come quello del pipe, allora assumerà esso stesso proprio
+il valore <code>x</code> nella sua interezza (essendo il risultato di quanto a
+sinistra del pipe) e quindi il nostro risultato sarà sempre una lista
+lunga <span class="math inline">\(2\)</span> ma in cui in entrambi gli elementi ci sarà tutto <code>x</code>.</p>
+<p>Quale sarà, da quanto visto fin’ora, l’opzione corretta?</p>
+<pre class="r"><code>x %&gt;% map( ~.)
+#&gt; [[1]]
+#&gt; [1] 1
+#&gt; 
+#&gt; [[2]]
+#&gt; [1] 2</code></pre>
+<p>Esattamente! R cercherà il significato di <code>.</code> innanzitutto dentro il
+mondo in cui viene definita <code>.f</code> o tra i suoi input. Da quanto visto,
+<code>rlang::as_function()</code> fa proprio si che <code>.</code> sia proprio un input di
+quelli che avrà la <code>.f</code> modificata per essere applicata. Quindi R sarà
+più che soddisfatto, e userà proprio quella!</p>
+<p>A titolo di completezza riportiamo anche le altre possibilità che si
+potrebbero incontrare:</p>
+<pre class="r"><code>x %&gt;% map(function(k) k)
+#&gt; [[1]]
+#&gt; [1] 1
+#&gt; 
+#&gt; [[2]]
+#&gt; [1] 2</code></pre>
+<p>Chiaramente da il risultato atteso.</p>
+<pre class="r"><code>x %&gt;% map(function(k) .x)
+#&gt; Error in .f(.x[[i]], ...): object &#39;.x&#39; not found</code></pre>
+<p>Chiaramente da errore in quanto la nostra funzione ha come input solo
+<code>k</code>: in questo caso, come avevamo letto dalla documentazione <code>?map</code>, la
+funzione verrà usata <em>così com’è</em>, senza alcuna modifica; quindi non
+sarà passata sotto le sgrinfie di <code>rlang::as_function()</code>, e quindi <code>.x</code>
+non farà parte dei possibili alias input della <code>.f</code> applicata, ma la
+nostra <code>.f</code> finale applicata sarà proprio e precisamente <code>function(k) .x</code>.</p>
+<p>Inoltre <code>.x</code> non è definito nell’ambiente in cui viene definita <code>.f</code>
+(ovvero, il <code>.x</code> di <code>map()</code> non è disponibile) e, infine, “noi” non
+abbiamo definito nel nostro ambiente globale nessun oggetto chiamato
+<code>.x</code>. Quindi <code>.f</code> non può trovarlo da nessuna parte, e restituisce
+l’errore (atteso…).</p>
+<p>Curioso il caso seguente che, a questo punto, non dovrebbe stupire ma
+che, in generale, prima di questo approfondimento, ha colpito me per
+primom facendomi esclamare “puffRbacco!!! 😨”</p>
+<pre><code>x %&gt;% map(function(k) .)</code></pre>
+<p>Ebbene, superficialmente, all’inizio, mi sarei aspettato che il <code>.</code>
+fosse quello del <code>map()</code>, ma abbiamo capito che una funzione definita
+esplicitamente non passa sotto le sgrinfie di <code>rlang::as_function()</code> e
+quindi, né dentro <code>map()</code> né tanto meno dentro <code>.f</code>, si ha che <code>.</code> è
+definito.</p>
+<p>Si potrebbe pensare quindi che venga restituito un errore. Invece,
+sappiamo che <code>.</code> è anche il nome usato dal pipe per la variabile
+rappresentante l’oggetto preso dalla sua sinistra per passarlo a quanto
+alla sua destra. Inoltre, il pipe stesso viene eseguito (chiaramente)
+“prima” ancora di chiamare <code>map()</code> (infatti deve prima eseguire quanto
+alla sua sinistra per estrarne l’output!) e quindi <em>prima</em> (ovvero: “in
+un ambiente contenitore”) dell’ambiente in cui verrà creata la nostra
+funzione.</p>
+<p>Dunque, quando R, esegue <code>function(k) .</code>, avrà:</p>
+<ul>
+<li><p>come <code>.x</code> in <code>map()</code> il valore di <code>x</code>, cioè quanto passato dal pipe
+tramite il primo <code>.</code> implicito e non scritto.</p></li>
+<li><p>a <code>k</code> assegnerà il componente di <code>.x</code> (cioè del nostro <code>x</code>) su cui
+di volta in volta verrà eseguita la funzione (e che poi non userà
+visto che <code>k</code> non compare nel corpo della funzione…).</p></li>
+</ul>
+<p>Dentro il corpo della funzione non si troverà la definizione di <code>.</code>, e
+nemmeno tra i suoi input; quindi R comincerà a cercarlo all’esterno,
+risalendo la catena di ambienti, trovandolo nell’ambiente in cui è stato
+chiamato il pipe: che contiene quello in cui la funzione in questione
+è stata creata!</p>
+<p>Tutto si spiega quindi e ora possiamo tranquillamente padroneggiare
+l’uso, anche annidato, di <code>map()</code>, senza timore di eseguire qualcosa che
+porti a un errore o, peggio, a un risultato inatteso (quindi coerente in
+forma con quanto ci aspettiamo, ma sbagliato. Pericolosissimo!!)!</p>
+</div>
+<div id="test" class="section level2">
+<h2>Test</h2>
+<p>A questo punto dovremmo davvero riuscire a prevedere cosa restituiscono
+le seguenti chiamate, sapendone il perché!</p>
+<p>Quali restituiscono il risultato: "lista di <span class="math inline">\(2\)</span> elementi (relativamente a
+<code>x</code>), ciascuno che sia la lista di <span class="math inline">\(3\)</span> elementi contenenti la somma del
+corrispondente elemento di <code>x</code> con il corrispondente elementi di <code>y</code>?
+Cioè l’oggetto che volevamo all’inizio:</p>
+<pre class="r"><code>list(list(1 + 3, 1 + 4, 1 + 5), list(2 + 3, 2 + 4, 2 + 5))
+#&gt; [[1]]
+#&gt; [[1]][[1]]
+#&gt; [1] 4
+#&gt; 
+#&gt; [[1]][[2]]
+#&gt; [1] 5
+#&gt; 
+#&gt; [[1]][[3]]
+#&gt; [1] 6
+#&gt; 
+#&gt; 
+#&gt; [[2]]
+#&gt; [[2]][[1]]
+#&gt; [1] 5
+#&gt; 
+#&gt; [[2]][[2]]
+#&gt; [1] 6
+#&gt; 
+#&gt; [[2]][[3]]
+#&gt; [1] 7</code></pre>
+<p>Per ora, riportiamone solo l’elenco:</p>
+<pre class="r"><code>map(x, ~map(y, ~. + .))
+map(x, ~map(y, ~. + x))
+map(x, ~map(y, ~. + y))
+map(x, ~map(y, ~x + y))
+map(x, ~map(y, ~. + .x))
+map(x, ~map(y, ~.x + .x))
+# se non lo è nessuno di questi, lo si può fare usando questa struttura
+# di annidamento?
+
+map(x, function(y) map(y, ~. + .))
+map(x, function(y) map(y, ~. + x))
+map(x, function(y) map(y, ~. + y))
+map(x, function(y) map(y, ~x + y))
+map(x, function(y) map(y, ~. + .x))
+map(x, function(y) map(y, ~.x + .x))
+# se non lo è nessuno di questi, lo si può fare usando questa struttura
+# di annidamento?
+
+#...z
+map(x, function(z) map(y, ~. + .))
+map(x, function(z) map(y, ~. + x))
+map(x, function(z) map(y, ~. + z)) # ;-)
+map(x, function(z) map(y, ~x + z))
+map(x, function(z) map(y, ~. + y))
+map(x, function(z) map(y, ~x + y))
+map(x, function(z) map(y, ~. + .x))
+map(x, function(z) map(y, ~.x + .x))
+
+
+map(x, function(z) map(y, function(k) z + k))
+
+map(x, function(z) {
+  map(y, function(k) {
+    z + k
+  })
+})
+
+x %&gt;% map(function(z) {
+  y %&gt;% map(~. + z)
+})</code></pre>
+<p>Lascio a voi il piacere di ipotizzarlo ed eseguirlo sul vostro
+computer. Nel caso sbagliaste una previsione, fatemelo sapere: sarà
+importantissimo per me e per gli altri capire quali aspetti sono ancora
+in ombra 😊</p>
+</div>
+<div id="domandone-finale-ma-annidare-map-serve-davvero" class="section level2">
+<h2>Domandone finale: ma annidare <code>map()</code>… serve davvero?!</h2>
+<p>Chiaramente la semplice “somma” è stato solo un esempio per una funzione
+che solitamente nella pratica sarà molto più complessa.</p>
+<p>Detto tutto questo, secondo me annidare i <code>map()</code> resta comunque una
+strategia un pochino contorta e che potrebbe riservare spiacevoli
+sorprese (parlo per esperienza, ne ho annidati molti… ne ho sbagliati
+molti 😓.</p>
+<p>Cosa ne pensate del cercare una strategia che eviti del tutto di
+annidare i <code>map()</code>, cercando un modo di usarne comunque al più uno?</p>
+<p>Del resto, parallelizzare un operazione su ogni combinazione di un
+vettore con gli elementi di un’altro vettore… potrebbe essere fatto
+creando prima le combinazioni e poi eseguire la semplice operazione
+parallela su di esse.</p>
+<p>Per esempio, a me verrebbe in mente di fare cosi:</p>
+<pre class="r"><code>list(x = x, y = y) %&gt;% 
+  cross_df() %&gt;% 
+  mutate(`x + y` = map2_dbl(x, y, sum))
+#&gt; # A tibble: 6 x 3
+#&gt;       x     y `x + y`
+#&gt;   &lt;int&gt; &lt;int&gt;   &lt;dbl&gt;
+#&gt; 1     1     3       4
+#&gt; 2     2     3       5
+#&gt; 3     1     4       5
+#&gt; 4     2     4       6
+#&gt; 5     1     5       6
+#&gt; 6     2     5       7</code></pre>
+<p>Cosa ne pensate? Alternative facili da ricordare e usare? Esempi
+difficili da de-annidare?</p>
+<p>Aspetto i vostri commenti!
+Saaalvé!</p>
+<div id="refs" class="references">
+<div id="ref-wickham2019advanced">
+<p>Wickham, H. 2019. <em>Advanced R, Second Edition</em>. Chapman &amp; Hall/Crc the R Series. Taylor &amp; Francis. <a href="https://adv-r.hadley.nz">https://adv-r.hadley.nz</a>.</p>
+</div>
+<div id="ref-wickham2016r">
+<p>Wickham, H., and G. Grolemund. 2016. <em>R for Data Science: Import, Tidy, Transform, Visualize, and Model Data</em>. O’Reilly Media. <a href="https://r4ds.had.co.nz/">https://r4ds.had.co.nz/</a>.</p>
+</div>
+</div>
+</div>
+<div class="footnotes">
+<hr />
+<ol>
+<li id="fn1"><p>Meno flessibile =
+(quasi sempre) più robusto e sicuro!<a href="#fnref1" class="footnote-back">↩</a></p></li>
+<li id="fn2"><p>Per esempio se dovessimo
+scrivere esplicitamente (cioè senza usare la funzione <code>cumsum()</code> o
+simili) il vettore delle somme cumulate di un vettore dato, sarebbe
+difficile farlo senza un ciclo.<a href="#fnref2" class="footnote-back">↩</a></p></li>
+<li id="fn3"><p>Per esempio,
+se volessimo calcolare il doppio di ciascun numero di un vettore dato
+(anche leggendo come ho espresso io stesso qui il problema) non penso
+istintivamente a un ciclo (sequenziale) ma più che altro a un processo
+<em>parallelo</em>.<a href="#fnref3" class="footnote-back">↩</a></p></li>
+<li id="fn4"><p>Per approfondire si veda la documentazione <code>?map</code>, oltre che
+<a href="https://r4ds.had.co.nz/iteration.html#for-loops-vs.functionals">For loops vs.
+functionals</a>
+<span class="citation">(Wickham and Grolemund <a href="#ref-wickham2016r" role="doc-biblioref">2016</a>)</span> e
+<a href="https://adv-r.hadley.nz/functionals.html">Functionals</a>
+<span class="citation">(Wickham <a href="#ref-wickham2019advanced" role="doc-biblioref">2019</a>)</span>.<a href="#fnref4" class="footnote-back">↩</a></p></li>
+<li id="fn5"><p>Il
+risultato ottenuto dipende dal fatto che <code>map(y, sum)</code> viene valutato e
+restituisce un valore numerico, in particolare, visto che <code>y</code> è <code>c(1, 2, 3)</code>, restituisce <code>c(1, 2, 3)</code>. Quindi la nostra chiamata equivale a
+chiamare <code>map(1:2, 1:3)</code> il quale esegue sottoselezioni annidate, in
+particolare il risultato finale sarebbe (scritto in modo esteso)
+<code>list(1[[1]][[2]][[3]], 2[[1]][[2]][[3]])</code>, che chiaramente risulta in
+una lista di due <code>NULL</code>. Per maggiorni informazioni leggere la
+documentazione di
+<a href="https://www.rdocumentation.org/packages/purrr/versions/0.2.5/topics/map"><code>?purrr::map</code></a>),
+<a href="https://www.rdocumentation.org/packages/purrr/versions/0.2.5/topics/pluck"><code>?purrr::pluck</code></a>
+e qualche approfondimento sul funzionamento degli <a href="http://adv-r.had.co.nz/Subsetting.html">operatori di
+sottoselezione</a>.<a href="#fnref5" class="footnote-back">↩</a></p></li>
+<li id="fn6"><p>Per maggiori informazioni in merito
+<a href="https://adv-r.hadley.nz/environments.html">Environments</a>
+[wickham2019advanced].<a href="#fnref6" class="footnote-back">↩</a></p></li>
+<li id="fn7"><p><a href="http://adv-r.had.co.nz/Environments.html#function-envs">Ambienti delle
+funzioni</a>.<a href="#fnref7" class="footnote-back">↩</a></p></li>
+<li id="fn8"><p>Da notare anche che in questo caso,
+probabilmente e spesso, questo potrebbe significare che la funzione è
+stata mal definita, in quanto il suo risultato dipende da oggetti che
+non sono controllati o decisi all’interno del campo d’azione della
+funzione stessa (o nostro) su di essa. Quindi in questo caso
+probabilmente un errore sarebbe preferibile, ma se per (s)fortuna
+abbiamo definito un oggetto con quel nome in un punto che a ritroso sia
+esplorato dalla da <code>.f</code> nella ricerca di <code>x</code>, allora <code>.f</code> lo userà, e
+potrebbe succedere che non dia errore! Questo ci porrebbe nella
+situazione di aver ottenuto un risultato, probabilmente sbagliato, e
+senza nessun segnale di aver fatto un errore. Fare molta (molta!)
+attenzione quindi a definire funzioni il cui corpo sfrutti oggetti che
+non siano né definiti all’interno della funzione stessa né passati come
+input alla funzione!!<a href="#fnref8" class="footnote-back">↩</a></p></li>
+<li id="fn9"><p>Viene infatti creato quando <code>map()</code> viene chiamata<a href="#fnref9" class="footnote-back">↩</a></p></li>
+<li id="fn10"><p>Per approfondire come
+funziona il metodo base di selezione dei metodi in R si può guardare
+<a href="https://adv-r.hadley.nz/s3.html">S3</a> <span class="citation">(Wickham <a href="#ref-wickham2019advanced" role="doc-biblioref">2019</a>)</span>.<a href="#fnref10" class="footnote-back">↩</a></p></li>
+<li id="fn11"><p>Questo, nel nostro caso,
+sappiamo che non avviene visto che <code>map()</code> funziona 😉<a href="#fnref11" class="footnote-back">↩</a></p></li>
+<li id="fn12"><p>Fare comunque sempre attenzione a usare funzioni non
+esportate, se non lo sono un motivo c’è, il più probabile dei quali è
+che tale funzione non sia stabile, o magari verrà modificata senza
+garantire la retro-compatibilità, oppure non è ben testata…
+“guardarla” va bene, usarla interattivamente per un bisogno estemporaneo
+va bene, incorporarla in un proprio progetto che abbia una prospettiva
+di utilità che vada oltre ad “adesso” potrebbe essere davvero molto
+rischioso (infatti, se fate un pacchetto il CRAN non lo accetterà se usa
+funzioni non esportate di altri pacchetti!).<a href="#fnref12" class="footnote-back">↩</a></p></li>
+</ol>
+</div>
