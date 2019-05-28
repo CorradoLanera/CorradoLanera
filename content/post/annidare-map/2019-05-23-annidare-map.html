@@ -55,7 +55,7 @@ funzione su un oggetto non dipende dal risultato ottenuto sugli oggetti
 “precedenti”, allora potrebbe essere meglio sfruttare una procedura più
 simile a come pensiamo in modo naturale, cioè: “applica la funzione data
 a tutti gli oggetti considerati (<em>contemporaneamente</em>).”<a href="#fn3" class="footnote-ref" id="fnref3"><sup>3</sup></a> Questo tipo di processo va sotto il nome di
-<a href="http://adv-r.had.co.nz/Functional-programming.html"><em>programamzione
+<a href="http://adv-r.had.co.nz/Functional-programming.html"><em>programmazione
 funzionale</em></a></p>
 <p>In questo caso, una possibile regola del pollice per capire se siamo in
 una situazione <em>parallela</em> è chiedersi: “posso mescolare gli oggetti
@@ -93,7 +93,7 @@ applicare.<a href="#fn4" class="footnote-ref" id="fnref4"><sup>4</sup></a></p>
 <div id="il-problema-annidare-map" class="section level2">
 <h2>Il problema: annidare <code>map()</code></h2>
 <p>Supponiamo di avere una coppia di vettori e per ciascun elemento del
-primo vettore vogliamo applicare una funzione prefissata per ciascu
+primo vettore vogliamo applicare una funzione prefissata per ciascun
 elemento del secondo vettore.</p>
 <p>Il problema si potrebbe risolverlo annidando due cicli… o due <code>map()</code>
 :-).</p>
@@ -132,7 +132,7 @@ corrispondenti elementi di <code>y</code>. Cioè l’oggetto:</p>
 #&gt; 
 #&gt; [[2]][[3]]
 #&gt; [1] 7</code></pre>
-<p>Supopniamo quindi che ci venga voglia di usare due <code>map()</code> annidati, del
+<p>Supponiamo quindi che ci venga voglia di usare due <code>map()</code> annidati, del
 resto il pensiero naturalmente parallelo per risolverlo è “prendi
 (separatamente) ogni elemento di <code>x</code> e sommalo (separatamente) a ogni
 elemento di <code>y</code>”. Proviamo a scriverla:</p>
@@ -413,7 +413,7 @@ senza parentesi o argomenti:</p>
 #&gt;     .f &lt;- as_mapper(.f, ...)
 #&gt;     .Call(map_impl, environment(), &quot;.x&quot;, &quot;.f&quot;, &quot;list&quot;)
 #&gt; }
-#&gt; &lt;bytecode: 0x000000000eec0230&gt;
+#&gt; &lt;bytecode: 0x000000001313ca98&gt;
 #&gt; &lt;environment: namespace:purrr&gt;</code></pre>
 <p>a questo punto vediamo che <code>.f</code> viene elaborata (prima di essere eseguita
 dal misterioso <code>.Call</code>) da una funzione <code>as_mapper()</code>. Vediamo allora
@@ -423,7 +423,7 @@ questa com’è fatta:</p>
 #&gt; {
 #&gt;     UseMethod(&quot;as_mapper&quot;)
 #&gt; }
-#&gt; &lt;bytecode: 0x0000000015271d70&gt;
+#&gt; &lt;bytecode: 0x000000001928e7f0&gt;
 #&gt; &lt;environment: namespace:purrr&gt;</code></pre>
 <p>Bene bene, si tratta di una funzione <strong>generica</strong>. Una funzione generica
 richiama semplicemente un <strong>metodo</strong> (cioè, nient’altro che un’altra
@@ -464,7 +464,7 @@ le dita, visto che <em>deve</em> esserci…</p>
 <p>Bene, errore, quindi per forza deve essere una funzione non esportata
 (le opzioni sono infatti finite, visto che <code>map()</code> usa la funzione
 generica <code>as_mapper()</code> e questa a sua volta deve richiamare un metodo
-che “faccia” qualosa)!</p>
+che “faccia” qualcosa)!</p>
 <pre class="r"><code>purrr:::as_mapper.default
 #&gt; function (.f, ...) 
 #&gt; {
@@ -479,7 +479,7 @@ che “faccia” qualosa)!</p>
 #&gt;         rlang::as_function(.f)
 #&gt;     }
 #&gt; }
-#&gt; &lt;bytecode: 0x000000000eebf158&gt;
+#&gt; &lt;bytecode: 0x000000001313b9c0&gt;
 #&gt; &lt;environment: namespace:purrr&gt;</code></pre>
 <p>Perfetto, eccola qui! Vediamo che anche dentro questa funzione, la
 nostra continua a chiamarsi con l’alias <code>.f</code>, che sappiamo, per noi,
@@ -584,7 +584,7 @@ abbiamo definito nel nostro ambiente globale nessun oggetto chiamato
 l’errore (atteso…).</p>
 <p>Curioso il caso seguente che, a questo punto, non dovrebbe stupire ma
 che, in generale, prima di questo approfondimento, ha colpito me per
-primom facendomi esclamare “puffRbacco!!! 😨”</p>
+primo facendomi esclamare “puffRbacco!!! 😨”</p>
 <pre><code>x %&gt;% map(function(k) .)</code></pre>
 <p>Ebbene, superficialmente, all’inizio, mi sarei aspettato che il <code>.</code>
 fosse quello del <code>map()</code>, ma abbiamo capito che una funzione definita
@@ -703,7 +703,7 @@ molti 😓.</p>
 <p>Cosa ne pensate del cercare una strategia che eviti del tutto di
 annidare i <code>map()</code>, cercando un modo di usarne comunque al più uno?</p>
 <p>Del resto, parallelizzare un operazione su ogni combinazione di un
-vettore con gli elementi di un’altro vettore… potrebbe essere fatto
+vettore con gli elementi di un altro vettore… potrebbe essere fatto
 creando prima le combinazioni e poi eseguire la semplice operazione
 parallela su di esse.</p>
 <p>Per esempio, a me verrebbe in mente di fare cosi:</p>
@@ -755,15 +755,15 @@ functionals</a>
 <li id="fn5"><p>Il
 risultato ottenuto dipende dal fatto che <code>map(y, sum)</code> viene valutato e
 restituisce un valore numerico, in particolare, visto che <code>y</code> è <code>c(1, 2, 3)</code>, restituisce <code>c(1, 2, 3)</code>. Quindi la nostra chiamata equivale a
-chiamare <code>map(1:2, 1:3)</code> il quale esegue sottoselezioni annidate, in
+chiamare <code>map(1:2, 1:3)</code> il quale esegue sotto-selezioni annidate, in
 particolare il risultato finale sarebbe (scritto in modo esteso)
 <code>list(1[[1]][[2]][[3]], 2[[1]][[2]][[3]])</code>, che chiaramente risulta in
-una lista di due <code>NULL</code>. Per maggiorni informazioni leggere la
+una lista di due <code>NULL</code>. Per maggiori informazioni leggere la
 documentazione di
 <a href="https://www.rdocumentation.org/packages/purrr/versions/0.2.5/topics/map"><code>?purrr::map</code></a>),
 <a href="https://www.rdocumentation.org/packages/purrr/versions/0.2.5/topics/pluck"><code>?purrr::pluck</code></a>
 e qualche approfondimento sul funzionamento degli <a href="http://adv-r.had.co.nz/Subsetting.html">operatori di
-sottoselezione</a>.<a href="#fnref5" class="footnote-back">↩</a></p></li>
+sotto-selezione</a>.<a href="#fnref5" class="footnote-back">↩</a></p></li>
 <li id="fn6"><p>Per maggiori informazioni in merito
 <a href="https://adv-r.hadley.nz/environments.html">Environments</a>
 [wickham2019advanced].<a href="#fnref6" class="footnote-back">↩</a></p></li>

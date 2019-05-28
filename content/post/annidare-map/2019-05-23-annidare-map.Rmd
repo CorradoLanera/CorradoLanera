@@ -72,7 +72,7 @@ se volessimo calcolare il doppio di ciascun numero di un vettore dato
 (anche leggendo come ho espresso io stesso qui il problema) non penso
 istintivamente a un ciclo (sequenziale) ma più che altro a un processo
 _parallelo_.] Questo tipo di processo va sotto il nome di
-[_programamzione
+[_programmazione
 funzionale_](http://adv-r.had.co.nz/Functional-programming.html)
 
 In questo caso, una possibile regola del pollice per capire se siamo in
@@ -126,7 +126,7 @@ functionals](https://r4ds.had.co.nz/iteration.html#for-loops-vs.functionals)
 ## Il problema: annidare `map()`
 
 Supponiamo di avere una coppia di vettori e per ciascun elemento del
-primo vettore vogliamo applicare una funzione prefissata per ciascu
+primo vettore vogliamo applicare una funzione prefissata per ciascun
 elemento del secondo vettore.
 
 Il problema si potrebbe risolverlo annidando due cicli... o due `map()`
@@ -156,7 +156,7 @@ list(
 ```
 
 
-Supopniamo quindi che ci venga voglia di usare due `map()` annidati, del
+Supponiamo quindi che ci venga voglia di usare due `map()` annidati, del
 resto il pensiero naturalmente parallelo per risolverlo è "prendi
 (separatamente) ogni elemento di `x` e sommalo (separatamente) a ogni
 elemento di `y`". Proviamo a scriverla:
@@ -172,15 +172,15 @@ interpreterebbe la funzione come una formula ma come un nome.^[Il
 risultato ottenuto dipende dal fatto che `map(y, sum)` viene valutato e
 restituisce un valore numerico, in particolare, visto che `y` è `c(1, 2,
 3)`, restituisce `c(1, 2, 3)`. Quindi la nostra chiamata equivale a
-chiamare `map(1:2, 1:3)` il quale esegue sottoselezioni annidate, in
+chiamare `map(1:2, 1:3)` il quale esegue sotto-selezioni annidate, in
 particolare il risultato finale sarebbe (scritto in modo esteso)
 `list(1[[1]][[2]][[3]], 2[[1]][[2]][[3]])`, che chiaramente risulta in
-una lista di due `NULL`. Per maggiorni informazioni leggere la
+una lista di due `NULL`. Per maggiori informazioni leggere la
 documentazione di
 [`?purrr::map`](https://www.rdocumentation.org/packages/purrr/versions/0.2.5/topics/map)),
 [`?purrr::pluck`](https://www.rdocumentation.org/packages/purrr/versions/0.2.5/topics/pluck)
 e qualche approfondimento sul funzionamento degli [operatori di
-sottoselezione](http://adv-r.had.co.nz/Subsetting.html).]
+sotto-selezione](http://adv-r.had.co.nz/Subsetting.html).]
 
 Usiamo allora la tilde:
 
@@ -527,7 +527,7 @@ as_mapper.default
 Bene, errore, quindi per forza deve essere una funzione non esportata
 (le opzioni sono infatti finite, visto che `map()` usa la funzione 
 generica `as_mapper()` e questa a sua volta deve richiamare un metodo 
-che "faccia" qualosa)!
+che "faccia" qualcosa)!
 
 ```{r}
 purrr:::as_mapper.default
@@ -641,7 +641,7 @@ l’errore (atteso...).
 
 Curioso il caso seguente che, a questo punto, non dovrebbe stupire ma
 che, in generale, prima di questo approfondimento, ha colpito me per
-primom facendomi esclamare "puffRbacco!!! `r knitr::asis_output("\U1F628")`"
+primo facendomi esclamare "puffRbacco!!! `r knitr::asis_output("\U1F628")`"
 
 ```
 x %>% map(function(k) .)
@@ -765,7 +765,7 @@ Cosa ne pensate del cercare una strategia che eviti del tutto di
 annidare i `map()`, cercando un modo di usarne comunque al più uno?
 
 Del resto, parallelizzare un operazione su ogni combinazione di un
-vettore con gli elementi di un'altro vettore... potrebbe essere fatto
+vettore con gli elementi di un altro vettore... potrebbe essere fatto
 creando prima le combinazioni e poi eseguire la semplice operazione 
 parallela su di esse. 
 
