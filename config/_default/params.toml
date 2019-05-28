@@ -79,7 +79,7 @@ contact_links = [
 
   {icon = "twitter", icon_pack = "fab", name = "DM Me", link = "https://twitter.com/CorradoLanera"},
   {icon = "skype", icon_pack = "fab", name = "Skype Me", link = "skype:live:corrado.lanera"},
-  {icon = "telegram", icon_pack = "fab", name = "Telegram Me", link = "https://telegram.me/CorradoLanera"},
+  {icon = "telegram", icon_pack = "fab", name = "Telegram Me", link = "https://telegram.me/CorradoLanera"}
 ]
 
 # Display a map.
