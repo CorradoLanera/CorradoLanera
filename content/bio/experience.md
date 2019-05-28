@@ -18,6 +18,16 @@ date_format = "Jan 2006"
 #   Leave `date_end` empty if it's your current employer.
 #   Begin/end multi-line descriptions with 3 quotes `"""`.
 [[experience]]
+  title = "Exchange J1 Visitor Student: Research Science Technologies"
+  company = "University of Pennsylvania "
+  company_url = "https://www.upenn.edu"
+  location = "Phyladelphia (PA)"
+  date_start = "2019-06-01"
+  date_end = "2020-09-30"
+  description = "[Health Language Processing Lab](http://www.healthlanguageprocessing.org/) within the [Institute of Biomedical Informatics](http://upibi.org/)"
+
+
+[[experience]]
   title = "Research Grant: Review and development of Machine Learning techniques applied in risk assessment related to food safety"
   company = "University of Padova"
   company_url = "https://www.unipd.it"
