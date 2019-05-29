@@ -52,7 +52,7 @@ the University of Padova (Italy). His research activity is driven in the
 area of Machine Learning (ML) and Phenomapping techniques applied to
 clinical science.
 
-He put particular attention to free-text and unstructured data analyses
+He puts particular attention to free-text and unstructured data analyses
 on:
 
   1) patient classification with or without reported infections based on
