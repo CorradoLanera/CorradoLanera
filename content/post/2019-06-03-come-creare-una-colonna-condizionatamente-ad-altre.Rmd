@@ -1,5 +1,5 @@
 ---
-title: Creare una colonna condizionatamente ad altre
+title: "Creare una colonna condizionatamente ad altre"
 subtitle: "Ovvero: gestire condizioni vettorializzate"
 author: Corrado Lanera
 date: '2019-06-03'
@@ -9,9 +9,12 @@ categories:
   - R
   - peRcorsi
 tags:
+  - rstats
   - mutate
   - dplyr
   - if
+  - ifelse
+  - if_else
   - case_when
 image:
   caption: ''
