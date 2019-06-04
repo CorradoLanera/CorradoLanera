@@ -15,10 +15,12 @@ tags:
 image:
   caption: ''
   focal_point: ''
-bibliography: ["../biblio.bib"]
+bibliography: ["biblio.bib"]
 biblio-style: "apalike"
 link-citations: true
-output: blogdown::html_page
+output:
+  blogdown::html_page:
+    df_print: paged
 ---
 
 ```{r setup, include = FALSE}

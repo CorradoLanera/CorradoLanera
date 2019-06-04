@@ -1,0 +1,445 @@
+---
+title: Creare una colonna condizionatamente ad altre
+subtitle: "Ovvero: gestire condizioni vettorializzate"
+author: Corrado Lanera
+date: '2019-06-03'
+slug: creazione-colonna-condizionale
+categories:
+  - COME
+  - R
+  - peRcorsi
+tags:
+  - mutate
+  - dplyr
+  - if
+  - case_when
+image:
+  caption: ''
+  focal_point: ''
+bibliography: ["biblio.bib"]
+biblio-style: "apalike"
+link-citations: true
+output:
+  blogdown::html_page:
+    df_print: paged
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+Sys.setenv("_R_CHECK_LENGTH_1_CONDITION_" = "false")
+```
+
+## Introduzione
+Ciao a tutti, oggi una collega ha avuto un problema con le _età_ in una
+base di dati. In particolare, esistevano due colonne con tale 
+informazione: in una l'età era stata inserita direttamente
+da chi aveva compilato il format di inserimento dati, nell'altra l'età
+era stata calcolata (in automatico suppongo) a partire dalla data di
+nascita e un giorno noto di riferimento.
+
+Supponendo che le informazioni fossero tutte giuste, le due colonne
+sarebbero dovute essere uguali, e complete. 
+
+Tralasciando il primo problema (controllare che le informazioni, quando
+entrambe presenti, fossero coerenti), la questione di oggi era che le
+età _riportate_ non erano presenti per tutti i soggetti, e nemmeno
+quelle calcolate. L'interesse era quindi:
+
+> creare una colonna riportante il valore dell'età riportata (ritenuto
+> di qualità superiore), quando presente, o quello dell'età calcolata
+> in assenza del primo.
+
+
+Per poterci ragionare sopra, creiamo una base di dati di esempio che
+riporti i possibili casi, e carichiamo anche i pacchetti che
+ci saranno utili. Impostiamo anche un _seed_ per la riproducibilità.
+
+```{r}
+suppressPackageStartupMessages(library(dplyr))   # gestione basi di dati
+suppressPackageStartupMessages(library(lubridate))       # gestione date
+set.seed(1)
+```
+
+```{r}
+foreveryoung <- tribble(
+  ~reported_age, ~computed_age, ~wanted_results,
+             18,            18,  18,
+             NA,            18,  18,
+             18,            NA,  18,
+             NA,            NA,  NA,
+             18,            19,  18          # possibilmente con warning
+)
+
+foreveryoung
+```
+
+
+## if - else
+La prima opzione che mi viene in mente, è quella di usare una struttura
+`if`-`else`. Vediamo qual'è il risultato applicando il tutto nel modo
+(che a me sembra) più diretto e intuitivo.
+
+```{r}
+foreveryoung %>% 
+  mutate(
+    final_age = if (!is.na(reported_age)) reported_age else computed_age
+  )
+```
+
+
+PuffRbacco!!!, è sbagliato. Come mai? La risposta possiamo trovarla in
+[Invalid inputs](https://adv-r.hadley.nz/control-flow.html#choices)
+[@wickham2019advanced]. Insieme a un modo per accorgersene ed evitare
+che accada:^[Per rendere automatica l'attivazione della restituzione
+di un errore in caso in cui la condizione sia multipla possiamo
+impostare la variabile ambientale direttamente nel file `.Renviron`,
+a cui possiamo accedere tramite l'esecuzione di `edit_r_environ()` del
+pacchetto **usethis**. Da notare che questa opzione è tra quelle "sane"
+da poter attivare come opzione globale e persistente in quanto crea
+solo una limitazione che non si ripercuote in eventuali altri sistemi:
+qualunque script "funzioni" nel nostro sistema con tale opzione attiva,
+funzionerà anche sul sistema di qualunque nostro collega anche se non 
+sappiamo se ha o meno tale opzione attiva!]
+
+```{r, error=TRUE}
+Sys.setenv("_R_CHECK_LENGTH_1_CONDITION_" = "true")
+foreveryoung %>% 
+  mutate(
+    final_age = if (!is.na(reported_age)) reported_age else computed_age
+  )
+
+```
+
+Eccolo li infatti!! Il problema è proprio che una condizione `if` non 
+è vettorializzata, ovvero, restituisce solo il primo risultato se al suo
+interno ne ha di più.
+
+Rimettiamo le variabili ambientali alla normalità e vediamo
+esplicitamente cosa accade riprendendo lo stesso esempio della sezione
+segnalata.
+
+
+```{r}
+Sys.setenv("_R_CHECK_LENGTH_1_CONDITION_" = "false")
+
+if (c(TRUE, FALSE)) 1 else 2
+if (c(TRUE, TRUE)) 1 else 2
+
+if (c(FALSE, TRUE)) 1 else 2
+if (c(FALSE, FALSE)) 1 else 2
+
+```
+
+E in effetti, come leggiamo dal warning, solo la prima condizione viene
+usata e tutto il resto della condizione ignorato. Del resto chiediamo
+di eseguire un istruzione _se_ una condizione è vera, come potrebbe R
+sapere cosa fare con molteplici condizioni?
+
+D'altro canto R è dotata di una struttura adeguata specificatamente 
+allo scopo!
+
+## ifelse
+La funzione `ifelse()` è proprio quella messa a disposizione da R per
+gestire un vettore di condizioni a cui associare, quindi, un vettore
+di risultati (di eguale lunghezza)!
+
+Vediamo come funziona
+
+```{r}
+ifelse(c(TRUE, FALSE, TRUE), yes = c(1, 2, 3), no = c(4, 5, 6))
+```
+
+Vediamo immediatamente che otteniamo direttamente quello che vogliamo:
+fornendo due vettori di possibilità di eguale lunghezza e fornendo un 
+primo vettore logico (solitamente il risultato di un test sugli stessi
+vettori) vengono usate le componenti corrispondenti ai `TRUE` del primo
+vettore, e quelli corrispondenti ai `FALSE` del secondo vettore.
+
+Un uso più frequente, come accennavo, potrebbe essere una cosa del tipo:
+
+```{r}
+some_integers <- c(-1, -2, 0, 4, 7)
+some_integers
+
+all_to_positive <- ifelse(some_integers >= 0,
+  yes =  some_integers,
+  no  = -some_integers
+)
+all_to_positive
+```
+
+Si, sembra proprio fare al caso nostro! Proviamo ad applicarlo!
+
+```{r}
+foreveryoung %>% 
+  mutate(
+      final_age = ifelse(!is.na(reported_age),
+          yes = reported_age,
+          no  = computed_age
+      )
+  )
+```
+
+Benissimo! Ma vediamo un'altra funzione che potrebbe essere utile
+considerare al posto di `ifelse()` e, ovviamente, vediamo il perché!
+
+
+## if_else
+La funzione `ifelse()` ha un piccolo problema: è conforme alle regole di 
+coercizione di R per le classi di dati.^{Vedi [https://adv-r.hadley.nz/vectors-chap.html#testing-and-coercion](https://adv-r.hadley.nz/vectors-chap.html#testing-and-coercion)}
+
+Questo significa che gli output `yes` e `no` tra cui la funzione pesca
+per costruire l'output possono essere di classe differente senza
+problemi: R provvederà a riportare tutti alla classe più _generale_.^[
+character > double  > integer > logical.]
+
+Questo permette di fare cose del tipo:
+
+```{r}
+some_integers <- c(-1, -2, 0, 4, 7)
+some_characters <- c("one", "two", "three", "four", "five")
+
+strange_things_happens <- ifelse(some_integers >= 0,
+  yes = some_integers,
+  no  = some_characters
+)
+strange_things_happens
+```
+
+A vote, questo comportamento è proprio quello che vogliamo, ma in
+generale (e parlo per esperienza personale) dietro a un risultato di 
+questo tipo si nasconde un errore.
+
+Solitamente infatti, come nel caso delle nostre età, vogliamo fare dei
+confronti su un oggetto per produrre un oggetto dello stesso tipo:
+un numero, una stringa, un logico, ... ma dello stesso tipo!
+
+Come di consueto, è sempre avere a disposizione meno flessibilità
+possibile fintanto che non è strettamente necessaria. Questo
+atteggiamento infatti fa risparmiare un sacco di grattacapi e non toglie
+nulla alle nostre possibilità: se vogliamo un comportamento "insolito" e
+riceviamo un errore, stiamo un attimo a passare a una funzione più
+flessibile che ci peretta di adeguare il nostro codice all'eccezione.
+Se, invece, _non_ otteniamo un errore quando vorremmo un comportamento
+"usuale", ma per una svista abbiamo sbagliato qualcosa, ed R ci
+restituisce comunque _qualcosa_ senza farci sapere che ha eseguito
+un'operazione _non usuale_, ebbene, il propagarsi di questo errore
+(ignoto) potrebbe arrivare a provocare danni molto elevati, analisi
+molto errate, valutazioni molto sfalsate... senza nemmeno darci un segno
+che quanto ottenuto potrebbe non essere corretto!
+
+cosa succederebbe infatti se invece delle età calcolate per errore
+passassimo la colonna delle date di nascita?
+
+```{r}
+birth_foreveryoung <- foreveryoung %>% 
+  mutate(
+    data_of_birth = today() - years(computed_age)
+  )
+
+birth_foreveryoung
+
+birth_foreveryoung %>% 
+  mutate(
+    final_age = ifelse(!is.na(reported_age),
+        yes = reported_age,
+        no  = birth_foreveryoung
+    )
+  )
+
+```
+
+Come vediamo, nemmeno un errore, nemmeno un warning, ma il risultato 
+sembra essere molto lontano da quanto atteso. Immaginare che il tutto 
+possa essere incluso in uno script di cui questo non è che un risultato
+intermedio, che magari non verrà nemmeno mai visualizzato, porta a
+disegnare scenari variabili dall'imbarazzante al problematico.
+
+
+## if_else
+Il pacchetto **dplyr** mette a disposizione una semplicissima funzione
+che nel modo più ingenuo e semplice possibile, nel caso in cui i due
+vettori tra cui prendere gli elementi per costruire l'output non siano
+della stessa classe, restituisce un errore!
+
+```{r, error=TRUE}
+birth_foreveryoung %>% 
+  mutate(
+    final_age = if_else(!is.na(reported_age),
+        true  = reported_age,
+        false = birth_foreveryoung
+    )
+  )
+```
+
+Questo ci permette di identificare subito l'errore e poterlo correggere
+_efficacentemente_ col cuore in pace :-). ^[_Efficacente_, com'è
+noto, significa contemporaneamente _efficace_ ("fare la cosa giusta") ed
+_efficiente_ ("farlo nel modo giusto"). NdC.]
+
+```{r}
+birth_foreveryoung %>% 
+  mutate(
+    final_age = if_else(!is.na(reported_age),
+        true  = reported_age,
+        false = computed_age
+    )
+  )
+```
+
+
+Inoltre, `if_else()` permette anche gestire il caso in cui il test risulti
+in un valore mancante! Per esempio, nel caso di due NA potremmo voler
+assegnare "a forza" il valore `-1`. Usando `if_else()` possiamo farlo
+senza problemi (a patto che `-1` sia, chiaramente, dello stessa classe
+dei due vettori passati per costruire l'output!)
+
+```{r}
+birth_foreveryoung %>% 
+  mutate(
+    final_age = if_else(!is.na(reported_age),
+        true  = reported_age,
+        false = computed_age,
+        missing = -1
+    )
+  )
+```
+
+Come mai non funziona? Beh, la risposta in effetti è semplice: non
+abbiamo nessun `NA` nel risultato della condizione, infatti l'`NA` che
+vediamo nel risultato è il valore di `computed_age`, quando
+`reported_age` è `NA` la seconda volta. Quindi nulla di strano.
+
+Per vedere l'opzione **missing** all'opera, proviamo per esempio a
+esplicitare un valore non noto nella classificazione di una variabile.
+
+Supponiamo, per esempio di avere una misura rilevata solo se presente 
+e riportata con valore $1$ quando "poca" e $2$ quando "tanta". Visto
+che la codifica numerica non ci garba vogliamo assegnare le etichette,
+riportando "assente" quando il dato manca (ovvero, non è stato
+rilevato).
+
+```{r}
+measure_foreveryoung <- foreveryoung %>% 
+  mutate(measure = sample(c(1, 2, NA), size = nrow(.), replace = TRUE))
+
+measure_foreveryoung
+
+measure_foreveryoung %>% 
+  mutate(
+    measure_class = if_else(measure > 1,
+        true  = "tanta",
+        false = "poca",
+        missing = "assente"
+    )
+  )
+```
+
+Prima di concludere esaminiamo un ultimo caso: cosa succede se le 
+condizioni e le opzioni non sono due ma molteplici? Una soluzione
+potrebbe essere annidare istruzioni `if_else()` come se non ci fosse un 
+domani... ma la strategia potrebbe non essere delle migliori o tra le
+più efficaci. Per questo, ci viene in aiuto la funzione `case_when()`.
+
+## case_when
+La funzione `case_when()` del pacchetto **dplyr** implementa una
+versione vettorializzata e generalizzata della funzione `if()`.
+In particolare è utilissima in tutte quelle situazioni in cui abbiamo 
+condizioni complesse e molteplici.
+
+Per esempio:
+
+```{r}
+foreveryoung %>% 
+  mutate(
+    complete_columns = case_when(
+      !is.na(reported_age) & !is.na(computed_age) ~ reported_age,
+      !is.na(reported_age) | !is.na(computed_age) ~ 1,
+                          TRUE                    ~ 0 
+    )
+  )
+```
+
+Per quanto non sia un esempio particolarmente brillante, ci permette di
+mettere in luce qualche caratteristica di `case_when()`, la prima è
+che possiamo vettorializzare sia la parte di condizione (a sinistra
+della `~`) sia quella di destra, infatti `reported_age` è usato, solo
+per le righe che restituiscono `TRUE` alla prima condizione. Dopodiché,
+che le condizioni vengono eseguite _in ordine_ e quindi possiamo
+considerare nella seconda riga (condizione con `|`) che la prima abbia
+restituito `FALSE`, o meglio... considereremo la seconda condizione 
+solo per le righe che avranno restituito `FALSE` per la prima
+condizione!
+
+
+## In breve
+
+Attenzione a usare `if` - `else` per definire nuove colonne di una base
+di dati in quanto la funzione non è vettorializzata e userà solo il
+primo risultato del vettore logico risultante (probabilmente) nella 
+condizione per l'esecuzione. Per ovviare ed essere sicuri che questo
+non accada attivare
+`Sys.setenv("_R_CHECK_LENGTH_1_CONDITION_" = "false")`. 
+
+Per condizioni vettorializzate utilizzare la versione vettorializzata
+`ifelse()`, ancora meglio se nella sua versione più _rigida_ `if_else()`
+messa a disposizione dal pacchetto **dplyr**.
+
+Per istruzioni condizionate complesse, e vettorializzate, una possibile
+opzione è usare `case_when()`, funzione messa a disposizione dallo
+stesso pacchetto **dplyr**.
+
+Bene, spero di aver fatto una panoramica sufficiente sulle varie opzioni
+per poter definire in modo _efficacente_ una nuova colonna di una base
+di dati a partire da condizioni su colonne già esistenti. 
+
+Se avete suggerimenti, o richieste, lasciateli pure nei commenti!
+Alla prossima!
+
+Saaalvé!
+
+## Appendice
+Come ultima nota rimasta in sospeso c'era la restituzione del warning
+nel caso in cui fossero presenti entrambi i valori di eta ma questi 
+fossero discordi.
+
+Per fare questo possiamo definire una funzione che mandi in output il 
+warning desiderato (da personalizzare a piacere) e poi restituisca
+l'oggetto che ci interessa senza modificarlo.
+
+Usiamo `case_when()`, ricordandoci che le condizioni sono calcolate
+_in ordine_ (e quindi un'istruzione vale solo quando (nei casi in cui)
+tutte le precedenti risultino `FALSE`).
+
+```{r}
+return_with_warning <- function(x) {
+  
+  warning(paste(
+    "Alcuni soggetti hanno `reported_age` e `computed_age`",
+    "entrambi presenti ma diversi.\n",
+    "Il valore utilizzato è `reported_age`"
+    
+  ), call. = FALSE)
+  
+  x
+}
+
+
+foreveryoung %>% 
+  mutate(
+    final_age = case_when(
+      is.na(reported_age)          ~ computed_age,
+      is.na(computed_age)          ~ reported_age,
+      reported_age != computed_age ~ return_with_warning(reported_age),
+      TRUE                         ~ reported_age
+    )
+  )
+
+```
+
+
+
+## Bibliografia

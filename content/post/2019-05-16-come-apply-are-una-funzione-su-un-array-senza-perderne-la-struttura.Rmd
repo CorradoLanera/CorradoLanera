@@ -1,6 +1,6 @@
 ---
-title: "apply()are una funzione lungo una dimensione di un array, senza perderne la struttura"
-subtitle: "ovvero: a cosa potrebbe servire sotto-selezionare... _nulla_?"
+title: "apply()care una funzione lungo una dimensione di un array, senza perderne la struttura"
+subtitle: "Ovvero: a cosa potrebbe servire sotto-selezionare... _nulla_?"
 author: Corrado Lanera
 date: '2019-05-16'
 slug: apply identity to arrays
@@ -19,10 +19,12 @@ tags:
 image:
   caption: ''
   focal_point: ''
-bibliography: ["../biblio.bib"]
+bibliography: ["biblio.bib"]
 biblio-style: "apalike"
 link-citations: true
-output: blogdown::html_page
+output:
+  blogdown::html_page:
+    df_print: paged
 ---
 
 ```{r setup, include = FALSE}

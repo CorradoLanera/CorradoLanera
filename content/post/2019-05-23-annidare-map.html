@@ -15,12 +15,16 @@ tags:
 image:
   caption: ''
   focal_point: ''
-bibliography: ["../biblio.bib"]
+bibliography: ["biblio.bib"]
 biblio-style: "apalike"
 link-citations: true
-output: blogdown::html_page
+output:
+  blogdown::html_page:
+    df_print: paged
 ---
 
+<link href="/rmarkdown-libs/pagedtable/css/pagedtable.css" rel="stylesheet" />
+<script src="/rmarkdown-libs/pagedtable/js/pagedtable.js"></script>
 
 
 <div id="introduzione" class="section level2">
@@ -413,7 +417,7 @@ senza parentesi o argomenti:</p>
 #&gt;     .f &lt;- as_mapper(.f, ...)
 #&gt;     .Call(map_impl, environment(), &quot;.x&quot;, &quot;.f&quot;, &quot;list&quot;)
 #&gt; }
-#&gt; &lt;bytecode: 0x000000001313ca98&gt;
+#&gt; &lt;bytecode: 0x00000000187de450&gt;
 #&gt; &lt;environment: namespace:purrr&gt;</code></pre>
 <p>a questo punto vediamo che <code>.f</code> viene elaborata (prima di essere eseguita
 dal misterioso <code>.Call</code>) da una funzione <code>as_mapper()</code>. Vediamo allora
@@ -423,7 +427,7 @@ questa com’è fatta:</p>
 #&gt; {
 #&gt;     UseMethod(&quot;as_mapper&quot;)
 #&gt; }
-#&gt; &lt;bytecode: 0x000000001928e7f0&gt;
+#&gt; &lt;bytecode: 0x00000000195d39e0&gt;
 #&gt; &lt;environment: namespace:purrr&gt;</code></pre>
 <p>Bene bene, si tratta di una funzione <strong>generica</strong>. Una funzione generica
 richiama semplicemente un <strong>metodo</strong> (cioè, nient’altro che un’altra
@@ -479,7 +483,7 @@ che “faccia” qualcosa)!</p>
 #&gt;         rlang::as_function(.f)
 #&gt;     }
 #&gt; }
-#&gt; &lt;bytecode: 0x000000001313b9c0&gt;
+#&gt; &lt;bytecode: 0x00000000187e11a8&gt;
 #&gt; &lt;environment: namespace:purrr&gt;</code></pre>
 <p>Perfetto, eccola qui! Vediamo che anche dentro questa funzione, la
 nostra continua a chiamarsi con l’alias <code>.f</code>, che sappiamo, per noi,
@@ -709,16 +713,12 @@ parallela su di esse.</p>
 <p>Per esempio, a me verrebbe in mente di fare cosi:</p>
 <pre class="r"><code>list(x = x, y = y) %&gt;% 
   cross_df() %&gt;% 
-  mutate(`x + y` = map2_dbl(x, y, sum))
-#&gt; # A tibble: 6 x 3
-#&gt;       x     y `x + y`
-#&gt;   &lt;int&gt; &lt;int&gt;   &lt;dbl&gt;
-#&gt; 1     1     3       4
-#&gt; 2     2     3       5
-#&gt; 3     1     4       5
-#&gt; 4     2     4       6
-#&gt; 5     1     5       6
-#&gt; 6     2     5       7</code></pre>
+  mutate(`x + y` = map2_dbl(x, y, sum))</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["x"],"name":[1],"type":["int"],"align":["right"]},{"label":["y"],"name":[2],"type":["int"],"align":["right"]},{"label":["x + y"],"name":[3],"type":["dbl"],"align":["right"]}],"data":[{"1":"1","2":"3","3":"4"},{"1":"2","2":"3","3":"5"},{"1":"1","2":"4","3":"5"},{"1":"2","2":"4","3":"6"},{"1":"1","2":"5","3":"6"},{"1":"2","2":"5","3":"7"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
 <p>Cosa ne pensate? Alternative facili da ricordare e usare? Esempi
 difficili da de-annidare?</p>
 <p>Aspetto i vostri commenti!

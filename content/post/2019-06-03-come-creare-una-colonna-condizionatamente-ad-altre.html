@@ -1,0 +1,444 @@
+---
+title: Creare una colonna condizionatamente ad altre
+subtitle: "Ovvero: gestire condizioni vettorializzate"
+author: Corrado Lanera
+date: '2019-06-03'
+slug: creazione-colonna-condizionale
+categories:
+  - COME
+  - R
+  - peRcorsi
+tags:
+  - mutate
+  - dplyr
+  - if
+  - case_when
+image:
+  caption: ''
+  focal_point: ''
+bibliography: ["biblio.bib"]
+biblio-style: "apalike"
+link-citations: true
+output:
+  blogdown::html_page:
+    df_print: paged
+---
+
+<link href="/rmarkdown-libs/pagedtable/css/pagedtable.css" rel="stylesheet" />
+<script src="/rmarkdown-libs/pagedtable/js/pagedtable.js"></script>
+
+
+<div id="introduzione" class="section level2">
+<h2>Introduzione</h2>
+<p>Ciao a tutti, oggi una collega ha avuto un problema con le <em>età</em> in una
+base di dati. In particolare, esistevano due colonne con tale
+informazione: in una l’età era stata inserita direttamente
+da chi aveva compilato il format di inserimento dati, nell’altra l’età
+era stata calcolata (in automatico suppongo) a partire dalla data di
+nascita e un giorno noto di riferimento.</p>
+<p>Supponendo che le informazioni fossero tutte giuste, le due colonne
+sarebbero dovute essere uguali, e complete.</p>
+<p>Tralasciando il primo problema (controllare che le informazioni, quando
+entrambe presenti, fossero coerenti), la questione di oggi era che le
+età <em>riportate</em> non erano presenti per tutti i soggetti, e nemmeno
+quelle calcolate. L’interesse era quindi:</p>
+<blockquote>
+<p>creare una colonna riportante il valore dell’età riportata (ritenuto
+di qualità superiore), quando presente, o quello dell’età calcolata
+in assenza del primo.</p>
+</blockquote>
+<p>Per poterci ragionare sopra, creiamo una base di dati di esempio che
+riporti i possibili casi, e carichiamo anche i pacchetti che
+ci saranno utili. Impostiamo anche un <em>seed</em> per la riproducibilità.</p>
+<pre class="r"><code>suppressPackageStartupMessages(library(dplyr))   # gestione basi di dati
+suppressPackageStartupMessages(library(lubridate))       # gestione date
+set.seed(1)</code></pre>
+<pre class="r"><code>foreveryoung &lt;- tribble(
+  ~reported_age, ~computed_age, ~wanted_results,
+             18,            18,  18,
+             NA,            18,  18,
+             18,            NA,  18,
+             NA,            NA,  NA,
+             18,            19,  18          # possibilmente con warning
+)
+
+foreveryoung</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["reported_age"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["computed_age"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["wanted_results"],"name":[3],"type":["dbl"],"align":["right"]}],"data":[{"1":"18","2":"18","3":"18"},{"1":"NA","2":"18","3":"18"},{"1":"18","2":"NA","3":"18"},{"1":"NA","2":"NA","3":"NA"},{"1":"18","2":"19","3":"18"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+<div id="if---else" class="section level2">
+<h2>if - else</h2>
+<p>La prima opzione che mi viene in mente, è quella di usare una struttura
+<code>if</code>-<code>else</code>. Vediamo qual’è il risultato applicando il tutto nel modo
+(che a me sembra) più diretto e intuitivo.</p>
+<pre class="r"><code>foreveryoung %&gt;% 
+  mutate(
+    final_age = if (!is.na(reported_age)) reported_age else computed_age
+  )
+#&gt; Warning in if (!is.na(reported_age)) reported_age else computed_age: the
+#&gt; condition has length &gt; 1 and only the first element will be used</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["reported_age"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["computed_age"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["wanted_results"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["final_age"],"name":[4],"type":["dbl"],"align":["right"]}],"data":[{"1":"18","2":"18","3":"18","4":"18"},{"1":"NA","2":"18","3":"18","4":"NA"},{"1":"18","2":"NA","3":"18","4":"18"},{"1":"NA","2":"NA","3":"NA","4":"NA"},{"1":"18","2":"19","3":"18","4":"18"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<p>PuffRbacco!!!, è sbagliato. Come mai? La risposta possiamo trovarla in
+<a href="https://adv-r.hadley.nz/control-flow.html#choices">Invalid inputs</a>
+<span class="citation">(Wickham <a href="#ref-wickham2019advanced" role="doc-biblioref">2019</a>)</span>. Insieme a un modo per accorgersene ed evitare
+che accada:<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a></p>
+<pre class="r"><code>Sys.setenv(&quot;_R_CHECK_LENGTH_1_CONDITION_&quot; = &quot;true&quot;)
+foreveryoung %&gt;% 
+  mutate(
+    final_age = if (!is.na(reported_age)) reported_age else computed_age
+  )
+#&gt; Error in if (!is.na(reported_age)) reported_age else computed_age: the condition has length &gt; 1</code></pre>
+<p>Eccolo li infatti!! Il problema è proprio che una condizione <code>if</code> non
+è vettorializzata, ovvero, restituisce solo il primo risultato se al suo
+interno ne ha di più.</p>
+<p>Rimettiamo le variabili ambientali alla normalità e vediamo
+esplicitamente cosa accade riprendendo lo stesso esempio della sezione
+segnalata.</p>
+<pre class="r"><code>Sys.setenv(&quot;_R_CHECK_LENGTH_1_CONDITION_&quot; = &quot;false&quot;)
+
+if (c(TRUE, FALSE)) 1 else 2
+#&gt; Warning in if (c(TRUE, FALSE)) 1 else 2: the condition has length &gt; 1 and
+#&gt; only the first element will be used
+#&gt; [1] 1
+if (c(TRUE, TRUE)) 1 else 2
+#&gt; Warning in if (c(TRUE, TRUE)) 1 else 2: the condition has length &gt; 1 and
+#&gt; only the first element will be used
+#&gt; [1] 1
+
+if (c(FALSE, TRUE)) 1 else 2
+#&gt; Warning in if (c(FALSE, TRUE)) 1 else 2: the condition has length &gt; 1 and
+#&gt; only the first element will be used
+#&gt; [1] 2
+if (c(FALSE, FALSE)) 1 else 2
+#&gt; Warning in if (c(FALSE, FALSE)) 1 else 2: the condition has length &gt; 1 and
+#&gt; only the first element will be used
+#&gt; [1] 2</code></pre>
+<p>E in effetti, come leggiamo dal warning, solo la prima condizione viene
+usata e tutto il resto della condizione ignorato. Del resto chiediamo
+di eseguire un istruzione <em>se</em> una condizione è vera, come potrebbe R
+sapere cosa fare con molteplici condizioni?</p>
+<p>D’altro canto R è dotata di una struttura adeguata specificatamente
+allo scopo!</p>
+</div>
+<div id="ifelse" class="section level2">
+<h2>ifelse</h2>
+<p>La funzione <code>ifelse()</code> è proprio quella messa a disposizione da R per
+gestire un vettore di condizioni a cui associare, quindi, un vettore
+di risultati (di eguale lunghezza)!</p>
+<p>Vediamo come funziona</p>
+<pre class="r"><code>ifelse(c(TRUE, FALSE, TRUE), yes = c(1, 2, 3), no = c(4, 5, 6))
+#&gt; [1] 1 5 3</code></pre>
+<p>Vediamo immediatamente che otteniamo direttamente quello che vogliamo:
+fornendo due vettori di possibilità di eguale lunghezza e fornendo un
+primo vettore logico (solitamente il risultato di un test sugli stessi
+vettori) vengono usate le componenti corrispondenti ai <code>TRUE</code> del primo
+vettore, e quelli corrispondenti ai <code>FALSE</code> del secondo vettore.</p>
+<p>Un uso più frequente, come accennavo, potrebbe essere una cosa del tipo:</p>
+<pre class="r"><code>some_integers &lt;- c(-1, -2, 0, 4, 7)
+some_integers
+#&gt; [1] -1 -2  0  4  7
+
+all_to_positive &lt;- ifelse(some_integers &gt;= 0,
+  yes =  some_integers,
+  no  = -some_integers
+)
+all_to_positive
+#&gt; [1] 1 2 0 4 7</code></pre>
+<p>Si, sembra proprio fare al caso nostro! Proviamo ad applicarlo!</p>
+<pre class="r"><code>foreveryoung %&gt;% 
+  mutate(
+      final_age = ifelse(!is.na(reported_age),
+          yes = reported_age,
+          no  = computed_age
+      )
+  )</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["reported_age"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["computed_age"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["wanted_results"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["final_age"],"name":[4],"type":["dbl"],"align":["right"]}],"data":[{"1":"18","2":"18","3":"18","4":"18"},{"1":"NA","2":"18","3":"18","4":"18"},{"1":"18","2":"NA","3":"18","4":"18"},{"1":"NA","2":"NA","3":"NA","4":"NA"},{"1":"18","2":"19","3":"18","4":"18"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<p>Benissimo! Ma vediamo un’altra funzione che potrebbe essere utile
+considerare al posto di <code>ifelse()</code> e, ovviamente, vediamo il perché!</p>
+</div>
+<div id="if_else" class="section level2">
+<h2>if_else</h2>
+<p>La funzione <code>ifelse()</code> ha un piccolo problema: è conforme alle regole di
+coercizione di R per le classi di dati.^{Vedi <a href="https://adv-r.hadley.nz/vectors-chap.html#testing-and-coercion">https://adv-r.hadley.nz/vectors-chap.html#testing-and-coercion</a>}</p>
+<p>Questo significa che gli output <code>yes</code> e <code>no</code> tra cui la funzione pesca
+per costruire l’output possono essere di classe differente senza
+problemi: R provvederà a riportare tutti alla classe più <em>generale</em>.<a href="#fn2" class="footnote-ref" id="fnref2"><sup>2</sup></a></p>
+<p>Questo permette di fare cose del tipo:</p>
+<pre class="r"><code>some_integers &lt;- c(-1, -2, 0, 4, 7)
+some_characters &lt;- c(&quot;one&quot;, &quot;two&quot;, &quot;three&quot;, &quot;four&quot;, &quot;five&quot;)
+
+strange_things_happens &lt;- ifelse(some_integers &gt;= 0,
+  yes = some_integers,
+  no  = some_characters
+)
+strange_things_happens
+#&gt; [1] &quot;one&quot; &quot;two&quot; &quot;0&quot;   &quot;4&quot;   &quot;7&quot;</code></pre>
+<p>A vote, questo comportamento è proprio quello che vogliamo, ma in
+generale (e parlo per esperienza personale) dietro a un risultato di
+questo tipo si nasconde un errore.</p>
+<p>Solitamente infatti, come nel caso delle nostre età, vogliamo fare dei
+confronti su un oggetto per produrre un oggetto dello stesso tipo:
+un numero, una stringa, un logico, … ma dello stesso tipo!</p>
+<p>Come di consueto, è sempre avere a disposizione meno flessibilità
+possibile fintanto che non è strettamente necessaria. Questo
+atteggiamento infatti fa risparmiare un sacco di grattacapi e non toglie
+nulla alle nostre possibilità: se vogliamo un comportamento “insolito” e
+riceviamo un errore, stiamo un attimo a passare a una funzione più
+flessibile che ci peretta di adeguare il nostro codice all’eccezione.
+Se, invece, <em>non</em> otteniamo un errore quando vorremmo un comportamento
+“usuale”, ma per una svista abbiamo sbagliato qualcosa, ed R ci
+restituisce comunque <em>qualcosa</em> senza farci sapere che ha eseguito
+un’operazione <em>non usuale</em>, ebbene, il propagarsi di questo errore
+(ignoto) potrebbe arrivare a provocare danni molto elevati, analisi
+molto errate, valutazioni molto sfalsate… senza nemmeno darci un segno
+che quanto ottenuto potrebbe non essere corretto!</p>
+<p>cosa succederebbe infatti se invece delle età calcolate per errore
+passassimo la colonna delle date di nascita?</p>
+<pre class="r"><code>birth_foreveryoung &lt;- foreveryoung %&gt;% 
+  mutate(
+    data_of_birth = today() - years(computed_age)
+  )
+
+birth_foreveryoung</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["reported_age"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["computed_age"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["wanted_results"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["data_of_birth"],"name":[4],"type":["date"],"align":["right"]}],"data":[{"1":"18","2":"18","3":"18","4":"2001-06-04"},{"1":"NA","2":"18","3":"18","4":"2001-06-04"},{"1":"18","2":"NA","3":"18","4":"<NA>"},{"1":"NA","2":"NA","3":"NA","4":"<NA>"},{"1":"18","2":"19","3":"18","4":"2000-06-04"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<pre class="r"><code>
+birth_foreveryoung %&gt;% 
+  mutate(
+    final_age = ifelse(!is.na(reported_age),
+        yes = reported_age,
+        no  = birth_foreveryoung
+    )
+  )</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["reported_age"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["computed_age"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["wanted_results"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["data_of_birth"],"name":[4],"type":["date"],"align":["right"]},{"label":["final_age"],"name":[5],"type":["list"],"align":["right"]}],"data":[{"1":"18","2":"18","3":"18","4":"2001-06-04","5":"<dbl [1]>"},{"1":"NA","2":"18","3":"18","4":"2001-06-04","5":"<dbl [5]>"},{"1":"18","2":"NA","3":"18","4":"<NA>","5":"<dbl [1]>"},{"1":"NA","2":"NA","3":"NA","4":"<NA>","5":"<date [5]>"},{"1":"18","2":"19","3":"18","4":"2000-06-04","5":"<dbl [1]>"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<p>Come vediamo, nemmeno un errore, nemmeno un warning, ma il risultato
+sembra essere molto lontano da quanto atteso. Immaginare che il tutto
+possa essere incluso in uno script di cui questo non è che un risultato
+intermedio, che magari non verrà nemmeno mai visualizzato, porta a
+disegnare scenari variabili dall’imbarazzante al problematico.</p>
+</div>
+<div id="if_else-1" class="section level2">
+<h2>if_else</h2>
+<p>Il pacchetto <strong>dplyr</strong> mette a disposizione una semplicissima funzione
+che nel modo più ingenuo e semplice possibile, nel caso in cui i due
+vettori tra cui prendere gli elementi per costruire l’output non siano
+della stessa classe, restituisce un errore!</p>
+<pre class="r"><code>birth_foreveryoung %&gt;% 
+  mutate(
+    final_age = if_else(!is.na(reported_age),
+        true  = reported_age,
+        false = birth_foreveryoung
+    )
+  )
+#&gt; `false` must be length 5 (length of `condition`) or one, not 4</code></pre>
+<p>Questo ci permette di identificare subito l’errore e poterlo correggere
+<em>efficacentemente</em> col cuore in pace :-).<a href="#fn3" class="footnote-ref" id="fnref3"><sup>3</sup></a></p>
+<pre class="r"><code>birth_foreveryoung %&gt;% 
+  mutate(
+    final_age = if_else(!is.na(reported_age),
+        true  = reported_age,
+        false = computed_age
+    )
+  )</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["reported_age"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["computed_age"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["wanted_results"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["data_of_birth"],"name":[4],"type":["date"],"align":["right"]},{"label":["final_age"],"name":[5],"type":["dbl"],"align":["right"]}],"data":[{"1":"18","2":"18","3":"18","4":"2001-06-04","5":"18"},{"1":"NA","2":"18","3":"18","4":"2001-06-04","5":"18"},{"1":"18","2":"NA","3":"18","4":"<NA>","5":"18"},{"1":"NA","2":"NA","3":"NA","4":"<NA>","5":"NA"},{"1":"18","2":"19","3":"18","4":"2000-06-04","5":"18"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<p>Inoltre, <code>if_else()</code> permette anche gestire il caso in cui il test risulti
+in un valore mancante! Per esempio, nel caso di due NA potremmo voler
+assegnare “a forza” il valore <code>-1</code>. Usando <code>if_else()</code> possiamo farlo
+senza problemi (a patto che <code>-1</code> sia, chiaramente, dello stessa classe
+dei due vettori passati per costruire l’output!)</p>
+<pre class="r"><code>birth_foreveryoung %&gt;% 
+  mutate(
+    final_age = if_else(!is.na(reported_age),
+        true  = reported_age,
+        false = computed_age,
+        missing = -1
+    )
+  )</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["reported_age"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["computed_age"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["wanted_results"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["data_of_birth"],"name":[4],"type":["date"],"align":["right"]},{"label":["final_age"],"name":[5],"type":["dbl"],"align":["right"]}],"data":[{"1":"18","2":"18","3":"18","4":"2001-06-04","5":"18"},{"1":"NA","2":"18","3":"18","4":"2001-06-04","5":"18"},{"1":"18","2":"NA","3":"18","4":"<NA>","5":"18"},{"1":"NA","2":"NA","3":"NA","4":"<NA>","5":"NA"},{"1":"18","2":"19","3":"18","4":"2000-06-04","5":"18"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<p>Come mai non funziona? Beh, la risposta in effetti è semplice: non
+abbiamo nessun <code>NA</code> nel risultato della condizione, infatti l’<code>NA</code> che
+vediamo nel risultato è il valore di <code>computed_age</code>, quando
+<code>reported_age</code> è <code>NA</code> la seconda volta. Quindi nulla di strano.</p>
+<p>Per vedere l’opzione <strong>missing</strong> all’opera, proviamo per esempio a
+esplicitare un valore non noto nella classificazione di una variabile.</p>
+<p>Supponiamo, per esempio di avere una misura rilevata solo se presente
+e riportata con valore <span class="math inline">\(1\)</span> quando “poca” e <span class="math inline">\(2\)</span> quando “tanta”. Visto
+che la codifica numerica non ci garba vogliamo assegnare le etichette,
+riportando “assente” quando il dato manca (ovvero, non è stato
+rilevato).</p>
+<pre class="r"><code>measure_foreveryoung &lt;- foreveryoung %&gt;% 
+  mutate(measure = sample(c(1, 2, NA), size = nrow(.), replace = TRUE))
+
+measure_foreveryoung</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["reported_age"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["computed_age"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["wanted_results"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["measure"],"name":[4],"type":["dbl"],"align":["right"]}],"data":[{"1":"18","2":"18","3":"18","4":"1"},{"1":"NA","2":"18","3":"18","4":"NA"},{"1":"18","2":"NA","3":"18","4":"1"},{"1":"NA","2":"NA","3":"NA","4":"2"},{"1":"18","2":"19","3":"18","4":"1"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<pre class="r"><code>
+measure_foreveryoung %&gt;% 
+  mutate(
+    measure_class = if_else(measure &gt; 1,
+        true  = &quot;tanta&quot;,
+        false = &quot;poca&quot;,
+        missing = &quot;assente&quot;
+    )
+  )</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["reported_age"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["computed_age"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["wanted_results"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["measure"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["measure_class"],"name":[5],"type":["chr"],"align":["left"]}],"data":[{"1":"18","2":"18","3":"18","4":"1","5":"poca"},{"1":"NA","2":"18","3":"18","4":"NA","5":"assente"},{"1":"18","2":"NA","3":"18","4":"1","5":"poca"},{"1":"NA","2":"NA","3":"NA","4":"2","5":"tanta"},{"1":"18","2":"19","3":"18","4":"1","5":"poca"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<p>Prima di concludere esaminiamo un ultimo caso: cosa succede se le
+condizioni e le opzioni non sono due ma molteplici? Una soluzione
+potrebbe essere annidare istruzioni <code>if_else()</code> come se non ci fosse un
+domani… ma la strategia potrebbe non essere delle migliori o tra le
+più efficaci. Per questo, ci viene in aiuto la funzione <code>case_when()</code>.</p>
+</div>
+<div id="case_when" class="section level2">
+<h2>case_when</h2>
+<p>La funzione <code>case_when()</code> del pacchetto <strong>dplyr</strong> implementa una
+versione vettorializzata e generalizzata della funzione <code>if()</code>.
+In particolare è utilissima in tutte quelle situazioni in cui abbiamo
+condizioni complesse e molteplici.</p>
+<p>Per esempio:</p>
+<pre class="r"><code>foreveryoung %&gt;% 
+  mutate(
+    complete_columns = case_when(
+      !is.na(reported_age) &amp; !is.na(computed_age) ~ reported_age,
+      !is.na(reported_age) | !is.na(computed_age) ~ 1,
+                          TRUE                    ~ 0 
+    )
+  )</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["reported_age"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["computed_age"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["wanted_results"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["complete_columns"],"name":[4],"type":["dbl"],"align":["right"]}],"data":[{"1":"18","2":"18","3":"18","4":"18"},{"1":"NA","2":"18","3":"18","4":"1"},{"1":"18","2":"NA","3":"18","4":"1"},{"1":"NA","2":"NA","3":"NA","4":"0"},{"1":"18","2":"19","3":"18","4":"18"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<p>Per quanto non sia un esempio particolarmente brillante, ci permette di
+mettere in luce qualche caratteristica di <code>case_when()</code>, la prima è
+che possiamo vettorializzare sia la parte di condizione (a sinistra
+della <code>~</code>) sia quella di destra, infatti <code>reported_age</code> è usato, solo
+per le righe che restituiscono <code>TRUE</code> alla prima condizione. Dopodiché,
+che le condizioni vengono eseguite <em>in ordine</em> e quindi possiamo
+considerare nella seconda riga (condizione con <code>|</code>) che la prima abbia
+restituito <code>FALSE</code>, o meglio… considereremo la seconda condizione
+solo per le righe che avranno restituito <code>FALSE</code> per la prima
+condizione!</p>
+</div>
+<div id="in-breve" class="section level2">
+<h2>In breve</h2>
+<p>Attenzione a usare <code>if</code> - <code>else</code> per definire nuove colonne di una base
+di dati in quanto la funzione non è vettorializzata e userà solo il
+primo risultato del vettore logico risultante (probabilmente) nella
+condizione per l’esecuzione. Per ovviare ed essere sicuri che questo
+non accada attivare
+<code>Sys.setenv("_R_CHECK_LENGTH_1_CONDITION_" = "false")</code>.</p>
+<p>Per condizioni vettorializzate utilizzare la versione vettorializzata
+<code>ifelse()</code>, ancora meglio se nella sua versione più <em>rigida</em> <code>if_else()</code>
+messa a disposizione dal pacchetto <strong>dplyr</strong>.</p>
+<p>Per istruzioni condizionate complesse, e vettorializzate, una possibile
+opzione è usare <code>case_when()</code>, funzione messa a disposizione dallo
+stesso pacchetto <strong>dplyr</strong>.</p>
+<p>Bene, spero di aver fatto una panoramica sufficiente sulle varie opzioni
+per poter definire in modo <em>efficacente</em> una nuova colonna di una base
+di dati a partire da condizioni su colonne già esistenti.</p>
+<p>Se avete suggerimenti, o richieste, lasciateli pure nei commenti!
+Alla prossima!</p>
+<p>Saaalvé!</p>
+</div>
+<div id="appendice" class="section level2">
+<h2>Appendice</h2>
+<p>Come ultima nota rimasta in sospeso c’era la restituzione del warning
+nel caso in cui fossero presenti entrambi i valori di eta ma questi
+fossero discordi.</p>
+<p>Per fare questo possiamo definire una funzione che mandi in output il
+warning desiderato (da personalizzare a piacere) e poi restituisca
+l’oggetto che ci interessa senza modificarlo.</p>
+<p>Usiamo <code>case_when()</code>, ricordandoci che le condizioni sono calcolate
+<em>in ordine</em> (e quindi un’istruzione vale solo quando (nei casi in cui)
+tutte le precedenti risultino <code>FALSE</code>).</p>
+<pre class="r"><code>return_with_warning &lt;- function(x) {
+  
+  warning(paste(
+    &quot;Alcuni soggetti hanno `reported_age` e `computed_age`&quot;,
+    &quot;entrambi presenti ma diversi.\n&quot;,
+    &quot;Il valore utilizzato è `reported_age`&quot;
+    
+  ), call. = FALSE)
+  
+  x
+}
+
+
+foreveryoung %&gt;% 
+  mutate(
+    final_age = case_when(
+      is.na(reported_age)          ~ computed_age,
+      is.na(computed_age)          ~ reported_age,
+      reported_age != computed_age ~ return_with_warning(reported_age),
+      TRUE                         ~ reported_age
+    )
+  )
+#&gt; Warning: Alcuni soggetti hanno `reported_age` e `computed_age` entrambi presenti ma diversi.
+#&gt;  Il valore utilizzato è `reported_age`</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["reported_age"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["computed_age"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["wanted_results"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["final_age"],"name":[4],"type":["dbl"],"align":["right"]}],"data":[{"1":"18","2":"18","3":"18","4":"18"},{"1":"NA","2":"18","3":"18","4":"18"},{"1":"18","2":"NA","3":"18","4":"18"},{"1":"NA","2":"NA","3":"NA","4":"NA"},{"1":"18","2":"19","3":"18","4":"18"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+<div id="bibliografia" class="section level2 unnumbered">
+<h2>Bibliografia</h2>
+<div id="refs" class="references">
+<div id="ref-wickham2019advanced">
+<p>Wickham, H. 2019. <em>Advanced R, Second Edition</em>. Chapman &amp; Hall/Crc the R Series. Taylor &amp; Francis. <a href="https://adv-r.hadley.nz">https://adv-r.hadley.nz</a>.</p>
+</div>
+</div>
+</div>
+<div class="footnotes">
+<hr />
+<ol>
+<li id="fn1"><p>Per rendere automatica l’attivazione della restituzione
+di un errore in caso in cui la condizione sia multipla possiamo
+impostare la variabile ambientale direttamente nel file <code>.Renviron</code>,
+a cui possiamo accedere tramite l’esecuzione di <code>edit_r_environ()</code> del
+pacchetto <strong>usethis</strong>. Da notare che questa opzione è tra quelle “sane”
+da poter attivare come opzione globale e persistente in quanto crea
+solo una limitazione che non si ripercuote in eventuali altri sistemi:
+qualunque script “funzioni” nel nostro sistema con tale opzione attiva,
+funzionerà anche sul sistema di qualunque nostro collega anche se non
+sappiamo se ha o meno tale opzione attiva!<a href="#fnref1" class="footnote-back">↩</a></p></li>
+<li id="fn2"><p>
+character &gt; double &gt; integer &gt; logical.<a href="#fnref2" class="footnote-back">↩</a></p></li>
+<li id="fn3"><p><em>Efficacente</em>, com’è
+noto, significa contemporaneamente <em>efficace</em> (“fare la cosa giusta”) ed
+<em>efficiente</em> (“farlo nel modo giusto”). NdC.<a href="#fnref3" class="footnote-back">↩</a></p></li>
+</ol>
+</div>
