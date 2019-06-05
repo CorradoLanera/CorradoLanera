@@ -237,10 +237,10 @@ che quanto ottenuto potrebbe non essere corretto!
 cosa succederebbe infatti se invece delle età calcolate per errore
 passassimo la colonna delle date di nascita?
 
-```{r}
+```{r, cols.min.print=5}
 birth_foreveryoung <- foreveryoung %>% 
   mutate(
-    data_of_birth = today() - years(computed_age)
+    date_of_birth = today() - years(computed_age)
   )
 
 birth_foreveryoung
@@ -249,17 +249,19 @@ birth_foreveryoung %>%
   mutate(
     final_age = ifelse(!is.na(reported_age),
         yes = reported_age,
-        no  = birth_foreveryoung
+        no  = date_of_birth
     )
   )
 
 ```
 
-Come vediamo, nemmeno un errore, nemmeno un warning, ma il risultato 
-sembra essere molto lontano da quanto atteso. Immaginare che il tutto 
-possa essere incluso in uno script di cui questo non è che un risultato
-intermedio, che magari non verrà nemmeno mai visualizzato, porta a
-disegnare scenari variabili dall'imbarazzante al problematico.
+Come vediamo, nemmeno un errore, nemmeno un warning, ma il risultato
+(nella colonna `final_age`) sembra essere piuttosto lontano da quanto
+atteso, nonostante che resti _compatibile_ formalmente con quanto
+attesto. Immaginare che il tutto possa essere incluso in uno script di
+cui questo non è che un risultato intermedio, che magari non verrà
+nemmeno mai visualizzato, porta a disegnare scenari variabili
+dall'imbarazzante al problematico.
 
 
 ## if_else
@@ -273,7 +275,7 @@ birth_foreveryoung %>%
   mutate(
     final_age = if_else(!is.na(reported_age),
         true  = reported_age,
-        false = birth_foreveryoung
+        false = date_of_birth
     )
   )
 ```

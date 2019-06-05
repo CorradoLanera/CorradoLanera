@@ -210,13 +210,13 @@ che quanto ottenuto potrebbe non essere corretto!</p>
 passassimo la colonna delle date di nascita?</p>
 <pre class="r"><code>birth_foreveryoung &lt;- foreveryoung %&gt;% 
   mutate(
-    data_of_birth = today() - years(computed_age)
+    date_of_birth = today() - years(computed_age)
   )
 
 birth_foreveryoung</code></pre>
 <div data-pagedtable="false">
 <script data-pagedtable-source type="application/json">
-{"columns":[{"label":["reported_age"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["computed_age"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["wanted_results"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["data_of_birth"],"name":[4],"type":["date"],"align":["right"]}],"data":[{"1":"18","2":"18","3":"18","4":"2001-06-04"},{"1":"NA","2":"18","3":"18","4":"2001-06-04"},{"1":"18","2":"NA","3":"18","4":"<NA>"},{"1":"NA","2":"NA","3":"NA","4":"<NA>"},{"1":"18","2":"19","3":"18","4":"2000-06-04"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+{"columns":[{"label":["reported_age"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["computed_age"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["wanted_results"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["date_of_birth"],"name":[4],"type":["date"],"align":["right"]}],"data":[{"1":"18","2":"18","3":"18","4":"2001-06-05"},{"1":"NA","2":"18","3":"18","4":"2001-06-05"},{"1":"18","2":"NA","3":"18","4":"<NA>"},{"1":"NA","2":"NA","3":"NA","4":"<NA>"},{"1":"18","2":"19","3":"18","4":"2000-06-05"}],"options":{"columns":{"min":[5],"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
 <pre class="r"><code>
@@ -224,19 +224,21 @@ birth_foreveryoung %&gt;%
   mutate(
     final_age = ifelse(!is.na(reported_age),
         yes = reported_age,
-        no  = birth_foreveryoung
+        no  = date_of_birth
     )
   )</code></pre>
 <div data-pagedtable="false">
 <script data-pagedtable-source type="application/json">
-{"columns":[{"label":["reported_age"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["computed_age"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["wanted_results"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["data_of_birth"],"name":[4],"type":["date"],"align":["right"]},{"label":["final_age"],"name":[5],"type":["list"],"align":["right"]}],"data":[{"1":"18","2":"18","3":"18","4":"2001-06-04","5":"<dbl [1]>"},{"1":"NA","2":"18","3":"18","4":"2001-06-04","5":"<dbl [5]>"},{"1":"18","2":"NA","3":"18","4":"<NA>","5":"<dbl [1]>"},{"1":"NA","2":"NA","3":"NA","4":"<NA>","5":"<date [5]>"},{"1":"18","2":"19","3":"18","4":"2000-06-04","5":"<dbl [1]>"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+{"columns":[{"label":["reported_age"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["computed_age"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["wanted_results"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["date_of_birth"],"name":[4],"type":["date"],"align":["right"]},{"label":["final_age"],"name":[5],"type":["dbl"],"align":["right"]}],"data":[{"1":"18","2":"18","3":"18","4":"2001-06-05","5":"18"},{"1":"NA","2":"18","3":"18","4":"2001-06-05","5":"11478"},{"1":"18","2":"NA","3":"18","4":"<NA>","5":"18"},{"1":"NA","2":"NA","3":"NA","4":"<NA>","5":"NA"},{"1":"18","2":"19","3":"18","4":"2000-06-05","5":"18"}],"options":{"columns":{"min":[5],"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
 <p>Come vediamo, nemmeno un errore, nemmeno un warning, ma il risultato
-sembra essere molto lontano da quanto atteso. Immaginare che il tutto
-possa essere incluso in uno script di cui questo non è che un risultato
-intermedio, che magari non verrà nemmeno mai visualizzato, porta a
-disegnare scenari variabili dall’imbarazzante al problematico.</p>
+(nella colonna <code>final_age</code>) sembra essere piuttosto lontano da quanto
+atteso, nonostante che resti <em>compatibile</em> formalmente con quanto
+attesto. Immaginare che il tutto possa essere incluso in uno script di
+cui questo non è che un risultato intermedio, che magari non verrà
+nemmeno mai visualizzato, porta a disegnare scenari variabili
+dall’imbarazzante al problematico.</p>
 </div>
 <div id="if_else-1" class="section level2">
 <h2>if_else</h2>
@@ -248,10 +250,10 @@ della stessa classe, restituisce un errore!</p>
   mutate(
     final_age = if_else(!is.na(reported_age),
         true  = reported_age,
-        false = birth_foreveryoung
+        false = date_of_birth
     )
   )
-#&gt; `false` must be length 5 (length of `condition`) or one, not 4</code></pre>
+#&gt; `false` must have class `numeric`, not class `Date`</code></pre>
 <p>Questo ci permette di identificare subito l’errore e poterlo correggere
 <em>efficacentemente</em> col cuore in pace :-).<a href="#fn3" class="footnote-ref" id="fnref3"><sup>3</sup></a></p>
 <pre class="r"><code>birth_foreveryoung %&gt;% 
@@ -263,7 +265,7 @@ della stessa classe, restituisce un errore!</p>
   )</code></pre>
 <div data-pagedtable="false">
 <script data-pagedtable-source type="application/json">
-{"columns":[{"label":["reported_age"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["computed_age"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["wanted_results"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["data_of_birth"],"name":[4],"type":["date"],"align":["right"]},{"label":["final_age"],"name":[5],"type":["dbl"],"align":["right"]}],"data":[{"1":"18","2":"18","3":"18","4":"2001-06-04","5":"18"},{"1":"NA","2":"18","3":"18","4":"2001-06-04","5":"18"},{"1":"18","2":"NA","3":"18","4":"<NA>","5":"18"},{"1":"NA","2":"NA","3":"NA","4":"<NA>","5":"NA"},{"1":"18","2":"19","3":"18","4":"2000-06-04","5":"18"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+{"columns":[{"label":["reported_age"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["computed_age"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["wanted_results"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["date_of_birth"],"name":[4],"type":["date"],"align":["right"]},{"label":["final_age"],"name":[5],"type":["dbl"],"align":["right"]}],"data":[{"1":"18","2":"18","3":"18","4":"2001-06-05","5":"18"},{"1":"NA","2":"18","3":"18","4":"2001-06-05","5":"18"},{"1":"18","2":"NA","3":"18","4":"<NA>","5":"18"},{"1":"NA","2":"NA","3":"NA","4":"<NA>","5":"NA"},{"1":"18","2":"19","3":"18","4":"2000-06-05","5":"18"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
 <p>Inoltre, <code>if_else()</code> permette anche gestire il caso in cui il test risulti
@@ -281,7 +283,7 @@ dei due vettori passati per costruire l’output!)</p>
   )</code></pre>
 <div data-pagedtable="false">
 <script data-pagedtable-source type="application/json">
-{"columns":[{"label":["reported_age"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["computed_age"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["wanted_results"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["data_of_birth"],"name":[4],"type":["date"],"align":["right"]},{"label":["final_age"],"name":[5],"type":["dbl"],"align":["right"]}],"data":[{"1":"18","2":"18","3":"18","4":"2001-06-04","5":"18"},{"1":"NA","2":"18","3":"18","4":"2001-06-04","5":"18"},{"1":"18","2":"NA","3":"18","4":"<NA>","5":"18"},{"1":"NA","2":"NA","3":"NA","4":"<NA>","5":"NA"},{"1":"18","2":"19","3":"18","4":"2000-06-04","5":"18"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+{"columns":[{"label":["reported_age"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["computed_age"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["wanted_results"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["date_of_birth"],"name":[4],"type":["date"],"align":["right"]},{"label":["final_age"],"name":[5],"type":["dbl"],"align":["right"]}],"data":[{"1":"18","2":"18","3":"18","4":"2001-06-05","5":"18"},{"1":"NA","2":"18","3":"18","4":"2001-06-05","5":"18"},{"1":"18","2":"NA","3":"18","4":"<NA>","5":"18"},{"1":"NA","2":"NA","3":"NA","4":"<NA>","5":"NA"},{"1":"18","2":"19","3":"18","4":"2000-06-05","5":"18"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
 <p>Come mai non funziona? Beh, la risposta in effetti è semplice: non
