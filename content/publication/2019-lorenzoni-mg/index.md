@@ -34,6 +34,10 @@ tags:
 
 title: "High‑ and low‑inpatients’ serum magnesium levels are associated with in‑hospital mortality in elderly patients: a neglected marker?"
 
+links:
+  - name: "View Journal Article"
+    url: "https://link.springer.com/article/10.1007%2Fs40520-019-01230-6"
+
 url_code: ""
 
 url_dataset: ""
