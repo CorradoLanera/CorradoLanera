@@ -13,7 +13,7 @@ authors:
 - Dario Gregori
 date: "2019-06-17"
 doi: "10.3390/jcm8060865"
-featured: true
+featured: false
 image:
   caption: 'Structure of the Bayesian network estimated considering demographical variables, known risk factors and genetic factors. The red node is the clinical endpoint, which indicates the presence or absence of EIMs. The chosen network was learned with the Tabu Search algorithm, which is one of the available algorithms in the “bnlearn” R package.'
   focal_point: ""

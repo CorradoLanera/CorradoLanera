@@ -11,7 +11,7 @@ authors:
 - Dario Gregori
 date: "2019-05-30"
 doi: "10.1007/s40520-019-01230-6"
-featured: true
+featured: false
 image:
   caption: 'Unadjusted association of serum Mg and in-hospital mortality.'
   focal_point: ""

@@ -12,7 +12,7 @@ authors:
 - Dario Gregori
 date: "2019-08-22"
 doi: "10.1186/s12889-019-7469-7"
-featured: true
+featured: false
 image:
   caption: 'Flowchart for the CHOP study'
   focal_point: ""
