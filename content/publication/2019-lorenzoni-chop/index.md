@@ -24,7 +24,7 @@ publication_types:
 - "2"
 publishDate: "2019-08-22"
 slides: ""
-summary: Food choking represents a considerable public health burden, which might be reduced through increased effective preventative education programs. We present a protocol for a community intervention trial termed CHOP (CHOking Prevention project) that aimed to teach Italian families how to prevent food choking injuries and increase knowledge relating to nutrition. The protocol we present provides an opportunity to progress towards overcoming such challenges through a working model that can be implemented also in other countries..
+summary: Food choking represents a considerable public health burden, which might be reduced through increased effective preventative education programs. We present a protocol for a community intervention trial termed CHOP (CHOking Prevention project) that aimed to teach Italian families how to prevent food choking injuries and increase knowledge relating to nutrition. The protocol we present provides an opportunity to progress towards overcoming such challenges through a working model that can be implemented also in other countries.
 
 tags:
 - choking prevention
