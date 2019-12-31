@@ -8,6 +8,12 @@
   url = "#about"
   weight = 10
 
+
+[[main]]
+  name = "Experiences"
+  url = "#experience"
+  weight = 50
+
 [[main]]
   name = "Posts"
   url = "#posts"
@@ -18,18 +24,34 @@
   url = "#publications"
   weight = 30
 
+
 [[main]]
-  name = "Contacts"
-  url = "#contact"
+  name = "Skills"
+  url = "#skills"
   weight = 40
 
 [[main]]
-  name = "Bio"
-  url = "bio/"
+  name = "Experiences"
+  url = "#experience"
   weight = 50
+
+[[main]]
+  name = "Accomplishments"
+  url = "#accomplishments"
+  weight = 60
+
+[[main]]
+  name = "Contacts"
+  url = "#contact"
+  weight = 70
+
+# [[main]]
+#   name = "Bio"
+#   url = "bio/"
+#   weight = 50
 
 [[main]]
    name = "CV (PDF)"
    url = "files/cv_CL.pdf"
-   weight = 60
+   weight = 80
 

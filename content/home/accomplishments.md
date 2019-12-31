@@ -2,10 +2,10 @@
 # Accomplishments widget.
 widget = "accomplishments"  # See https://sourcethemes.com/academic/docs/page-builder/
 headless = true  # This file represents a page section.
-active = false  # Activate this widget? true/false
-weight = 90  # Order that this section will appear.
+active = true  # Activate this widget? true/false
+weight = 80  # Order that this section will appear.
 
-title = "Accomplish&shy;ments"
+title = "Certifications"
 subtitle = ""
 
 # Date format
@@ -49,8 +49,8 @@ date_format = "Jan 2006"
   * Neural Network and Deep Learning ([certificate](https://www.coursera.org/account/accomplishments/verify/ZAHRWGQ8Q2HN))
   * Improving Deep Neural Networks: Hyperparameter tuning, Regularization and Optimization ([certificate](https://www.coursera.org/account/accomplishments/verify/RDWAQXXV63NN))
   * Structuring Machine Learning Projects ([certificate](https://www.coursera.org/account/accomplishments/verify/VAKPYA43KPPC))
-  * Convolutional Neural Networks ([certificate](https://www.coursera.org/account/accomplishments/verify/Y9ATEKUZVJ8T))
-  * Sequence Models (in progress)
+  * Convolutional Neural Networks (in progress)
+  * Sequence Models (to do)
   """
 
 
