@@ -107,21 +107,21 @@ segnalata.</p>
 <pre class="r"><code>Sys.setenv(&quot;_R_CHECK_LENGTH_1_CONDITION_&quot; = &quot;false&quot;)
 
 if (c(TRUE, FALSE)) 1 else 2
-#&gt; Warning in if (c(TRUE, FALSE)) 1 else 2: the condition has length &gt; 1 and
-#&gt; only the first element will be used
+#&gt; Warning in if (c(TRUE, FALSE)) 1 else 2: the condition has length &gt; 1 and only
+#&gt; the first element will be used
 #&gt; [1] 1
 if (c(TRUE, TRUE)) 1 else 2
-#&gt; Warning in if (c(TRUE, TRUE)) 1 else 2: the condition has length &gt; 1 and
-#&gt; only the first element will be used
+#&gt; Warning in if (c(TRUE, TRUE)) 1 else 2: the condition has length &gt; 1 and only
+#&gt; the first element will be used
 #&gt; [1] 1
 
 if (c(FALSE, TRUE)) 1 else 2
-#&gt; Warning in if (c(FALSE, TRUE)) 1 else 2: the condition has length &gt; 1 and
-#&gt; only the first element will be used
+#&gt; Warning in if (c(FALSE, TRUE)) 1 else 2: the condition has length &gt; 1 and only
+#&gt; the first element will be used
 #&gt; [1] 2
 if (c(FALSE, FALSE)) 1 else 2
-#&gt; Warning in if (c(FALSE, FALSE)) 1 else 2: the condition has length &gt; 1 and
-#&gt; only the first element will be used
+#&gt; Warning in if (c(FALSE, FALSE)) 1 else 2: the condition has length &gt; 1 and only
+#&gt; the first element will be used
 #&gt; [1] 2</code></pre>
 <p>E in effetti, come leggiamo dal warning, solo la prima condizione viene
 usata e tutto il resto della condizione ignorato. Del resto chiediamo
@@ -216,7 +216,7 @@ passassimo la colonna delle date di nascita?</p>
 birth_foreveryoung</code></pre>
 <div data-pagedtable="false">
 <script data-pagedtable-source type="application/json">
-{"columns":[{"label":["reported_age"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["computed_age"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["wanted_results"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["date_of_birth"],"name":[4],"type":["date"],"align":["right"]}],"data":[{"1":"18","2":"18","3":"18","4":"2001-06-05"},{"1":"NA","2":"18","3":"18","4":"2001-06-05"},{"1":"18","2":"NA","3":"18","4":"<NA>"},{"1":"NA","2":"NA","3":"NA","4":"<NA>"},{"1":"18","2":"19","3":"18","4":"2000-06-05"}],"options":{"columns":{"min":[5],"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+{"columns":[{"label":["reported_age"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["computed_age"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["wanted_results"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["date_of_birth"],"name":[4],"type":["date"],"align":["right"]}],"data":[{"1":"18","2":"18","3":"18","4":"2001-12-31"},{"1":"NA","2":"18","3":"18","4":"2001-12-31"},{"1":"18","2":"NA","3":"18","4":"<NA>"},{"1":"NA","2":"NA","3":"NA","4":"<NA>"},{"1":"18","2":"19","3":"18","4":"2000-12-31"}],"options":{"columns":{"min":[5],"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
 <pre class="r"><code>
@@ -229,7 +229,7 @@ birth_foreveryoung %&gt;%
   )</code></pre>
 <div data-pagedtable="false">
 <script data-pagedtable-source type="application/json">
-{"columns":[{"label":["reported_age"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["computed_age"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["wanted_results"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["date_of_birth"],"name":[4],"type":["date"],"align":["right"]},{"label":["final_age"],"name":[5],"type":["dbl"],"align":["right"]}],"data":[{"1":"18","2":"18","3":"18","4":"2001-06-05","5":"18"},{"1":"NA","2":"18","3":"18","4":"2001-06-05","5":"11478"},{"1":"18","2":"NA","3":"18","4":"<NA>","5":"18"},{"1":"NA","2":"NA","3":"NA","4":"<NA>","5":"NA"},{"1":"18","2":"19","3":"18","4":"2000-06-05","5":"18"}],"options":{"columns":{"min":[5],"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+{"columns":[{"label":["reported_age"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["computed_age"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["wanted_results"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["date_of_birth"],"name":[4],"type":["date"],"align":["right"]},{"label":["final_age"],"name":[5],"type":["dbl"],"align":["right"]}],"data":[{"1":"18","2":"18","3":"18","4":"2001-12-31","5":"18"},{"1":"NA","2":"18","3":"18","4":"2001-12-31","5":"11687"},{"1":"18","2":"NA","3":"18","4":"<NA>","5":"18"},{"1":"NA","2":"NA","3":"NA","4":"<NA>","5":"NA"},{"1":"18","2":"19","3":"18","4":"2000-12-31","5":"18"}],"options":{"columns":{"min":[5],"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
 <p>Come vediamo, nemmeno un errore, nemmeno un warning, ma il risultato
@@ -253,7 +253,7 @@ della stessa classe, restituisce un errore!</p>
         false = date_of_birth
     )
   )
-#&gt; `false` must have class `numeric`, not class `Date`</code></pre>
+#&gt; Error: `false` must have class `numeric`, not class `Date`</code></pre>
 <p>Questo ci permette di identificare subito l’errore e poterlo correggere
 <em>efficacentemente</em> col cuore in pace :-).<a href="#fn3" class="footnote-ref" id="fnref3"><sup>3</sup></a></p>
 <pre class="r"><code>birth_foreveryoung %&gt;% 
@@ -265,7 +265,7 @@ della stessa classe, restituisce un errore!</p>
   )</code></pre>
 <div data-pagedtable="false">
 <script data-pagedtable-source type="application/json">
-{"columns":[{"label":["reported_age"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["computed_age"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["wanted_results"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["date_of_birth"],"name":[4],"type":["date"],"align":["right"]},{"label":["final_age"],"name":[5],"type":["dbl"],"align":["right"]}],"data":[{"1":"18","2":"18","3":"18","4":"2001-06-05","5":"18"},{"1":"NA","2":"18","3":"18","4":"2001-06-05","5":"18"},{"1":"18","2":"NA","3":"18","4":"<NA>","5":"18"},{"1":"NA","2":"NA","3":"NA","4":"<NA>","5":"NA"},{"1":"18","2":"19","3":"18","4":"2000-06-05","5":"18"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+{"columns":[{"label":["reported_age"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["computed_age"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["wanted_results"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["date_of_birth"],"name":[4],"type":["date"],"align":["right"]},{"label":["final_age"],"name":[5],"type":["dbl"],"align":["right"]}],"data":[{"1":"18","2":"18","3":"18","4":"2001-12-31","5":"18"},{"1":"NA","2":"18","3":"18","4":"2001-12-31","5":"18"},{"1":"18","2":"NA","3":"18","4":"<NA>","5":"18"},{"1":"NA","2":"NA","3":"NA","4":"<NA>","5":"NA"},{"1":"18","2":"19","3":"18","4":"2000-12-31","5":"18"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
 <p>Inoltre, <code>if_else()</code> permette anche gestire il caso in cui il test risulti
@@ -283,7 +283,7 @@ dei due vettori passati per costruire l’output!)</p>
   )</code></pre>
 <div data-pagedtable="false">
 <script data-pagedtable-source type="application/json">
-{"columns":[{"label":["reported_age"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["computed_age"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["wanted_results"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["date_of_birth"],"name":[4],"type":["date"],"align":["right"]},{"label":["final_age"],"name":[5],"type":["dbl"],"align":["right"]}],"data":[{"1":"18","2":"18","3":"18","4":"2001-06-05","5":"18"},{"1":"NA","2":"18","3":"18","4":"2001-06-05","5":"18"},{"1":"18","2":"NA","3":"18","4":"<NA>","5":"18"},{"1":"NA","2":"NA","3":"NA","4":"<NA>","5":"NA"},{"1":"18","2":"19","3":"18","4":"2000-06-05","5":"18"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+{"columns":[{"label":["reported_age"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["computed_age"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["wanted_results"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["date_of_birth"],"name":[4],"type":["date"],"align":["right"]},{"label":["final_age"],"name":[5],"type":["dbl"],"align":["right"]}],"data":[{"1":"18","2":"18","3":"18","4":"2001-12-31","5":"18"},{"1":"NA","2":"18","3":"18","4":"2001-12-31","5":"18"},{"1":"18","2":"NA","3":"18","4":"<NA>","5":"18"},{"1":"NA","2":"NA","3":"NA","4":"<NA>","5":"NA"},{"1":"18","2":"19","3":"18","4":"2000-12-31","5":"18"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
 <p>Come mai non funziona? Beh, la risposta in effetti è semplice: non
