@@ -49,8 +49,8 @@ date_format = "Jan 2006"
   * Neural Network and Deep Learning ([certificate](https://www.coursera.org/account/accomplishments/verify/ZAHRWGQ8Q2HN))
   * Improving Deep Neural Networks: Hyperparameter tuning, Regularization and Optimization ([certificate](https://www.coursera.org/account/accomplishments/verify/RDWAQXXV63NN))
   * Structuring Machine Learning Projects ([certificate](https://www.coursera.org/account/accomplishments/verify/VAKPYA43KPPC))
-  * Convolutional Neural Networks (in progress)
-  * Sequence Models (to do)
+  * Convolutional Neural Networks ([certificate](https://www.coursera.org/account/accomplishments/verify/Y9ATEKUZVJ8T))
+  * Sequence Models (in progress)
   """
 
 
