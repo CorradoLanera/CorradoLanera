@@ -7,15 +7,12 @@ education:
   - course: 'III year Ph.D. in Specialistic medicine "G.B. Morgagni" - Biostatistics'
     institution: University of Padova
     year: 2017-in progress
-  - course: II lev. Master in Advanced Biostatistics for the Clinical Research
+  - course: II level master in Advanced Biostatistics for the Clinical Research
     institution: University of Padova
     year: 2016
   - course: MSc in Mathematics
     institution: University of Udine
     year: 2014
-  - course: BSc in Mathematics
-    institution: University of Udine
-    year: 2010
 email: "corrado.lanera@unipd.it"
 interests:
 - Machine Learning
@@ -47,25 +44,15 @@ user_groups:
 - Visitors
 ---
 
-Corrado Lanera is a fellow researcher working in the Laboratory for
-Artificail Intelligence for Medical Sciences within the Unit of
-Biostatistics, Epidemiology and Public Health of the department of
-Cardiac, Thoracic, Vascoular Sciences and Public Helath at
-the University of Padova (Italy). His research activity is driven in the
-area of Machine Learning (ML) and Phenomapping techniques applied to
-clinical science.
+My research activity is driven in the area of machine learning
+and phenomapping techniques applied to clinical settings, with
+particular attention to free-text and unstructured data analyses
+and classification of:
 
-He puts particular attention to free-text and unstructured data analyses
-on:
-
-  1) patient classification with or without reported infections based on
-     free-text fields of the Electronic Health Records
+  - patients, based on free-text fields of electronic health records
     
-  2) classification of papers and clinical registries' entries driven by
-     researcher interest, to support the Systematic Review and
-     Meta-Analysis processes
+  - papers and clinical registries' entries taylored on researchers'
+    interest, supporting systematic review and meta-analysis processes
   
-  3) caloric intake estimation from wearable devices' kinetic signals
-     
-  4) patients pre- vs post-surgical rehabilitation rate/quality from
-     wearable devices' kinetic signals.
+  - wearable devices' kinetic signals, for caloric intake and
+    rehabilitation rate/quality estimation

@@ -67,7 +67,7 @@ subtitle = ""
   icon = "bed"
   icon_pack = "fas"
   name = "limitless sleeping"
-  description = "Record: 25.5 hours continuosly, can fall asleep anytime/where"  
+  description = "Record: 25.5 hours continuosly, can fall asleep anytime/anywhere"  
   
   
   
