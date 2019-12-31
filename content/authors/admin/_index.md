@@ -1,7 +1,8 @@
 ---
 authors:
 - admin
-bio: My research activity is driven in the area of Machine Learning (ML) and Phenomapping techniques applied to clinical science.
+bio: My research activity is driven in the area of Machine Learning (ML)
+and Phenomapping techniques applied to clinical science.
 education:
   courses:
   - course: 'III year Ph.D. in Specialistic medicine "G.B. Morgagni" - Biostatistics'
@@ -27,9 +28,10 @@ organizations:
   url: "https://www.unipd.it/"
 - name: Dep. Cardiac, Thoracic, Vascular Sciences and Public Health
   url: "https://www.dctv.unipd.it/"
-- name: Biostatistics, Epidemiology and Public Health Unit
+- name: Unit of Biostatistics, Epidemiology and Public Health
   url: "https://www.dctv.unipd.it/dipartimento/strutture/biostatistica"
-role: Ph. D. Student
+- name: Laboratory of Artificial Intelligence for Medical Sciences
+role: Fellow researcher
 social:
 - icon: envelope
   icon_pack: fas
@@ -46,8 +48,10 @@ user_groups:
 - Visitors
 ---
 
-Corrado Lanera is a third year Ph.D. student in Biostatistics at the
-department of Cardiac, Thoracic, Vascoular Sciences and Public Helath of
+Corrado Lanera is a fellow researcher working in the Laboratory for
+Artificail Intelligence for Medical Sciences within the Unit of
+Biostatistics, Epidemiology and Public Health of the department of
+Cardiac, Thoracic, Vascoular Sciences and Public Helath at
 the University of Padova (Italy). His research activity is driven in the
 area of Machine Learning (ML) and Phenomapping techniques applied to
 clinical science.

@@ -18,12 +18,30 @@ date_format = "Jan 2006"
 #   Leave `date_end` empty if it's your current employer.
 #   Begin/end multi-line descriptions with 3 quotes `"""`.
 [[experience]]
+  title = "Research Grant: Review and development of Machine Learning techniques applied in risk assessment related to food safety"
+  company = "University of Padova"
+  company_url = "https://www.unipd.it"
+  location = "Padova (IT)"
+  date_start = "2019-10-01"
+  date_end = "2020-09-30"
+  description = """
+  Responsibilities include:
+  
+  * review of Machine Learning (ML) techniques
+  * scripting, documenting and executing ML projects and case-studies
+  * setup and managment of distributed computing
+  * writing scientific papers to reporting results, and presenting them national and international congresses
+  * teaching insights learned.
+  """
+
+
+[[experience]]
   title = "Exchange J1 Visitor Student: Research Science Technologies"
   company = "University of Pennsylvania "
   company_url = "https://www.upenn.edu"
   location = "Philadelphia (PA)"
   date_start = "2019-06-01"
-  date_end = "2020-09-30"
+  date_end = "2019-09-30"
   description = "[Health Language Processing Lab](http://www.healthlanguageprocessing.org/) within the [Institute of Biomedical Informatics](http://upibi.org/)"
 
 
@@ -42,7 +60,7 @@ date_format = "Jan 2006"
   * scripting, documenting and executing ML projects and case-studies
   * managment of distributed computing
   * reporting and presenting the results obtained
-  * teaching inights learned.
+  * teaching insights learned.
   """
 
 [[experience]]
