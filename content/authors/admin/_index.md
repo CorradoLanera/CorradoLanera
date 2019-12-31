@@ -1,8 +1,7 @@
 ---
 authors:
 - admin
-bio: My research activity is driven in the area of Machine Learning (ML)
-and Phenomapping techniques applied to clinical science.
+bio: My research activity is driven in the area of Machine Learning (ML) and Phenomapping techniques applied to clinical science.
 education:
   courses:
   - course: 'III year Ph.D. in Specialistic medicine "G.B. Morgagni" - Biostatistics'
