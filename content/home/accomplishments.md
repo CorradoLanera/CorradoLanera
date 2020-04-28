@@ -18,6 +18,27 @@ date_format = "Jan 2006"
 #   Leave other parameters empty if not required.
 #   Begin/end multi-line descriptions with 3 quotes `"""`.
 [[item]]
+  organization = "Coursera/deeplearning.ai"
+  organization_url = "https://www.coursera.org"
+  title = "Deep Learning Specialization"
+  url = "https://www.coursera.org/specializations/deep-learning"
+  certificate_url = "https://www.coursera.org/account/accomplishments/specialization/23BMEKA4J44V"
+  date_start = "2019-07-31"
+  date_end = "2020-04-28"
+  description = """
+  Courses Included:
+  
+  * Neural Network and Deep Learning ([certificate](https://www.coursera.org/account/accomplishments/verify/ZAHRWGQ8Q2HN))
+  * Improving Deep Neural Networks: Hyperparameter tuning, Regularization and Optimization ([certificate](https://www.coursera.org/account/accomplishments/verify/RDWAQXXV63NN))
+  * Structuring Machine Learning Projects ([certificate](https://www.coursera.org/account/accomplishments/verify/VAKPYA43KPPC))
+  * Convolutional Neural Networks ([certificate](https://www.coursera.org/account/accomplishments/verify/Y9ATEKUZVJ8T))
+  * Sequence Models (in progress) ([certificate](https://www.coursera.org/account/accomplishments/verify/8F8M22FPPYH7))
+
+  """
+
+
+
+[[item]]
   organization = "Coursera/Johns Hopkins University"
   organization_url = "https://www.coursera.org"
   title = "Mastering Software Development in R Specialization"
@@ -34,25 +55,6 @@ date_format = "Jan 2006"
   * Building Data Visualization Tools ([certificate](https://www.coursera.org/account/accomplishments/verify/H8QVSZZTZFB3))
   * Mastering Software Development in R Capstone ([certificate](https://www.coursera.org/account/accomplishments/verify/PAMZ34RS3NUG))
   """
-
-[[item]]
-  organization = "Coursera/deeplearning.ai"
-  organization_url = "https://www.coursera.org"
-  title = "Deep Learning Specialization *(in progress)*"
-  url = "https://www.coursera.org/specializations/deep-learning"
-  certificate_url = ""
-  date_start = "2019-07-31"
-  date_end = ""
-  description = """
-  Courses Included:
-  
-  * Neural Network and Deep Learning ([certificate](https://www.coursera.org/account/accomplishments/verify/ZAHRWGQ8Q2HN))
-  * Improving Deep Neural Networks: Hyperparameter tuning, Regularization and Optimization ([certificate](https://www.coursera.org/account/accomplishments/verify/RDWAQXXV63NN))
-  * Structuring Machine Learning Projects ([certificate](https://www.coursera.org/account/accomplishments/verify/VAKPYA43KPPC))
-  * Convolutional Neural Networks ([certificate](https://www.coursera.org/account/accomplishments/verify/Y9ATEKUZVJ8T))
-  * Sequence Models (in progress)
-  """
-
 
 [[item]]
   organization = "Coursera/Stanford University"

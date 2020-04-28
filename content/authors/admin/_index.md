@@ -4,9 +4,9 @@ authors:
 bio: My research activity is driven in the area of Machine Learning (ML) and Phenomapping techniques applied to clinical science.
 education:
   courses:
-  - course: 'III year Ph.D. in Specialistic medicine "G.B. Morgagni" - Biostatistics'
+  - course: 'Ph.D. in Specialistic medicine "G.B. Morgagni" - Biostatistics'
     institution: University of Padova
-    year: 2017-in progress
+    year: 2020
   - course: II level master in Advanced Biostatistics for the Clinical Research
     institution: University of Padova
     year: 2016
