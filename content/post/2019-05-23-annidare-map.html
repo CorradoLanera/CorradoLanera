@@ -417,7 +417,7 @@ senza parentesi o argomenti:</p>
 #&gt;     .f &lt;- as_mapper(.f, ...)
 #&gt;     .Call(map_impl, environment(), &quot;.x&quot;, &quot;.f&quot;, &quot;list&quot;)
 #&gt; }
-#&gt; &lt;bytecode: 0x0000000014797ff0&gt;
+#&gt; &lt;bytecode: 0x0000000015d01ba0&gt;
 #&gt; &lt;environment: namespace:purrr&gt;</code></pre>
 <p>a questo punto vediamo che <code>.f</code> viene elaborata (prima di essere eseguita
 dal misterioso <code>.Call</code>) da una funzione <code>as_mapper()</code>. Vediamo allora
@@ -427,7 +427,7 @@ questa com’è fatta:</p>
 #&gt; {
 #&gt;     UseMethod(&quot;as_mapper&quot;)
 #&gt; }
-#&gt; &lt;bytecode: 0x0000000011467e18&gt;
+#&gt; &lt;bytecode: 0x000000000e1a4a08&gt;
 #&gt; &lt;environment: namespace:purrr&gt;</code></pre>
 <p>Bene bene, si tratta di una funzione <strong>generica</strong>. Una funzione generica
 richiama semplicemente un <strong>metodo</strong> (cioè, nient’altro che un’altra
@@ -483,7 +483,7 @@ che “faccia” qualcosa)!</p>
 #&gt;         rlang::as_function(.f)
 #&gt;     }
 #&gt; }
-#&gt; &lt;bytecode: 0x0000000014796f18&gt;
+#&gt; &lt;bytecode: 0x0000000015d00ac8&gt;
 #&gt; &lt;environment: namespace:purrr&gt;</code></pre>
 <p>Perfetto, eccola qui! Vediamo che anche dentro questa funzione, la
 nostra continua a chiamarsi con l’alias <code>.f</code>, che sappiamo, per noi,
@@ -736,22 +736,22 @@ Saaalvé!</p>
 <hr />
 <ol>
 <li id="fn1"><p>Meno flessibile =
-(quasi sempre) più robusto e sicuro!<a href="#fnref1" class="footnote-back">↩</a></p></li>
+(quasi sempre) più robusto e sicuro!<a href="#fnref1" class="footnote-back">↩︎</a></p></li>
 <li id="fn2"><p>Per esempio se dovessimo
 scrivere esplicitamente (cioè senza usare la funzione <code>cumsum()</code> o
 simili) il vettore delle somme cumulate di un vettore dato, sarebbe
-difficile farlo senza un ciclo.<a href="#fnref2" class="footnote-back">↩</a></p></li>
+difficile farlo senza un ciclo.<a href="#fnref2" class="footnote-back">↩︎</a></p></li>
 <li id="fn3"><p>Per esempio,
 se volessimo calcolare il doppio di ciascun numero di un vettore dato
 (anche leggendo come ho espresso io stesso qui il problema) non penso
 istintivamente a un ciclo (sequenziale) ma più che altro a un processo
-<em>parallelo</em>.<a href="#fnref3" class="footnote-back">↩</a></p></li>
+<em>parallelo</em>.<a href="#fnref3" class="footnote-back">↩︎</a></p></li>
 <li id="fn4"><p>Per approfondire si veda la documentazione <code>?map</code>, oltre che
 <a href="https://r4ds.had.co.nz/iteration.html#for-loops-vs.functionals">For loops vs.
 functionals</a>
 <span class="citation">(Wickham and Grolemund <a href="#ref-wickham2016r" role="doc-biblioref">2016</a>)</span> e
 <a href="https://adv-r.hadley.nz/functionals.html">Functionals</a>
-<span class="citation">(Wickham <a href="#ref-wickham2019advanced" role="doc-biblioref">2019</a>)</span>.<a href="#fnref4" class="footnote-back">↩</a></p></li>
+<span class="citation">(Wickham <a href="#ref-wickham2019advanced" role="doc-biblioref">2019</a>)</span>.<a href="#fnref4" class="footnote-back">↩︎</a></p></li>
 <li id="fn5"><p>Il
 risultato ottenuto dipende dal fatto che <code>map(y, sum)</code> viene valutato e
 restituisce un valore numerico, in particolare, visto che <code>y</code> è <code>c(1, 2, 3)</code>, restituisce <code>c(1, 2, 3)</code>. Quindi la nostra chiamata equivale a
@@ -763,12 +763,12 @@ documentazione di
 <a href="https://www.rdocumentation.org/packages/purrr/versions/0.2.5/topics/map"><code>?purrr::map</code></a>),
 <a href="https://www.rdocumentation.org/packages/purrr/versions/0.2.5/topics/pluck"><code>?purrr::pluck</code></a>
 e qualche approfondimento sul funzionamento degli <a href="http://adv-r.had.co.nz/Subsetting.html">operatori di
-sotto-selezione</a>.<a href="#fnref5" class="footnote-back">↩</a></p></li>
+sotto-selezione</a>.<a href="#fnref5" class="footnote-back">↩︎</a></p></li>
 <li id="fn6"><p>Per maggiori informazioni in merito
 <a href="https://adv-r.hadley.nz/environments.html">Environments</a>
-[wickham2019advanced].<a href="#fnref6" class="footnote-back">↩</a></p></li>
+[wickham2019advanced].<a href="#fnref6" class="footnote-back">↩︎</a></p></li>
 <li id="fn7"><p><a href="http://adv-r.had.co.nz/Environments.html#function-envs">Ambienti delle
-funzioni</a>.<a href="#fnref7" class="footnote-back">↩</a></p></li>
+funzioni</a>.<a href="#fnref7" class="footnote-back">↩︎</a></p></li>
 <li id="fn8"><p>Da notare anche che in questo caso,
 probabilmente e spesso, questo potrebbe significare che la funzione è
 stata mal definita, in quanto il suo risultato dipende da oggetti che
@@ -782,13 +782,13 @@ situazione di aver ottenuto un risultato, probabilmente sbagliato, e
 senza nessun segnale di aver fatto un errore. Fare molta (molta!)
 attenzione quindi a definire funzioni il cui corpo sfrutti oggetti che
 non siano né definiti all’interno della funzione stessa né passati come
-input alla funzione!!<a href="#fnref8" class="footnote-back">↩</a></p></li>
-<li id="fn9"><p>Viene infatti creato quando <code>map()</code> viene chiamata<a href="#fnref9" class="footnote-back">↩</a></p></li>
+input alla funzione!!<a href="#fnref8" class="footnote-back">↩︎</a></p></li>
+<li id="fn9"><p>Viene infatti creato quando <code>map()</code> viene chiamata<a href="#fnref9" class="footnote-back">↩︎</a></p></li>
 <li id="fn10"><p>Per approfondire come
 funziona il metodo base di selezione dei metodi in R si può guardare
-<a href="https://adv-r.hadley.nz/s3.html">S3</a> <span class="citation">(Wickham <a href="#ref-wickham2019advanced" role="doc-biblioref">2019</a>)</span>.<a href="#fnref10" class="footnote-back">↩</a></p></li>
+<a href="https://adv-r.hadley.nz/s3.html">S3</a> <span class="citation">(Wickham <a href="#ref-wickham2019advanced" role="doc-biblioref">2019</a>)</span>.<a href="#fnref10" class="footnote-back">↩︎</a></p></li>
 <li id="fn11"><p>Questo, nel nostro caso,
-sappiamo che non avviene visto che <code>map()</code> funziona 😉<a href="#fnref11" class="footnote-back">↩</a></p></li>
+sappiamo che non avviene visto che <code>map()</code> funziona 😉<a href="#fnref11" class="footnote-back">↩︎</a></p></li>
 <li id="fn12"><p>Fare comunque sempre attenzione a usare funzioni non
 esportate, se non lo sono un motivo c’è, il più probabile dei quali è
 che tale funzione non sia stabile, o magari verrà modificata senza
@@ -797,6 +797,6 @@ garantire la retro-compatibilità, oppure non è ben testata…
 va bene, incorporarla in un proprio progetto che abbia una prospettiva
 di utilità che vada oltre ad “adesso” potrebbe essere davvero molto
 rischioso (infatti, se fate un pacchetto il CRAN non lo accetterà se usa
-funzioni non esportate di altri pacchetti!).<a href="#fnref12" class="footnote-back">↩</a></p></li>
+funzioni non esportate di altri pacchetti!).<a href="#fnref12" class="footnote-back">↩︎</a></p></li>
 </ol>
 </div>
