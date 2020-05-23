@@ -1,0 +1,331 @@
+---
+title: Accuratezza, sensibilità, specificità, prevalenza, e valori predittivi positivo
+  e negativo di un test diagnostico
+author: ''
+date: '2020-05-23'
+slug: accuratezza-sensibilità-specificità-prevalenza-e-valori-predittivi-positivo-e-negativo-di-un-test-diagnostico
+categories:
+  - biostat
+tags:
+  - test
+  - accuracy
+  - sensitivity
+  - specificity
+  - prevalence
+  - ppv
+  - ppn
+image:
+  caption: ''
+  focal_point: ''
+---
+
+# Accuratezza, Sensibilità, Specificità, Prevalenza, Valore Predittivo Positivo e Negativo di un test diagnostico
+
+## Preambolo
+
+La biologia è talmente variabile e complessa che un test diagnostico di
+laboratorio non sarà mai perfetto e non darà risultati sempre identici e
+perfetti in ripetizioni successive, anzi.
+
+Ci possono essere fonti di errore dietro ogni angolo, da errori "locali"
+dovuti ai macchinari, ai reagenti, al personale che conduce il test, a
+errori "generali" dovuti al particolare campione di materiale biologico
+estratto dal paziente, a errori o variazioni nei criteri decisionali e
+interpretativi dell'esito del test stesso.
+
+Per questi motivi, ogni test è accompagnato da misure di qualità che ci
+aiutano a capire e, sopratutto, a scegliere il test in base a condizioni
+e interessi per i quali utilizzarlo. A volte sarà più importante essere
+maggiormente sicuri di un esito negativo (per una malattia molto grave e
+molto infettiva sarà cruciale conoscere chi è malato, potendo quindi
+rischiare di dichiarare malato un sano, ma non di dichiarare sano un
+malato), a volte sarà più importante essere sicuri di un esito positivo
+(per esempio, in caso di una malattia rara con una cura sperimentale
+molto invasiva sarà forse preferibile rischiare di dichiarare negativa
+una persona che avrebbe potuto beneficiare di tale cura, piuttosto che
+positiva una persona per la quale altri trattamenti meno invasivi
+sarebbero stati più indicati).
+
+Inoltre è bene ricordare che il risultato grezzo di un test è spesso una
+probabilità mentre il risultato finale di un test che ci viene
+comunicato è spesso un "esito" (positivo o negativo), ovvero il frutto
+della scelta (da parte di una persona o un team di persone) di un valore
+"limite" o soglia per tale probabilità (per esempio, dichiarando come
+"positivo" ogni campione che ha più del 50% di probabilità di esserlo,
+oppure più dell'80% e così via). Tali scelte sono prese proprio in
+accordo a quanto sopra andando a prediligere la "garanzia" di un
+risultato positivo o negativo (dichiarando, per esempio, tutti positivi,
+sempre, sicuro non sbaglieremmo mai una classe negativa, viceversa,
+dichiarando sempre solo negativi non sbaglieremmo mai una classe
+positiva). Quando si parla di accuratezza di un test e di tutte le
+misure che andremo a vedere, la soglia scelta è già stata individuata
+(non sempre è nota) ed è quindi considerata immutabile: consideriamo
+quindi che il test dà (a noi che lo usiamo) come risultato una
+categoria, e non una probabilità. Le probabilità che ci interessano non
+sono quindi quelle per cui il risultato del test (positivo o negativo)
+riscontri la realtà (nota), ma al contrario ci interessano le
+probabilità che la realtà (ignota a noi che eseguiamo il test) sia
+coerente con il risultato ottenuto dal test (noto).
+
+
+
+## Qualità e utilità di un test
+
+Può sembrare a prima vista una cosa strana, ma i due concetti sono
+davvero molto diversi. Nel primo caso ci chiediamo "se un soggetto è
+malato, e lo sappiamo, quel'è la probabilità che il test dica che è
+malato?". Questa probabilità si chiama **sensibilità** del test. Oppure
+ci possiamo chiedere "se un soggetto è sano, qual è la probabilità che
+il test dica che è sano?". Questa è la **specificità**. Mettendo insieme
+le cose "Preso a caso un individuo che sappiamo essere malato o sano,
+con quale probabilità il test identificherà la classe corretta?"
+otteniamo l'**accuratezza**.
+
+Per quanto queste domande siano essenziali e sembrino quelle più
+naturali, ci sono in realtà utili solo a giudicare la qualità del test
+(rispettivamente nel riconoscere i sani e i malati), e sono quindi il
+pane quotidiano di chi crea i test, ma con solo queste informazioni
+sappiamo ben poco su quanto eseguire tale test sia davvero utile a noi.
+Quello che ci interessa davvero a noi, in generale (se il nostro scopo è
+usare i test e non svilupparli) è rispondere alle domande: "se faccio
+il test a una persona e risulta positivo, qual è la probabilità che
+questa persona sia davvero malata?". Questo è chiamato il **valore
+predittivo positivo**. D'altro canto, ci può anche interessare
+rispondere alla domanda "se faccio un test a una persona e risulta
+negativo, quel'è la probabilità che questa persona sia davvero sana?", e
+questo è il **valore predittivo negativo** del test!
+
+
+### Qualità
+
+Per rispondere alle prime due domande, quello che serve è avere un
+gruppo "campione" di cui sappiamo di per certo la risposta. Per quanto
+questo non sia del tutto banale, in caso di malattie è a posteriori
+abbastanza fattibile. A quel punto basterà applicare il test a tutta la
+base di dati noti e vedere le proporzioni con cui i risultati positivi e
+negativi sono correttamente o meno riconosciuti come tali. Otterremo
+dunque 4 numeri: **vp** (_veri positivi_, il numero di campioni positivi
+con test positivo), **vn** (_veri negativi_, il numero di campioni
+negativi con test negativo), **fp** (_falsi positivi_, il numero di
+campioni negativi con test positivo) e **fn** (_falsi negativi_, il
+numero di campioni positivi con test negativo).
+
+La sensibilità sarà quindi il rapporto tra i test correttamente positivi
+e la totalità dei campioni positivi, ovvero $\frac{vp}{vp + fn}.$ Di
+contro la specificità sarà il rapporto tra i test correttamente negativi
+e la totalità dei campioni negativi, ovvero $\frac{vn}{vn + fp}.$
+Infine, l'accuratezza sarà il rapporto tra i test corretti e tutti
+quelli effettuati $\frac{vp + vn}{vp + vn + fp + fn}.$
+
+
+
+### Utilità
+
+Fin qui le cose sono semplici (o meglio, sono più facili nella teoria
+che nella pratica, e per questo spesso le si sentono più spesso). Ma,
+come per ottenere la sensibilità e la specificità di un test
+necessitiamo di avere un campione "certo" da cui partire, per ottenere i
+valori predittivi positivo e negativo ci serve (o meglio, ci
+servirebbe...) sapere qual è la porzione di persone davvero malate nella
+popolazione nel momento in cui eseguiamo il test, numero che prende il
+nome di **prevalenza**. Ipotizzando di aver eseguito il test a tutti
+(!!) questo sarebbe ottenuto da $\frac{vp + fn}{vp + vn + fp + fn}.$
+Conoscere la prevalenza è cruciale perchè il valore predittivo positivo
+non è altro che il rapporto tra i test correttamente positivi e tutti i
+test che dovrebbero risultare positivi (ovvero il numero di malati),
+così come il valore predittivo negativo è il rapporto tra i test
+correttamente negativi e tutti i test che sarebbero dovuti essere
+negativi (ovvero il numero di sani). Chiaro che se il nostro campione
+"certo" fosse tutta l'intera popolazione il valore predittivo positivo
+sarebbe $\frac{vp}{vp + fp},$ così come avremmo che $\frac{vn}{vn + fp}$
+raprresenterebbe il valore predittivo negativo. Questo però non è
+verosimile (anche per il semplice fatto che se sapessimo la risposta
+certa vera per tutta la popolazione...il test non servirebbe proprio
+nemmeno farlo!).
+
+Il vero problema è che senza una misura della prevalenza, possiamo dire
+poco o nulla.
+
+Ipotiziamo infatti che un test sia accurato al 99% e che abbiamo 10000
+persone nella nostra popolazione. Se 100 fossero malate e 9900 fossero
+sane (ipotizzando di saperlo), poichè il test è accurato al 99%, avrà un
+riscontro corretto il 99% delle volte, quindi, avremo $vp = 99$ (malati
+correttamente individuati come tali, 99% di loro), $fn = 1$ (malati
+erroneamente considerati sani, 1% di loro), $fp = 99$ (sani erroneamente
+individuati come malati, 1% di loro), $vn = 9801$ (sani correttamente
+individuati come tali, 99% di loro). Se ora pescassimo una persona a
+caso e le facessimo il test e questo test risultasse positivo, quale
+sarebbe la probabilità che la persona analizzata sia davvero positiva?
+Beh, i corretti positivi sono $vp = 99$, mentre la totalità delle
+persone considerate positive è $vp + fp = 99 + 99 = 198$, da cui il
+valore predittivo positivo risulterebbe essere pari a $99 / 198 = 0.5$!
+Ovvero, abbiamo solo il 50% di probabilità che la persona testata
+positiva sia davvero positiva! Di contro, se nella nostra popolazione
+avessimo 5000 sani e 5000 malati, avremmo invece $vp = 4950$, $vn =
+4950$, $fp = 50$, e $fn = 50$, da cui il valore predittivo positivo
+sarebbe $$\frac{vp}{vp + fp} = \frac{50}{4950 + 50} = \frac{50}{5000} =
+0.99$$ che equivale esattamente al 99% di probabilità. Dunque, da un
+lato osserviamo che il valore di sensibilità e specificità equivalgono e
+possono essere considerati rispettivamente i valori predittivo positivo
+e negativo solamente nel caso in cui le classi siano perfettamente
+bilanciate; dall'altro lato, quello che è più importante capire, è che i
+valori predittivi positivo e negativo di un test dipendono
+intrinsecamente dalla quantità di persone positive e negative nella
+nostra popolazione di interesse o, meglio, dal rapporto tra le loro
+numerosità.
+
+
+
+## Nella pratica: popolazione
+
+Questo sembra impossibile da ottenere, ma la parte interessante è che è
+possibile approssimarlo molto bene. In realtà quello che conta, come
+abbiamo appena osservato, non è tanto la quantità di persone positive e
+negative, ma il loro rapporto. Facendo un po' di conti, si può infatti
+derivare (se siete curiosi provate a fare il conto esplicito... qui
+cerchiamo di tenere al minimo la matematica :-)) che il valore
+predittivo positivo è uguale al rapporto tra $(sensibilità *
+prevalenza)$ e $(sensibilità * prevalenza) + (1 - specificità) * (1 -
+prevalenza)$.
+
+In queste espressioni, conosciamo davvero tutto tranne la
+prevalenza. Ma la prevalenza non è altro che il rapporto di persone
+malate nella popolazione $\frac{vp + fn}{vp + fn + vn + fp}$, e abbiamo
+appena detto che non ci serve sapere quanti sono i sani e i malati, ma
+solo la proporzione di malati nella popolazione. Questo (su grandi
+numeri) è possibile approssimarlo bene analizzando un numero abbastanza
+grande e casuale della popolazione, in modo che risulti
+"rappresentativo" della popolazione stessa. Se ho un sacchetto di
+palline con 10000 palline, 100 nere e 9900 bianche e ne prendo 1000 a
+caso, è facile che circa 10 siano nere... del resto, se pesco 1000
+palline e ne trovo 10 nere, posso ipotizzare che nel sacchetto circa
+l'1% delle palline sia nera. Magari sbaglio, ma se le pescate sono
+davvero casuali è molto facile che l'errore sia davvero piccolo.
+
+Per questo è molto importante avere un riscontro casuale, generalizzato
+e ampio dello status di popolazione e non solo di chi finisce in
+ospedale o è noto sia malato. Questi infatti non ci dicono nulla dello
+stato dell'intera popolazione, e senza una stima accurata della
+prevalenza non possiamo dire nulla sul valore di un test fatto a una
+persona che risultasse positiva (o negativa), soprattutto nel caso in
+cui la malattia fosse rara o molto frequente (prossima a coprire, al
+contrario, l'intera popolazione). A maggior ragione, se vogliamo avere
+un controllo "sul controllo" (per esempio, sull'efficacia degli
+interventi adottati per CoViD-19) stiamo ipotizzando che la porzione di
+malati si sia ridotta, e tanto più questo è vero, tanto più è importante
+avere una stima accurata di quale porzione della popolazione sia malata.
+E questo è possibile farlo solamente testando un numero di persone (sane
+incluse, e tutte selezionate in modo casuale) sufficiente a essere
+rappresentativo della popolazione.
+  
+stima accurata di quale porzione della popolazione sia malata,
+potendolo fare solo facendo test ad abbastanza persone (sane incluse),
+prese in modo casuale.
+
+
+
+## Nella pratica: individuale
+
+Visto l'interesse a livello di popolazione, passiamo al livello
+personale, e ipotizziamo di voler fare noi un test "per noi" e per
+sapere se siamo sani o malati. Entrano di nuovo in ballo il valore
+predittivo positivo e la nostra ignoranza sulla prevalenza. In questo
+caso però abbiamo uno strumento potentissimo che possiamo usare per
+"migliorare" la nostra convinzione sul nostro reale stato di salute: la
+ripetizione dell'evidenza!
+
+Abbiamo detto infatti che il valore predittivo positivo (**vpp**) può
+essere calcolato tramite la formula $\frac{(sens * prev)}{(sens * prev) + (1 - spec) * (1 - prev)}$. Ma guardiamo le cose non dal punto di vista
+della popolazione ma personale, di fatto il vpp rappresenta la nostra
+probabilità di essere davvero malati se risultassimo tali, la
+sensibilità e la specificità sono dati del test che facciamo e non
+possiamo toccarli né alterarli, ce li dobbiamo tenere e basta, ma la
+prevalenza rappresenta la porzione di malati nella popolazione generale,
+e può essere vista come la "probabilità di essere malati in quella
+popolazione"; ovvero, la probabilità che (senza sapere nulla se non che
+faccio parte di tale popolazione) io sia malato, cioè ancora, la
+probabilità che ritengo verosimile di avere nel considerarmi malato nel
+momento immediatamente precedente all'esecuzione del test.
+
+Ma questo è tutto quello di cui abbiamo bisogno, perchè a questo punto,
+dopo aver fatto il test!, possiamo "aggiornare" la nostra
+conoscenza/stima/probabilità sul nostro stato di salute con l'esito del
+test che abbiamo fatto calcolandone il valore predittivo positivo. A
+questo punto, facendo un'altro test, la mia "prevalenza" (la probabilità
+che ho di essere malato un attimo prima di fare il (secondo) test) non
+sarà più la prevalenza grezza della popolazione, ma proprio il valore
+predittivo positivo del test appena effettuato.
+
+Ipotizziamo di aver fatto il test e di essere risultati positivi,
+possiamo calcolare la probabilità di essere davvero malati calcolando il
+valore predittivo positivo (usando come prevalenza, anche non ottimale
+ma solo stimata, per esempio il numero di persone che sono risultate
+malate sul numero di test effettuati fin'ora). Otteniamo così la
+"nostra" probabilità di essere malati (che se la malattia è rara, sarà
+facilmente una probabilità piuttosto bassa, anche con un test molto
+sensibile). Nel nostro primo esempio di prima (100 malati, 9900 sani,
+test accurato al 99%, ipotizzando anche 99% di sensibilità e
+specificità), e ipotizzando di avere la stima di prevalenza 1%,
+otterremo che il nostro valore predittivo positivo al primo test,
+risultato positivo, è (lo abbiamo già calcolato)
+
+$$\frac{(sens * prev)}{(sens * prev) + (1-spec) * (1-prev)} =\\\frac{(0.99 * 0.01)}{(0.99 * 0.01) + (1 - 0.99) * (1 - 0.01)} =\\ \frac{(0.99 * 0.01)}{(0.99 * 0.01) + (0.99 * 0.01)} =\\ 1/2 = 0.5$$
+
+ovvero solo possiamo considerare di avere solo il 50% di probabilità di
+essere malati. Ora, se facciamo un secondo test (magari in un
+laboratorio diverso per essere sicuri di non incappare in eventuali
+errori sistematici del laboratorio precedente, come per esempio l'uso di
+un macchinario con un difetto, o di un reagente scaduto, o un operatore
+inesperto) e dovesse risultare nuovamente positivo allora nel calcolo
+del nostro (nuovo) valore predittivo positivo potremmo sfruttare e usare
+come prevalenza non più la prevalenza grezza della popolazione (che
+usavamo come "probabilità senza sapere nulla di noi" di essere malati),
+ma possiamo usare la stima appena fatta della probabilità che abbiamo su
+"noi stessi" di essere malati! Ovvero, il nostro
+
+$$nuovo\ ppv = \frac{(sens * vecchio\ ppv)}{(sens * vecchio\ ppv) + (1 - spec) * (1 - vecchio\ ppv)}
+$$.
+
+Facciamo i conti e otteniamo
+
+$$\frac{0.99 * 0.5}{(0.99 * 0.5) +
+(0.01 * 0.5)} = \frac{0.99 * 0.5}{0.5 * (0.99 + 0.01)} =\\ \frac{0.99 * 0.5}{0.5} = 0.99$$
+
+ovvero il 99% di probabilità di risultare malati
+davvero. Notare che comunque non è ancora il 100%, e potremmo essere
+ancora (e se ci testassimo "tutti" 99 persone delle nostre 10000 si
+troverebbero in questa situazione!), essere sani!
+
+
+
+## E quindi...
+
+...per concludere possiamo dire che conoscere la qualità di un test in
+termini di sensibilità/specificità/accuratezza è fondamentale, ma senza
+(una stima della) prevalenza non possiamo dire molto sullo stato di
+salute di una persona che risultasse comunque positiva o negativa a un
+test, nemmeno se ne conoscessimo le qualità in termini di sensibilità e
+specificità. Nonostante questo, in presenza di una stima anche molto
+approssimata potremmo comunque partire da tale stima approssimata e fare
+più test uno dopo l'altro, aspettando di avere il risultato precedente
+prima di fare il seguente, per continuare ad "aggiornare" la nostra
+consapevolezza personale sul nostro stato di salute calcolando in modo
+sempre più "evidente" la nostra stima del valore predittivo positivo che
+l'ultimo dei test fatti ha specificatamente nei nostri confronti, noti
+gli esiti di tutti i test precedenti che abbiamo effettuato.
+
+In ogni caso, in assenza di una stima di prevalenza esatta, o di un test
+perfetto (100% di accuratezza, sensibilità e specificità), un solo
+singolo test non risulta comunque adeguato a dichiarare lo stato di
+salute di un soggetto, sopratutto per malattie che coinvolgano un numero
+lontano dal 50% della popolazione (ovvero molto più rare o frequenti). A
+livello di popolazione, la cosa più saggia è quindi quella di cercare di
+stimare più correttamente possibile la prevalenza reale mirando a
+testare un campione casuale rappresentativo della popolazione; a livello
+individuale il consiglio va sempre nella direzione di eseguire sempre
+almeno due test, possibilmente in centri/laboratori/con metodiche
+differenti, aggiornando a seconda dei paramentri specifici dei test
+effettuati i propri personali valori positivo e negativo e decidere in
+modo consapevole il proprio livello di probabilità di essere malati,
+così come il fare ulteriori test o riteneresi soddisfatti della propria
+consapevolezza (positiva o negativa che sia).
