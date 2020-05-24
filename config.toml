@@ -16,7 +16,7 @@ baseURL = "https://www.CorradoLanera.it/"
 copyright = "&copy;Corrado Lanera {year}"
 
 # Enable analytics by entering your Google Analytics tracking ID
-googleAnalytics = ""
+googleAnalytics = "UA-167540084-1"
 
 # Enable comments by entering your Disqus shortname
 disqusShortname = "CorradoLanera"
