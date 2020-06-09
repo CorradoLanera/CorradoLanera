@@ -45,7 +45,7 @@ molto invasiva sarà forse preferibile rischiare di dichiarare negativa
 una persona che avrebbe potuto beneficiare di tale cura, piuttosto che
 positiva una persona per la quale altri trattamenti meno invasivi
 sarebbero stati più indicati).
-
+ 
 Inoltre è bene ricordare che il risultato grezzo di un test è spesso una
 probabilità mentre il risultato finale di un test che ci viene
 comunicato è spesso un "esito" (positivo o negativo), ovvero il frutto
