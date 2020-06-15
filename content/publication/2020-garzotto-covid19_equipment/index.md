@@ -1,5 +1,5 @@
 ---
-title: "COVID-19: ensuring our medical equipment canmeet the challenge"
+title: "COVID-19: ensuring our medical equipment can meet the challenge"
 
 abstract: "To predict the spread of coronavirus disease globally and
   consequently prepare the hospital facilities with the required
