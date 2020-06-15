@@ -50,7 +50,6 @@ authors:
 - Giulia Lorenzoni
 - admin
 - Danila Azzolina
-- admin
 - Paola Berchialla
 - Dario Gregori
 date: "2020-04-28"
