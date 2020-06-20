@@ -1,5 +1,5 @@
 ---
-title: depigner 0.8.0
+title: depigner 0.8.0 
 subtitle: ''
 summary: ''
 author: Corrado
@@ -40,7 +40,7 @@ hope is to provide solutions to that kind of problems which would be
 normally solved using quick-and-dirty (ugly and maybe even wrong)
 patches.
 
-
+[![](https://img.shields.io/badge/WEB%20site-click%20me-orange.svg)](https://corradolanera.github.io/depigner/)
 
 # Installation
 You can install the released version from
