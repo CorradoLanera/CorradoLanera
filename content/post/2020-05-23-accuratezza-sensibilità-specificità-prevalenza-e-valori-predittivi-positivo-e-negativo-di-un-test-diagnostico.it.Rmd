@@ -1,22 +1,21 @@
 ---
 title: Accuratezza, sensibilità, specificità, prevalenza, e valori predittivi positivo
   e negativo di un test diagnostico
-author: ''
+authors: [admin]
 date: '2020-05-23'
 slug: accuratezza-sensibilità-specificità-prevalenza-e-valori-predittivi-positivo-e-negativo-di-un-test-diagnostico
 categories:
-  - biostat
+  - biostatistica
+  - ita
 tags:
   - test
-  - accuracy
-  - sensitivity
-  - specificity
-  - prevalence
-  - ppv
-  - ppn
-image:
+  - accuratezza
+mage:
   caption: ''
   focal_point: ''
+output:
+  blogdown::html_page:
+    df_print: paged
 ---
 
 # Accuratezza, Sensibilità, Specificità, Prevalenza, Valore Predittivo Positivo e Negativo di un test diagnostico

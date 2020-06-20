@@ -1,15 +1,13 @@
 ---
 title: "Creare una colonna condizionatamente ad altre"
 subtitle: "Ovvero: gestire condizioni vettorializzate"
-author: Corrado Lanera
+authors: [admin]
 date: '2019-06-03'
 slug: creazione-colonna-condizionale
 categories:
-  - COME
   - R
-  - peRcorsi
+  - ita
 tags:
-  - rstats
   - mutate
   - dplyr
   - if

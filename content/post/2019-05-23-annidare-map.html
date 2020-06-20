@@ -1,15 +1,13 @@
 ---
 title: "Annidare i map()"
 subtitle: "Ovvero: caccia alla definizione delle variabili"
-author: Corrado Lanera
+authors: [admin]
 date: '2019-05-27'
 slug: annidare-map
 categories:
-  - COME
-  - peRcorsi
   - R
+  - ita
 tags:
-  - rstats
   - purrr
   - lazy evaluation
 image:
@@ -417,7 +415,7 @@ senza parentesi o argomenti:</p>
 #&gt;     .f &lt;- as_mapper(.f, ...)
 #&gt;     .Call(map_impl, environment(), &quot;.x&quot;, &quot;.f&quot;, &quot;list&quot;)
 #&gt; }
-#&gt; &lt;bytecode: 0x0000000015d01ba0&gt;
+#&gt; &lt;bytecode: 0x5597f49d8208&gt;
 #&gt; &lt;environment: namespace:purrr&gt;</code></pre>
 <p>a questo punto vediamo che <code>.f</code> viene elaborata (prima di essere eseguita
 dal misterioso <code>.Call</code>) da una funzione <code>as_mapper()</code>. Vediamo allora
@@ -427,7 +425,7 @@ questa com’è fatta:</p>
 #&gt; {
 #&gt;     UseMethod(&quot;as_mapper&quot;)
 #&gt; }
-#&gt; &lt;bytecode: 0x000000000e1a4a08&gt;
+#&gt; &lt;bytecode: 0x5597f5c10288&gt;
 #&gt; &lt;environment: namespace:purrr&gt;</code></pre>
 <p>Bene bene, si tratta di una funzione <strong>generica</strong>. Una funzione generica
 richiama semplicemente un <strong>metodo</strong> (cioè, nient’altro che un’altra
@@ -483,7 +481,7 @@ che “faccia” qualcosa)!</p>
 #&gt;         rlang::as_function(.f)
 #&gt;     }
 #&gt; }
-#&gt; &lt;bytecode: 0x0000000015d00ac8&gt;
+#&gt; &lt;bytecode: 0x5597f49dce48&gt;
 #&gt; &lt;environment: namespace:purrr&gt;</code></pre>
 <p>Perfetto, eccola qui! Vediamo che anche dentro questa funzione, la
 nostra continua a chiamarsi con l’alias <code>.f</code>, che sappiamo, per noi,

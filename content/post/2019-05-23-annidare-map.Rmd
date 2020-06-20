@@ -1,15 +1,13 @@
 ---
 title: "Annidare i map()"
 subtitle: "Ovvero: caccia alla definizione delle variabili"
-author: Corrado Lanera
+authors: [admin]
 date: '2019-05-27'
 slug: annidare-map
 categories:
-  - COME
-  - peRcorsi
   - R
+  - ita
 tags:
-  - rstats
   - purrr
   - lazy evaluation
 image:
