@@ -1,21 +1,26 @@
 ---
-title: depigner 0.8.0 
+title: depigner 0.8.1 
 subtitle: ''
 summary: ''
 author: Corrado
-date: '2020-06-20'
-slug: depigner-0-8-0
+date: '2020-06-26'
+slug: depigner-0-8-1
 categories:
   - rstats
   - eng
 tags:
   - depigner
   - r-package
+  - Hmisc
+  - rms
+  - Telegram
+  - progress
+  - usethis
 authors: [admin]
-featured: no
+featured: yes
 image:
-  caption: ''
-  focal_point: ''
+  caption: '[Logo by Elisa Sovrano](https://www.elisasovrano.it)'
+  focal_point: 'center'
 bibliography: ["depigner-pkg.bib"]
 biblio-style: "apalike"
 link-citations: true
@@ -28,7 +33,7 @@ output:
 <script src="/rmarkdown-libs/pagedtable/js/pagedtable.js"></script>
 
 
-<p>I’m very exited to announce the initial release of <code>{depigner}</code> to
+<p>I’m very exited to announce the first release of <code>{depigner}</code> to
 CRAN!</p>
 <blockquote>
 <p><strong>Pigna</strong> [<em>pìn’n’a</em>] is the Italian word for pine cone. In jargon,
@@ -40,16 +45,16 @@ will find at least one inside it.</p>
 </blockquote>
 <p>The <code>{depigner}</code> aims to provide some useful functions to be used to
 solve small everyday problems of coding or analyzing data with R. The
-hope is to provide solutions to that kind of problems which would be
-normally solved using quick-and-dirty (ugly and maybe even wrong)
-patches.</p>
+hope is to provide solutions to that kind of small-little problems which
+would be normally solved using quick-and-dirty (ugly and maybe even
+wrong) patches.</p>
 <p><a href="https://corradolanera.github.io/depigner/"><img src="https://img.shields.io/badge/WEB%20site-click%20me-orange.svg" /></a></p>
 <div id="installation" class="section level1">
 <h1>Installation</h1>
 <p>You can install the released version from
 <a href="https://cran.r-project.org/">CRAN</a> directly calling:</p>
 <pre class="r"><code>install.packages(&quot;depigner&quot;)</code></pre>
-<p>If you would like to by updated with the last development version
+<p>If you would like to be updated with the last development version
 available, you can install it from it’s
 <a href="https://corradolanera.github.io/depigner/">source</a> on
 <a href="https://github.com/">GitHub</a> by calling:</p>
@@ -159,6 +164,22 @@ devtools::install_github(&quot;CorradoLanera/depigner&quot;)</code></pre>
 </table>
 <div id="harrells-verse-tools" class="section level2">
 <h2>Harrell’s Verse Tools</h2>
+<p><a href="https://www.fharrell.com/">Harrell</a>’s packages <a href="https://cran.r-project.org/web/packages/Hmisc/index.html"><code>{Hmisc}</code></a> and <a href="https://cran.r-project.org/web/packages/rms/index.html"><code>{rms}</code></a> are
+amazing packages to do statistical analyses, especially for clinical
+data and purposes. If you do not know them, you should.</p>
+<p>They are that useful and vast that they gain the label of
+<a href="https://www.nicholas-ollberding.com/post/an-introduction-to-the-harrell-verse-predictive-modeling-using-the-hmisc-and-rms-packages/">“Harrell’verse’”</a>.</p>
+<p>One of the functions I use more is its <code>summary()</code> methods, especially
+with the option <code>method = "reverse"</code> enabled. It is incredibly useful to
+get a “table one” like information.</p>
+<div id="pigna" class="section level3">
+<h3><strong>Pigna</strong></h3>
+<p>Often, my colleagues and I have faced to the problem of
+using the data inside the output of the <code>summary()</code> function, and I have
+seen very many colorful patches to manage this issue.</p>
+<p><code>{depigner}</code>: depigner has a <code>tidy_summary()</code> pipable function that
+produces in output a lovely table already adjusted to be processed by
+<code>{pander}</code>!</p>
 <ul>
 <li><strong><code>tidy_summary()</code></strong>: produces a data frame from the <code>summary()</code>
 functions provided by <code>{Hmisc}</code> <span class="citation">(Harrell Jr, Charles Dupont, and others. <a href="#ref-R-Hmisc" role="doc-biblioref">2020</a>)</span> and <code>{rms}</code> <span class="citation">(Harrell Jr <a href="#ref-R-rms" role="doc-biblioref">2020</a>)</span>
@@ -273,6 +294,14 @@ tidy_summary(my_summary) %&gt;%
 </tr>
 </tbody>
 </table>
+</div>
+<div id="pigna-1" class="section level3">
+<h3><strong>Pigna</strong></h3>
+<p>What if you have paired samples into the data you would like to
+<code>summary()</code>zed?</p>
+<p><code>{depigner}</code>: provide the required object to pass to the <code>summary()</code>
+function to perform a paired test, both for continuous and categorical
+data with two or more groups.<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a></p>
 <ul>
 <li><strong><code>paired_test_*()</code></strong>: Paired test for categorical/continuous
 variables to be used in the <code>summary()</code> of the <code>{Hmisc}</code> <span class="citation">(Harrell Jr, Charles Dupont, and others. <a href="#ref-R-Hmisc" role="doc-biblioref">2020</a>)</span>
@@ -361,6 +390,14 @@ summary(Species ~.,
 ## +------------+--------------------+--------------------+--------------------+-----------------------+
 ## |Petal.Width |      0.2/0.2/0.3   |      1.2/1.3/1.5   |      1.8/2.0/2.3   |F=234.21 d.f.=2 P&lt;0.001|
 ## +------------+--------------------+--------------------+--------------------+-----------------------+</code></pre>
+</div>
+<div id="pigna-2" class="section level3">
+<h3><strong>Pigna</strong></h3>
+<p>How often were you asked to provide “all vs. all” checks and tests to
+find that unique randomly sampled P-value, which is less than 0.05 by a
+factor of <span class="math inline">\(10^{-15}\)</span> order of magnitude?
+<code>{depigner}</code>: gives you a function to automatically adjust the resulting
+p-values for multiplicity into the <code>summary()</code> tables are also provided.</p>
 <ul>
 <li><strong><code>adjust_p()</code></strong>: Adjust P-values of a <code>tidy_summary</code> objects:</li>
 </ul>
@@ -415,6 +452,8 @@ summary(Species ~.,
 </tr>
 </tbody>
 </table>
+<p>Producing a lovely, concise, printable table when interaction kicks in
+into the model is the aim of the <code>summary_interact()</code> function.</p>
 <ul>
 <li><strong><code>summary_interact()</code></strong>: Produce a data frame of OR (with the
 corresponding CI95%) for the interactions between different combination
@@ -553,6 +592,12 @@ a categorical one in a logistic model provided by <code>lrm()</code> (from the
 </tr>
 </tbody>
 </table>
+</div>
+<div id="pigna-3" class="section level3">
+<h3><strong>Pigna</strong></h3>
+<p>Another super useful function provided by <code>Hmisc</code> is <code>describe()</code>, which has a lovely <code>plot()</code> method for its results. I had faced some issue when I needed to use those plots programmatically because their outputs are not that clear or easy to infer before to see them. I.e., suppose you want to know which variable will be plotted, and in which plot they will be plotted (or even if a plot will be produced). Hence, working with <code>{Hmisc}</code>, it is crucial to know which variables Harrell considers continuous or categorical. Among them, it is also mandatory to know which one he considers to have (good) enough information to have been plotted.</p>
+<p><code>{depigner}</code> solve those problems with its family of <code>htypes()</code> functions, which seems to have “reasonable” results… <strong>officially</strong>:</p>
+{{% tweet "1268881861746610176" %}}
 <ul>
 <li><strong><code>htypes()</code></strong> and friends: get/check types of variable with respect
 to the <code>{Hmisc}</code> ecosystem <span class="citation">(Harrell Jr, Charles Dupont, and others. <a href="#ref-R-Hmisc" role="doc-biblioref">2020</a>)</span>.</li>
@@ -571,17 +616,28 @@ htypes(desc)</code></pre>
 <pre class="r"><code>is_hcon(desc[[1]])</code></pre>
 <pre><code>## [1] TRUE</code></pre>
 </div>
+</div>
 <div id="statistical-tools" class="section level2">
 <h2>Statistical Tools</h2>
+<div id="pigna-4" class="section level3">
+<h3><strong>Pigna</strong></h3>
+<p>Some people can and prefer to read more information into
+a (single) value than into two…</p>
+<p><code>{depigner}</code>: have a wrapper to provide an answer to them.</p>
 <ul>
 <li><strong><code>ci2p()</code></strong>: compute the p-value related with a provided confidence
-interval:</li>
+interval (assuming every type o necessary assumptions):</li>
 </ul>
 <pre class="r"><code>ci2p(1.125, 0.634,  1.999, log_transform = TRUE)</code></pre>
 <pre><code>## [1] 0.367902</code></pre>
 </div>
+</div>
 <div id="programming-tools" class="section level2">
 <h2>Programming Tools</h2>
+<div id="pigna-5" class="section level3">
+<h3><strong>Pigna</strong></h3>
+<p>Progress bars provided by <a href="https://cran.r-project.org/web/packages/progress/index.html"><code>{progress}</code></a> are great, complete, and powerful. They are also quite easy to set up, but for effortless usage (which comes quite often) an even more easy-to-use wrapper could be useful.<a href="#fn2" class="footnote-ref" id="fnref2"><sup>2</sup></a></p>
+<p><code>{depigner}</code>: helps you with this super simple wrapper, you have to know the length (i.e., number of steps) the progress should do overall, and that’s it!</p>
 <ul>
 <li><strong><code>pb_len()</code></strong>: Progress bar of given length, wrapper from the
 <code>{progress}</code> <span class="citation">(Csárdi and FitzJohn <a href="#ref-R-progress" role="doc-biblioref">2019</a>)</span> package:</li>
@@ -592,6 +648,11 @@ for (i in 1:100) {
     Sys.sleep(0.1)
     tick(pb, paste(&quot;i = &quot;, i))
 }</code></pre>
+</div>
+<div id="pigna-6" class="section level3">
+<h3><strong>Pigna</strong></h3>
+<p>How often have you (re)installed the same set of packages on (your or other) computers? You need to remember which packages you or they need, you can forget one of them, and next… you have to repeat it for the next computer!</p>
+<p><code>{depigner}</code>: gives you a function and a set of predefined sets of packages which you can use to install all the packages you need in a single call. Moreover, it does it politely querying the use if they agree for the installation, and possibly for a general update.</p>
 <ul>
 <li><strong><code>install_pkg_set()</code></strong>: Simple and polite wrapper to install sets of
 packages. Moreover, <code>{depigner}</code> provides some sets already defined
@@ -603,21 +664,39 @@ install_pkg_set(pkg_stan)
 
 ?pkg_sets</code></pre>
 </div>
+</div>
 <div id="development-tools" class="section level2">
 <h2>Development Tools</h2>
+<div id="pigna-7" class="section level3">
+<h3><strong>Pigna</strong></h3>
+<p>When developing a package, use the <a href="https://usethis.r-lib.org/"><code>{usethis}</code></a> interface would be fantastic. Anyway, importing <code>{usethis}</code> can be not enough: you still need to write the call for its functions explicitly, e.g., you could be face to the problem of writing something like</p>
+<pre class="r"><code>usethis::ui_stop(&#39;field {usethis::ui_field(&quot;foo&quot;)} must has value {usethis::ui_value(value)}, ...&#39;)</code></pre>
+<p>Which is not that nice, doesn’t it?</p>
+<p><code>{depigner}</code>: help you, in a single call in the <code>{usethis}</code> style to add to your <code>NAMESPACE</code> all the <code>{usethis}</code>’ UI permitting to you to go straight to something like</p>
+<pre class="r"><code>ui_stop(&#39;field {ui_field(&quot;foo&quot;)} must has value {ui_value(value)}, ...&#39;)</code></pre>
 <ul>
 <li><strong><code>use_ui()</code></strong>: Use <code>{usethis}</code>’ user interface <span class="citation">(Wickham and Bryan <a href="#ref-R-usethis" role="doc-biblioref">2020</a>)</span> in your
 package</li>
 </ul>
 <pre class="r"><code># in the initial setup steps of the development of a package
 use_ui()</code></pre>
+</div>
+<div id="pigna-8" class="section level3">
+<h3><strong>Pigna</strong></h3>
+<p>When you need to write code that others should run, it is not kind to force the installation or the update of packages in their environments.</p>
+<p><code>{depigner}</code>: thanks to a prompt given by <strong>He The Hadley</strong> during a fantastic workshop in NYC, gives you a function to politely ask others to install on <strong>their</strong> system the packages that <strong>you</strong> need.</p>
 <ul>
-<li><strong><code>lease_install()</code></strong>: This is a polite wrapper to
+<li><strong><code>please_install()</code></strong>: This is a polite wrapper to
 <code>install.packages()</code> inspired (= w/ very minimal modification) by a
 function Hadley showed us during a course.</li>
 </ul>
 <pre class="r"><code>a_pkg_i_miss &lt;- setdiff(available.packages(), installed.packages())[[1]]
 please_install(a_pkg_i_miss)</code></pre>
+</div>
+<div id="pigna-9" class="section level3">
+<h3><strong>Pigna</strong></h3>
+<p>When you install or attach packages, often (quite ever), other packages (i.e., dependencies) were installed/attached too. Whose are they? Do we need to install both those packages explicitly or one of them it is sufficient because the other will be automatically installed as a consequence?</p>
+<p><code>{depigner}</code>: has a simple single function to provide you a quick answer to those questions.<a href="#fn3" class="footnote-ref" id="fnref3"><sup>3</sup></a></p>
 <ul>
 <li><strong><code>imported_from()</code></strong>: If you would like to know which packages are
 imported by a package (eg to know which packages are required for its
@@ -629,8 +708,14 @@ installation or either installed during it) you can use this function</li>
 ## [11] &quot;rprojroot&quot;    &quot;stats&quot;        &quot;stringr&quot;      &quot;telegram.bot&quot; &quot;tibble&quot;      
 ## [16] &quot;tidyr&quot;        &quot;usethis&quot;      &quot;utils&quot;</code></pre>
 </div>
+</div>
 <div id="telegram-tools" class="section level2">
 <h2>Telegram Tools</h2>
+<p>Telegram… I love it!<a href="#fn4" class="footnote-ref" id="fnref4"><sup>4</sup></a></p>
+<div id="pigna-10" class="section level3">
+<h3><strong>Pigna</strong></h3>
+<p>Have you ever run some long, very long, super long, extra long, computation… on a server? How many times did you need to come back to your PC, or to your <code>ssh</code> + <code>screen</code> session to check its state, to check the logs, to see if some errors evilly happened?</p>
+<p><code>{depigner}</code>: provide you some super easy to use wrappers on some functionalities of <a href="https://cran.r-project.org/web/packages/telegram.bot/index.html"><code>{telegram.bot}</code></a> package which will permit you to be notified with custom messages, images, and even errors on your phone directly. You need only to define your bot (instruction in the help page), and you are ready to go!</p>
 <ul>
 <li><strong>Wrappers to simple use of Telegram’s bots</strong>: wrappers from the
 <code>{telegram.bot}</code> package <span class="citation">(Benedito <a href="#ref-R-telegram.bot" role="doc-biblioref">2019</a>)</span>:</li>
@@ -653,17 +738,23 @@ send_to_telegram(gg)
 # Divert output errors to the telegram bot
 errors_to_telegram()</code></pre>
 </div>
+</div>
 <div id="why-not" class="section level2">
 <h2>Why Not?!</h2>
+<div id="pigna-11" class="section level3">
+<h3><strong>Pigna</strong></h3>
+<p>SSometimes piñatas are too many to be solved, and you just have to give in to them.</p>
+<p><code>{depigner}</code>: is near you.<a href="#fn5" class="footnote-ref" id="fnref5"><sup>5</sup></a></p>
 <ul>
-<li><strong><code>gdp()</code></strong>: A wrapper to relax</li>
+<li><strong><code>gdp()</code></strong>: A wrapper to relax.</li>
 </ul>
 <pre class="r"><code>gdp(7)</code></pre>
 </div>
 </div>
+</div>
 <div id="acknowledgements" class="section level1">
 <h1>Acknowledgements</h1>
-<p>The <code>{depigner}</code>’s logo was designed by
+<p>The <code>{depigner}</code>’s logo was lovely designed by
 <a href="https://elisasovrano.it">Elisa Sovrano</a>.</p>
 </div>
 <div id="references" class="section level1 unnumbered">
@@ -688,4 +779,17 @@ errors_to_telegram()</code></pre>
 <p>Wickham, Hadley, and Jennifer Bryan. 2020. <em>Usethis: Automate Package and Project Setup</em>.</p>
 </div>
 </div>
+</div>
+<div class="footnotes">
+<hr />
+<ol>
+<li id="fn1"><p>Pay particular attention to the
+<code>?paired_test_*</code> documentation of interest because data should be
+provided in some specific way due to the internal management of records
+from <code>{Hmisc}</code>’s functions.<a href="#fnref1" class="footnote-back">↩︎</a></p></li>
+<li id="fn2"><p>Note: currently, after <a href="https://2020.erum.io/">erum2020</a> I am considering to switch to [<code>{progressr}</code>] <a href="https://github.com/HenrikBengtsson/progressr" class="uri">https://github.com/HenrikBengtsson/progressr</a>) package. However, for the moment, I still consider <code>{progress}</code> and our <code>{depigner}</code> wrapper as simple to use as powerful for most cases.<a href="#fnref2" class="footnote-back">↩︎</a></p></li>
+<li id="fn3"><p>Note: it reports only the packages <strong>imported</strong> and not the <strong>suggested</strong> ones.<a href="#fnref3" class="footnote-back">↩︎</a></p></li>
+<li id="fn4"><p>Do not ask me why… It is wonderful! That’s it!<a href="#fnref4" class="footnote-back">↩︎</a></p></li>
+<li id="fn5"><p>Why “gdp”?… no one knows it…<a href="#fnref5" class="footnote-back">↩︎</a></p></li>
+</ol>
 </div>

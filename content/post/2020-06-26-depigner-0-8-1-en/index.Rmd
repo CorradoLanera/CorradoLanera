@@ -1,21 +1,26 @@
 ---
-title: depigner 0.8.0 
+title: depigner 0.8.1 
 subtitle: ''
 summary: ''
 author: Corrado
-date: '2020-06-20'
-slug: depigner-0-8-0
+date: '2020-06-26'
+slug: depigner-0-8-1
 categories:
   - rstats
   - eng
 tags:
   - depigner
   - r-package
+  - Hmisc
+  - rms
+  - Telegram
+  - progress
+  - usethis
 authors: [admin]
-featured: no
+featured: yes
 image:
-  caption: ''
-  focal_point: ''
+  caption: '[Logo by Elisa Sovrano](https://www.elisasovrano.it)'
+  focal_point: 'center'
 bibliography: ["depigner-pkg.bib"]
 biblio-style: "apalike"
 link-citations: true
@@ -24,7 +29,7 @@ output:
     df_print: paged
 ---
 
-I’m very exited to announce the initial release of `{depigner}` to
+I’m very exited to announce the first release of `{depigner}` to
 CRAN!
 
 > __Pigna__ [_pìn'n'a_] is the Italian word for pine cone.  In jargon,
@@ -36,9 +41,9 @@ will find at least one inside it.
 
 The `{depigner}` aims to provide some useful functions to be used to
 solve small everyday problems of coding or analyzing data with R. The
-hope is to provide solutions to that kind of problems which would be
-normally solved using quick-and-dirty (ugly and maybe even wrong)
-patches.
+hope is to provide solutions to that kind of small-little problems which
+would be normally solved using quick-and-dirty (ugly and maybe even
+wrong) patches.
 
 [![](https://img.shields.io/badge/WEB%20site-click%20me-orange.svg)](https://corradolanera.github.io/depigner/)
 
@@ -51,7 +56,7 @@ install.packages("depigner")
 ```
 
 
-If you would like to by updated with the last development version 
+If you would like to be updated with the last development version 
 available, you can install it from it's
 [source](https://corradolanera.github.io/depigner/) on
 [GitHub](https://github.com/) by calling:
@@ -94,6 +99,29 @@ library(depigner)
 
 ## Harrell's Verse Tools
 
+[Harrell](https://www.fharrell.com/)'s packages [`{Hmisc}`](https://cran.r-project.org/web/packages/Hmisc/index.html) and [`{rms}`](https://cran.r-project.org/web/packages/rms/index.html) are
+amazing packages to do statistical analyses, especially for clinical 
+data and purposes. If you do not know them, you should.
+
+They are that useful and vast that they gain the label of
+["Harrell'verse'"](https://www.nicholas-ollberding.com/post/an-introduction-to-the-harrell-verse-predictive-modeling-using-the-hmisc-and-rms-packages/).
+
+One of the functions I use more is its `summary()` methods, especially 
+with the option `method = "reverse"` enabled. It is incredibly useful to
+get a "table one" like information.
+
+
+
+
+### __Pigna__
+Often, my colleagues and I have faced to the problem of
+using the data inside the output of the `summary()` function, and I have
+seen very many colorful patches to manage this issue.
+
+`{depigner}`: depigner has a `tidy_summary()` pipable function that 
+  produces in output a lovely table already adjusted to be processed by
+  `{pander}`!
+
 - **`tidy_summary()`**: produces a data frame from the `summary()`
 functions provided by `{Hmisc}` [@R-Hmisc] and `{rms}` [@R-rms]
 packages ready to be `pander::pander()`ed [@R-pander].
@@ -119,6 +147,21 @@ my_summary <- summary(f)
 tidy_summary(my_summary) %>% 
   pander()
 ```
+
+
+
+
+### __Pigna__
+What if you have paired samples into the data you would like to 
+  `summary()`zed?
+
+`{depigner}`: provide the required object to pass to the `summary()`
+function to perform a paired test, both for continuous and categorical
+data with two or more groups.^[Pay particular attention to the
+`?paired_test_*` documentation of interest because data should be
+provided in some specific way due to the internal management of records
+from `{Hmisc}`'s functions.]
+
 
 - **`paired_test_*()`**: Paired test for categorical/continuous 
   variables to be used in the `summary()` of the `{Hmisc}` [@R-Hmisc]
@@ -158,6 +201,16 @@ summary(Species ~.,
 )
 ```
   
+  
+
+
+### __Pigna__
+How often were you asked to provide "all vs. all" checks and tests to
+find that unique randomly sampled P-value, which is less than 0.05 by a
+factor of $10^{-15}$ order of magnitude?
+`{depigner}`: gives you a function to automatically adjust the resulting
+p-values for multiplicity into the `summary()` tables are also provided.
+
 - **`adjust_p()`**: Adjust P-values of a `tidy_summary` objects:
 ```{r}
 my_summary <- summary(Species ~., data = iris, method = "reverse")
@@ -166,6 +219,10 @@ my_summary <- summary(Species ~., data = iris, method = "reverse")
     adjust_p() %>%
     pander()
 ```
+
+
+Producing a lovely, concise, printable table when interaction kicks in
+into the model is the aim of the `summary_interact()` function.
 
 - **`summary_interact()`**: Produce a data frame of OR (with the
 corresponding CI95%) for the interactions between different combination
@@ -196,6 +253,16 @@ summary_interact(lrm_mod, age, abo, p = TRUE) %>%
 
 
 
+
+### __Pigna__
+Another super useful function provided by `Hmisc` is `describe()`, which has a lovely `plot()` method for its results. I had faced some issue when I needed to use those plots programmatically because their outputs are not that clear or easy to infer before to see them. I.e., suppose you want to know which variable will be plotted, and in which plot they will be plotted (or even if a plot will be produced). Hence, working with `{Hmisc}`, it is crucial to know which variables Harrell considers continuous or categorical. Among them, it is also mandatory to know which one he considers to have (good) enough information to have been plotted.
+
+`{depigner}` solve those problems with its family of `htypes()` functions, which seems to have "reasonable" results... __officially__:
+
+```{r echo=FALSE}
+blogdown::shortcode('tweet', '1268881861746610176')
+```
+
 - **`htypes()`** and friends: get/check types of variable with respect 
   to the `{Hmisc}` ecosystem [@R-Hmisc].
   
@@ -214,8 +281,15 @@ is_hcon(desc[[1]])
 
 ## Statistical Tools
 
+### __Pigna__
+Some people can and prefer to read more information into
+a (single) value than into two...
+
+
+`{depigner}`: have a wrapper to provide an answer to them.
+
 - **`ci2p()`**: compute the p-value related with a provided confidence
-  interval:
+  interval (assuming every type o necessary assumptions):
 ```{r}
 ci2p(1.125, 0.634,	1.999, log_transform = TRUE)
 ```
@@ -224,6 +298,11 @@ ci2p(1.125, 0.634,	1.999, log_transform = TRUE)
 
 
 ## Programming Tools
+
+### __Pigna__
+Progress bars provided by [`{progress}`](https://cran.r-project.org/web/packages/progress/index.html) are great, complete, and powerful. They are also quite easy to set up, but for effortless usage (which comes quite often) an even more easy-to-use wrapper could be useful.^[Note: currently, after [erum2020](https://2020.erum.io/) I am considering to switch to [`{progressr}`] https://github.com/HenrikBengtsson/progressr) package. However, for the moment, I still consider `{progress}` and our `{depigner}` wrapper as simple to use as powerful for most cases.]
+
+`{depigner}`: helps you with this super simple wrapper, you have to know the length (i.e., number of steps) the progress should do overall, and that's it!
 
 - **`pb_len()`**: Progress bar of given length, wrapper from the 
   `{progress}` [@R-progress] package:
@@ -235,6 +314,12 @@ for (i in 1:100) {
     tick(pb, paste("i = ", i))
 }
 ```
+
+
+### __Pigna__
+How often have you (re)installed the same set of packages on (your or other) computers? You need to remember which packages you or they need, you can forget one of them, and next... you have to repeat it for the next computer!
+
+`{depigner}`: gives you a function and a set of predefined sets of packages which you can use to install all the packages you need in a  single call. Moreover, it does it politely querying the use if they agree for the installation, and possibly for a general update.
 
 - **`install_pkg_set()`**: Simple and polite wrapper to install sets of
   packages. Moreover, `{depigner}` provides some sets already defined
@@ -252,6 +337,22 @@ install_pkg_set(pkg_stan)
 
 ## Development Tools
 
+
+### __Pigna__
+When developing a package, use the [`{usethis}`](https://usethis.r-lib.org/) interface would be fantastic. Anyway, importing `{usethis}` can be not enough: you still need to  write the call for its functions explicitly, e.g., you could be face to  the problem of writing something like
+
+```r
+usethis::ui_stop('field {usethis::ui_field("foo")} must has value {usethis::ui_value(value)}, ...')
+```
+
+Which is not that nice, doesn't it?
+
+`{depigner}`: help you, in a single call in the `{usethis}` style to  add to your `NAMESPACE` all the `{usethis}`' UI permitting to you to  go straight to something like
+
+```r
+ui_stop('field {ui_field("foo")} must has value {ui_value(value)}, ...')
+```
+
 - **`use_ui()`**: Use `{usethis}`' user interface [@R-usethis] in your 
   package
 ```{r, eval=FALSE}
@@ -259,13 +360,24 @@ install_pkg_set(pkg_stan)
 use_ui()
 ```
 
-- **`lease_install()`**: This is a polite wrapper to
+
+### __Pigna__
+When you need to write code that others should run, it is not kind to force the installation or the update of packages in their environments.
+  
+`{depigner}`: thanks to a prompt given by __He The Hadley__ during a fantastic workshop in NYC, gives you a function to politely ask others to install on __their__ system the packages that __you__ need.
+
+- **`please_install()`**: This is a polite wrapper to
   `install.packages()` inspired (= w/ very minimal modification) by a
   function Hadley showed us during a course.
 ```{r, eval=FALSE}
 a_pkg_i_miss <- setdiff(available.packages(), installed.packages())[[1]]
 please_install(a_pkg_i_miss)
 ```
+
+### __Pigna__
+When you install or attach packages, often (quite ever), other packages (i.e., dependencies) were installed/attached too. Whose are they? Do we need to install both those packages explicitly or one of them it is sufficient because the other will be automatically installed as a consequence?
+
+`{depigner}`: has a simple single function to provide you a quick answer to those questions.^[Note: it reports only the packages __imported__ and not the __suggested__ ones.]
 
 - **`imported_from()`**: If you would like to know which packages are
   imported by a package (eg to know which packages are required for its
@@ -278,6 +390,13 @@ imported_from("depigner")
 
 
 ## Telegram Tools
+
+Telegram... I love it!^[Do not ask me why... It is wonderful! That's it!]
+
+### __Pigna__
+Have you ever run some long, very long, super long, extra long, computation... on a server? How many times did you need to come back to your PC, or to your `ssh` + `screen` session to check its state, to check the logs, to see if some errors evilly happened?
+
+`{depigner}`: provide you some super easy to use wrappers on some functionalities of [`{telegram.bot}`](https://cran.r-project.org/web/packages/telegram.bot/index.html) package which will permit you to be notified with custom messages, images, and even errors on your phone directly. You need only to define your bot (instruction in the help page), and you are ready to go!
 
 - **Wrappers to simple use of Telegram's bots**: wrappers from the
   `{telegram.bot}` package [@R-telegram.bot]:
@@ -306,13 +425,18 @@ errors_to_telegram()
 
 ## Why Not?!
 
-- **`gdp()`**: A wrapper to relax
+### __Pigna__
+SSometimes piñatas are too many to be solved, and you just have to give in to them.
+  
+`{depigner}`: is near you.^[Why "gdp"?... no one knows it...]
+
+- **`gdp()`**: A wrapper to relax.
 ```{r, eval=FALSE}
 gdp(7)
 ```
 
 # Acknowledgements 
-The `{depigner}`'s logo was designed by
+The `{depigner}`'s logo was lovely designed by
 [Elisa Sovrano](https://elisasovrano.it).
 
 
@@ -321,8 +445,8 @@ The `{depigner}`'s logo was designed by
 ```{r bib, include=FALSE, eval = TRUE}
 # create a bib file for the R packages used in this document
 knitr::write_bib(
-  x    = c('rms', 'Hmisc', 'telegram.bot', 'progress', 'usethis',
-           'pander'),
+  x    = c('depigner', 'rms', 'Hmisc', 'telegram.bot', 'progress',
+           'usethis', 'pander'),
   file = 'depigner-pkg.bib'
 )
 ```
