@@ -2,21 +2,14 @@
 title: depigner 0.8.1 
 subtitle: ''
 summary: ''
-author: Corrado
+author: [admin]
 date: '2020-06-26'
 slug: depigner-0-8-1
 categories:
-  - rstats
+  - depigner
   - eng
 tags:
-  - depigner
-  - r-package
-  - Hmisc
-  - rms
-  - Telegram
-  - progress
-  - usethis
-authors: [admin]
+  - r-packages
 featured: yes
 image:
   caption: '[Logo by Elisa Sovrano](https://www.elisasovrano.it)'
@@ -29,6 +22,7 @@ output:
     df_print: paged
 ---
 
+<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
 <link href="/rmarkdown-libs/pagedtable/css/pagedtable.css" rel="stylesheet" />
 <script src="/rmarkdown-libs/pagedtable/js/pagedtable.js"></script>
 
@@ -182,7 +176,7 @@ produces in output a lovely table already adjusted to be processed by
 <code>{pander}</code>!</p>
 <ul>
 <li><strong><code>tidy_summary()</code></strong>: produces a data frame from the <code>summary()</code>
-functions provided by <code>{Hmisc}</code> <span class="citation">(Harrell Jr, Charles Dupont, and others. <a href="#ref-R-Hmisc" role="doc-biblioref">2020</a>)</span> and <code>{rms}</code> <span class="citation">(Harrell Jr <a href="#ref-R-rms" role="doc-biblioref">2020</a>)</span>
+functions provided by <code>{Hmisc}</code> <span class="citation">(Harrell <a href="#ref-R-Hmisc" role="doc-biblioref">2020</a>)</span> and <code>{rms}</code> <span class="citation">(Harrell, Jr. <a href="#ref-R-rms" role="doc-biblioref">2020</a>)</span>
 packages ready to be <code>pander::pander()</code>ed <span class="citation">(Daróczi and Tsegelskyi <a href="#ref-R-pander" role="doc-biblioref">2018</a>)</span>.</li>
 </ul>
 <p>Currently it is tested for method <em>reverse</em> only:</p>
@@ -205,12 +199,12 @@ dd &lt;- datadist(iris)
 my_summary &lt;- summary(Species ~., data = iris, method = &quot;reverse&quot;)
 tidy_summary(my_summary) %&gt;% 
   pander()</code></pre>
-<table style="width:99%;">
+<table>
 <colgroup>
-<col width="12%" />
+<col width="19%" />
+<col width="25%" />
 <col width="27%" />
-<col width="29%" />
-<col width="29%" />
+<col width="27%" />
 </colgroup>
 <thead>
 <tr class="header">
@@ -222,25 +216,25 @@ tidy_summary(my_summary) %&gt;%
 </thead>
 <tbody>
 <tr class="odd">
-<td align="center">2</td>
+<td align="center">Sepal.Length</td>
 <td align="center">4.800/5.000/5.200</td>
 <td align="center">5.600/5.900/6.300</td>
 <td align="center">6.225/6.500/6.900</td>
 </tr>
 <tr class="even">
-<td align="center">3</td>
+<td align="center">Sepal.Width</td>
 <td align="center">3.200/3.400/3.675</td>
 <td align="center">2.525/2.800/3.000</td>
 <td align="center">2.800/3.000/3.175</td>
 </tr>
 <tr class="odd">
-<td align="center">4</td>
+<td align="center">Petal.Length</td>
 <td align="center">1.400/1.500/1.575</td>
 <td align="center">4.000/4.350/4.600</td>
 <td align="center">5.100/5.550/5.875</td>
 </tr>
 <tr class="even">
-<td align="center">5</td>
+<td align="center">Petal.Width</td>
 <td align="center">0.2/0.2/0.3</td>
 <td align="center">1.2/1.3/1.5</td>
 <td align="center">1.8/2.0/2.3</td>
@@ -304,7 +298,7 @@ function to perform a paired test, both for continuous and categorical
 data with two or more groups.<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a></p>
 <ul>
 <li><strong><code>paired_test_*()</code></strong>: Paired test for categorical/continuous
-variables to be used in the <code>summary()</code> of the <code>{Hmisc}</code> <span class="citation">(Harrell Jr, Charles Dupont, and others. <a href="#ref-R-Hmisc" role="doc-biblioref">2020</a>)</span>
+variables to be used in the <code>summary()</code> of the <code>{Hmisc}</code> <span class="citation">(Harrell <a href="#ref-R-Hmisc" role="doc-biblioref">2020</a>)</span>
 package:</li>
 </ul>
 <pre class="r"><code>data(Arthritis)
@@ -337,12 +331,12 @@ summary(Improved ~ Sex,
 ## 
 ## Descriptive Statistics by Improved
 ## 
-## +----------+---------------+---------------+---------------+---------------------+
-## |          |None           |Some           |Marked         |  Test               |
-## |          |(N=42)         |(N=14)         |(N=28)         |Statistic            |
-## +----------+---------------+---------------+---------------+---------------------+
-## |Sex : Male|      40%  (17)|      14%  ( 2)|      21%  ( 6)|t=1.03 d.f.=2 P=0.412|
-## +----------+---------------+---------------+---------------+---------------------+</code></pre>
+## +----------+-----------------+-----------------+-----------------+------------------------+
+## |          |None             |Some             |Marked           |  Test                  |
+## |          |(N=42)           |(N=14)           |(N=28)           |Statistic               |
+## +----------+-----------------+-----------------+-----------------+------------------------+
+## |Sex : Male|        40%  (17)|        14%  ( 2)|        21%  ( 6)|chi2=1.71 d.f.=3 P=0.634|
+## +----------+-----------------+-----------------+-----------------+------------------------+</code></pre>
 <pre class="r"><code># continuous --------------------------
 ## two groups
 summary(Species ~.,
@@ -401,21 +395,21 @@ p-values for multiplicity into the <code>summary()</code> tables are also provid
 <ul>
 <li><strong><code>adjust_p()</code></strong>: Adjust P-values of a <code>tidy_summary</code> objects:</li>
 </ul>
-<pre class="r"><code>my_summary &lt;- summary(Species ~., data = iris, method = &quot;reverse&quot;)
+<pre class="r"><code>my_summary &lt;- summary(Species ~., data = iris,
+                      method = &quot;reverse&quot;,
+                      test = TRUE)
 
-  tidy_summary(my_summary) %&gt;%
+  tidy_summary(my_summary, prtest = &quot;P&quot;) %&gt;%
     adjust_p() %&gt;%
     pander()</code></pre>
-<pre><code>## Warning: Unknown or uninitialised column: `P-value`.</code></pre>
-<pre><code>## x   The object `x` does not have a P-value column.
-##     Have you select `test = TRUE` into `summary()`?</code></pre>
-<pre><code>## x `x` is returned without changes.</code></pre>
-<table style="width:99%;">
+<pre><code>## ✓ P adjusted with BH method.</code></pre>
+<table>
+<caption>Table continues below</caption>
 <colgroup>
-<col width="12%" />
+<col width="19%" />
+<col width="25%" />
 <col width="27%" />
-<col width="29%" />
-<col width="29%" />
+<col width="27%" />
 </colgroup>
 <thead>
 <tr class="header">
@@ -427,28 +421,52 @@ p-values for multiplicity into the <code>summary()</code> tables are also provid
 </thead>
 <tbody>
 <tr class="odd">
-<td align="center">2</td>
+<td align="center">Sepal.Length</td>
 <td align="center">4.800/5.000/5.200</td>
 <td align="center">5.600/5.900/6.300</td>
 <td align="center">6.225/6.500/6.900</td>
 </tr>
 <tr class="even">
-<td align="center">3</td>
+<td align="center">Sepal.Width</td>
 <td align="center">3.200/3.400/3.675</td>
 <td align="center">2.525/2.800/3.000</td>
 <td align="center">2.800/3.000/3.175</td>
 </tr>
 <tr class="odd">
-<td align="center">4</td>
+<td align="center">Petal.Length</td>
 <td align="center">1.400/1.500/1.575</td>
 <td align="center">4.000/4.350/4.600</td>
 <td align="center">5.100/5.550/5.875</td>
 </tr>
 <tr class="even">
-<td align="center">5</td>
+<td align="center">Petal.Width</td>
 <td align="center">0.2/0.2/0.3</td>
 <td align="center">1.2/1.3/1.5</td>
 <td align="center">1.8/2.0/2.3</td>
+</tr>
+</tbody>
+</table>
+<table style="width:14%;">
+<colgroup>
+<col width="13%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="center">P-value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center">&lt;0.001</td>
+</tr>
+<tr class="even">
+<td align="center">&lt;=0.001</td>
+</tr>
+<tr class="odd">
+<td align="center">&lt;=0.001</td>
+</tr>
+<tr class="even">
+<td align="center">&lt;=0.001</td>
 </tr>
 </tbody>
 </table>
@@ -460,10 +478,22 @@ corresponding CI95%) for the interactions between different combination
 of a continuous variable (for which it is possible to define the
 reference and the target values) and (every or a selection of levels of)
 a categorical one in a logistic model provided by <code>lrm()</code> (from the
-<code>{rms}</code> package <span class="citation">(Harrell Jr <a href="#ref-R-rms" role="doc-biblioref">2020</a>)</span>):</li>
+<code>{rms}</code> package <span class="citation">(Harrell, Jr. <a href="#ref-R-rms" role="doc-biblioref">2020</a>)</span>):</li>
 </ul>
 <pre class="r"><code>summary_interact(lrm_mod, age, abo) %&gt;%
   pander()</code></pre>
+<pre><code>## New names:
+## * `Lower 0.95` -&gt; Lower.0.95
+## * `Upper 0.95` -&gt; Upper.0.95
+## New names:
+## * `Lower 0.95` -&gt; Lower.0.95
+## * `Upper 0.95` -&gt; Upper.0.95
+## New names:
+## * `Lower 0.95` -&gt; Lower.0.95
+## * `Upper 0.95` -&gt; Upper.0.95
+## New names:
+## * `Lower 0.95` -&gt; Lower.0.95
+## * `Upper 0.95` -&gt; Upper.0.95</code></pre>
 <table>
 <colgroup>
 <col width="14%" />
@@ -526,6 +556,18 @@ a categorical one in a logistic model provided by <code>lrm()</code> (from the
 </table>
 <pre class="r"><code>summary_interact(lrm_mod, age, abo, p = TRUE) %&gt;%
   pander()</code></pre>
+<pre><code>## New names:
+## * `Lower 0.95` -&gt; Lower.0.95
+## * `Upper 0.95` -&gt; Upper.0.95
+## New names:
+## * `Lower 0.95` -&gt; Lower.0.95
+## * `Upper 0.95` -&gt; Upper.0.95
+## New names:
+## * `Lower 0.95` -&gt; Lower.0.95
+## * `Upper 0.95` -&gt; Upper.0.95
+## New names:
+## * `Lower 0.95` -&gt; Lower.0.95
+## * `Upper 0.95` -&gt; Upper.0.95</code></pre>
 <table>
 <colgroup>
 <col width="12%" />
@@ -600,7 +642,7 @@ a categorical one in a logistic model provided by <code>lrm()</code> (from the
 {{% tweet "1268881861746610176" %}}
 <ul>
 <li><strong><code>htypes()</code></strong> and friends: get/check types of variable with respect
-to the <code>{Hmisc}</code> ecosystem <span class="citation">(Harrell Jr, Charles Dupont, and others. <a href="#ref-R-Hmisc" role="doc-biblioref">2020</a>)</span>.</li>
+to the <code>{Hmisc}</code> ecosystem <span class="citation">(Harrell <a href="#ref-R-Hmisc" role="doc-biblioref">2020</a>)</span>.</li>
 </ul>
 <pre class="r"><code>htypes(mtcars)</code></pre>
 <pre><code>##    mpg    cyl   disp     hp   drat     wt   qsec     vs     am   gear   carb 
@@ -703,10 +745,10 @@ imported by a package (eg to know which packages are required for its
 installation or either installed during it) you can use this function</li>
 </ul>
 <pre class="r"><code>imported_from(&quot;depigner&quot;)</code></pre>
-<pre><code>##  [1] &quot;broom&quot;        &quot;desc&quot;         &quot;dplyr&quot;        &quot;fs&quot;           &quot;ggplot2&quot;     
-##  [6] &quot;Hmisc&quot;        &quot;magrittr&quot;     &quot;progress&quot;     &quot;purrr&quot;        &quot;rlang&quot;       
-## [11] &quot;rprojroot&quot;    &quot;stats&quot;        &quot;stringr&quot;      &quot;telegram.bot&quot; &quot;tibble&quot;      
-## [16] &quot;tidyr&quot;        &quot;usethis&quot;      &quot;utils&quot;</code></pre>
+<pre><code>##  [1] &quot;desc&quot;         &quot;dplyr&quot;        &quot;fs&quot;           &quot;ggplot2&quot;      &quot;Hmisc&quot;       
+##  [6] &quot;magrittr&quot;     &quot;progress&quot;     &quot;purrr&quot;        &quot;rlang&quot;        &quot;rprojroot&quot;   
+## [11] &quot;stats&quot;        &quot;stringr&quot;      &quot;telegram.bot&quot; &quot;tibble&quot;       &quot;tidyr&quot;       
+## [16] &quot;usethis&quot;      &quot;utils&quot;</code></pre>
 </div>
 </div>
 <div id="telegram-tools" class="section level2">
@@ -759,24 +801,24 @@ errors_to_telegram()</code></pre>
 </div>
 <div id="references" class="section level1 unnumbered">
 <h1>References</h1>
-<div id="refs" class="references">
+<div id="refs" class="references hanging-indent">
 <div id="ref-R-telegram.bot">
-<p>Benedito, Ernest. 2019. <em>Telegram.bot: Develop a ’Telegram Bot’ with R</em>. <a href="https://CRAN.R-project.org/package=telegram.bot">https://CRAN.R-project.org/package=telegram.bot</a>.</p>
+<p>Benedito, Ernest. 2019. <em>Telegram.bot: Develop a Telegram Bot with R</em>. <a href="http://github.com/ebeneditos/telegram.bot">http://github.com/ebeneditos/telegram.bot</a>.</p>
 </div>
 <div id="ref-R-progress">
-<p>Csárdi, Gábor, and Rich FitzJohn. 2019. <em>Progress: Terminal Progress Bars</em>. <a href="https://CRAN.R-project.org/package=progress">https://CRAN.R-project.org/package=progress</a>.</p>
+<p>Csárdi, Gábor, and Rich FitzJohn. 2019. <em>Progress: Terminal Progress Bars</em>. <a href="https://github.com/r-lib/progress#readme">https://github.com/r-lib/progress#readme</a>.</p>
 </div>
 <div id="ref-R-pander">
-<p>Daróczi, Gergely, and Roman Tsegelskyi. 2018. <em>Pander: An R ’Pandoc’ Writer</em>. <a href="https://CRAN.R-project.org/package=pander">https://CRAN.R-project.org/package=pander</a>.</p>
-</div>
-<div id="ref-R-rms">
-<p>Harrell Jr, Frank E. 2020. <em>Rms: Regression Modeling Strategies</em>. <a href="https://CRAN.R-project.org/package=rms">https://CRAN.R-project.org/package=rms</a>.</p>
+<p>Daróczi, Gergely, and Roman Tsegelskyi. 2018. <em>Pander: An R Pandoc Writer</em>. <a href="http://rapporter.github.io/pander">http://rapporter.github.io/pander</a>.</p>
 </div>
 <div id="ref-R-Hmisc">
-<p>Harrell Jr, Frank E, with contributions from Charles Dupont, and many others. 2020. <em>Hmisc: Harrell Miscellaneous</em>. <a href="https://CRAN.R-project.org/package=Hmisc">https://CRAN.R-project.org/package=Hmisc</a>.</p>
+<p>Harrell, Frank E, Jr. 2020. <em>Hmisc: Harrell Miscellaneous</em>. <a href="https://CRAN.R-project.org/package=Hmisc">https://CRAN.R-project.org/package=Hmisc</a>.</p>
+</div>
+<div id="ref-R-rms">
+<p>Harrell, Jr., Frank E. 2020. <em>Rms: Regression Modeling Strategies</em>. <a href="https://CRAN.R-project.org/package=rms">https://CRAN.R-project.org/package=rms</a>.</p>
 </div>
 <div id="ref-R-usethis">
-<p>Wickham, Hadley, and Jennifer Bryan. 2020. <em>Usethis: Automate Package and Project Setup</em>.</p>
+<p>Wickham, Hadley, and Jennifer Bryan. 2020. <em>Usethis: Automate Package and Project Setup</em>. <a href="https://CRAN.R-project.org/package=usethis">https://CRAN.R-project.org/package=usethis</a>.</p>
 </div>
 </div>
 </div>

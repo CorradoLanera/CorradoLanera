@@ -5,11 +5,11 @@ authors: [admin]
 date: '2019-05-27'
 slug: annidare-map
 categories:
-  - R
+  - how-to
   - ita
 tags:
-  - purrr
-  - lazy evaluation
+  - functionals
+  - rstats
 image:
   caption: ''
   focal_point: ''
@@ -21,6 +21,7 @@ output:
     df_print: paged
 ---
 
+<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
 <link href="/rmarkdown-libs/pagedtable/css/pagedtable.css" rel="stylesheet" />
 <script src="/rmarkdown-libs/pagedtable/js/pagedtable.js"></script>
 
@@ -415,7 +416,7 @@ senza parentesi o argomenti:</p>
 #&gt;     .f &lt;- as_mapper(.f, ...)
 #&gt;     .Call(map_impl, environment(), &quot;.x&quot;, &quot;.f&quot;, &quot;list&quot;)
 #&gt; }
-#&gt; &lt;bytecode: 0x5597f49d8208&gt;
+#&gt; &lt;bytecode: 0x565457fa0270&gt;
 #&gt; &lt;environment: namespace:purrr&gt;</code></pre>
 <p>a questo punto vediamo che <code>.f</code> viene elaborata (prima di essere eseguita
 dal misterioso <code>.Call</code>) da una funzione <code>as_mapper()</code>. Vediamo allora
@@ -425,7 +426,7 @@ questa com’è fatta:</p>
 #&gt; {
 #&gt;     UseMethod(&quot;as_mapper&quot;)
 #&gt; }
-#&gt; &lt;bytecode: 0x5597f5c10288&gt;
+#&gt; &lt;bytecode: 0x5654597eedb0&gt;
 #&gt; &lt;environment: namespace:purrr&gt;</code></pre>
 <p>Bene bene, si tratta di una funzione <strong>generica</strong>. Una funzione generica
 richiama semplicemente un <strong>metodo</strong> (cioè, nient’altro che un’altra
@@ -481,7 +482,7 @@ che “faccia” qualcosa)!</p>
 #&gt;         rlang::as_function(.f)
 #&gt;     }
 #&gt; }
-#&gt; &lt;bytecode: 0x5597f49dce48&gt;
+#&gt; &lt;bytecode: 0x565457f936a8&gt;
 #&gt; &lt;environment: namespace:purrr&gt;</code></pre>
 <p>Perfetto, eccola qui! Vediamo che anche dentro questa funzione, la
 nostra continua a chiamarsi con l’alias <code>.f</code>, che sappiamo, per noi,
@@ -721,7 +722,7 @@ parallela su di esse.</p>
 difficili da de-annidare?</p>
 <p>Aspetto i vostri commenti!
 Saaalvé!</p>
-<div id="refs" class="references">
+<div id="refs" class="references hanging-indent">
 <div id="ref-wickham2019advanced">
 <p>Wickham, H. 2019. <em>Advanced R, Second Edition</em>. Chapman &amp; Hall/Crc the R Series. Taylor &amp; Francis. <a href="https://adv-r.hadley.nz">https://adv-r.hadley.nz</a>.</p>
 </div>
