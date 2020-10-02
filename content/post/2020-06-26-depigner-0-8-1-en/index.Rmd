@@ -2,21 +2,14 @@
 title: depigner 0.8.1 
 subtitle: ''
 summary: ''
-author: Corrado
+author: [admin]
 date: '2020-06-26'
 slug: depigner-0-8-1
 categories:
-  - rstats
+  - depigner
   - eng
 tags:
-  - depigner
-  - r-package
-  - Hmisc
-  - rms
-  - Telegram
-  - progress
-  - usethis
-authors: [admin]
+  - r-packages
 featured: yes
 image:
   caption: '[Logo by Elisa Sovrano](https://www.elisasovrano.it)'
@@ -213,9 +206,11 @@ p-values for multiplicity into the `summary()` tables are also provided.
 
 - **`adjust_p()`**: Adjust P-values of a `tidy_summary` objects:
 ```{r}
-my_summary <- summary(Species ~., data = iris, method = "reverse")
+my_summary <- summary(Species ~., data = iris,
+                      method = "reverse",
+                      test = TRUE)
 
-  tidy_summary(my_summary) %>%
+  tidy_summary(my_summary, prtest = "P") %>%
     adjust_p() %>%
     pander()
 ```
@@ -234,7 +229,7 @@ a categorical one in a logistic model provided by `lrm()` (from the
 ```{r, include = FALSE}
 data('transplant')
 censor_rows <- transplant[['event']] != 'censored' 
-transplant <- transplant[censor_rows, , drop = FALSE]
+transplant <- droplevels(transplant[censor_rows, ])
 
 dd <- datadist(transplant)
 lrm_mod <- lrm(event ~ rcs(age, 3)*(sex + abo) + rcs(year, 3),

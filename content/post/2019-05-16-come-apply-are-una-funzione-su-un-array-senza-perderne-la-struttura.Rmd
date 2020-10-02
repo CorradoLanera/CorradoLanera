@@ -5,14 +5,11 @@ authors: [admin]
 date: '2019-05-16'
 slug: apply-identity-to-arrays
 categories:
-  - R
+  - how-to
   - ita
 tags:
-  - apply
-  - aaply
-  - array
-  - aperm
-  - subsetting
+  - functionals
+  - rstats
 image:
   caption: ''
   focal_point: ''

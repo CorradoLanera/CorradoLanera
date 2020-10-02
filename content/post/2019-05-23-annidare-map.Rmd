@@ -5,11 +5,11 @@ authors: [admin]
 date: '2019-05-27'
 slug: annidare-map
 categories:
-  - R
+  - how-to
   - ita
 tags:
-  - purrr
-  - lazy evaluation
+  - functionals
+  - rstats
 image:
   caption: ''
   focal_point: ''

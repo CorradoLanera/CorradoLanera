@@ -5,15 +5,11 @@ authors: [admin]
 date: '2019-06-03'
 slug: creazione-colonna-condizionale
 categories:
-  - R
+  - how-to
   - ita
 tags:
-  - mutate
   - dplyr
-  - if
-  - ifelse
-  - if_else
-  - case_when
+  - rstats
 image:
   caption: ''
   focal_point: ''
@@ -25,6 +21,7 @@ output:
     df_print: paged
 ---
 
+<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
 <link href="/rmarkdown-libs/pagedtable/css/pagedtable.css" rel="stylesheet" />
 <script src="/rmarkdown-libs/pagedtable/js/pagedtable.js"></script>
 
@@ -79,6 +76,9 @@ foreveryoung</code></pre>
   mutate(
     final_age = if (!is.na(reported_age)) reported_age else computed_age
   )
+#&gt; Warning: Problem with `mutate()` input `final_age`.
+#&gt; ℹ the condition has length &gt; 1 and only the first element will be used
+#&gt; ℹ Input `final_age` is `if (!is.na(reported_age)) reported_age else computed_age`.
 #&gt; Warning in if (!is.na(reported_age)) reported_age else computed_age: the
 #&gt; condition has length &gt; 1 and only the first element will be used</code></pre>
 <div data-pagedtable="false">
@@ -216,7 +216,7 @@ passassimo la colonna delle date di nascita?</p>
 birth_foreveryoung</code></pre>
 <div data-pagedtable="false">
 <script data-pagedtable-source type="application/json">
-{"columns":[{"label":["reported_age"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["computed_age"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["wanted_results"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["date_of_birth"],"name":[4],"type":["date"],"align":["right"]}],"data":[{"1":"18","2":"18","3":"18","4":"2002-06-20"},{"1":"NA","2":"18","3":"18","4":"2002-06-20"},{"1":"18","2":"NA","3":"18","4":"<NA>"},{"1":"NA","2":"NA","3":"NA","4":"<NA>"},{"1":"18","2":"19","3":"18","4":"2001-06-20"}],"options":{"columns":{"min":[5],"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+{"columns":[{"label":["reported_age"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["computed_age"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["wanted_results"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["date_of_birth"],"name":[4],"type":["date"],"align":["right"]}],"data":[{"1":"18","2":"18","3":"18","4":"2002-10-02"},{"1":"NA","2":"18","3":"18","4":"2002-10-02"},{"1":"18","2":"NA","3":"18","4":"<NA>"},{"1":"NA","2":"NA","3":"NA","4":"<NA>"},{"1":"18","2":"19","3":"18","4":"2001-10-02"}],"options":{"columns":{"min":[5],"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
 <pre class="r"><code>
@@ -229,7 +229,7 @@ birth_foreveryoung %&gt;%
   )</code></pre>
 <div data-pagedtable="false">
 <script data-pagedtable-source type="application/json">
-{"columns":[{"label":["reported_age"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["computed_age"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["wanted_results"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["date_of_birth"],"name":[4],"type":["date"],"align":["right"]},{"label":["final_age"],"name":[5],"type":["dbl"],"align":["right"]}],"data":[{"1":"18","2":"18","3":"18","4":"2002-06-20","5":"18"},{"1":"NA","2":"18","3":"18","4":"2002-06-20","5":"11858"},{"1":"18","2":"NA","3":"18","4":"<NA>","5":"18"},{"1":"NA","2":"NA","3":"NA","4":"<NA>","5":"NA"},{"1":"18","2":"19","3":"18","4":"2001-06-20","5":"18"}],"options":{"columns":{"min":[5],"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+{"columns":[{"label":["reported_age"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["computed_age"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["wanted_results"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["date_of_birth"],"name":[4],"type":["date"],"align":["right"]},{"label":["final_age"],"name":[5],"type":["dbl"],"align":["right"]}],"data":[{"1":"18","2":"18","3":"18","4":"2002-10-02","5":"18"},{"1":"NA","2":"18","3":"18","4":"2002-10-02","5":"11962"},{"1":"18","2":"NA","3":"18","4":"<NA>","5":"18"},{"1":"NA","2":"NA","3":"NA","4":"<NA>","5":"NA"},{"1":"18","2":"19","3":"18","4":"2001-10-02","5":"18"}],"options":{"columns":{"min":[5],"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
 <p>Come vediamo, nemmeno un errore, nemmeno un warning, ma il risultato
@@ -267,7 +267,7 @@ della stessa classe, restituisce un errore!</p>
   )</code></pre>
 <div data-pagedtable="false">
 <script data-pagedtable-source type="application/json">
-{"columns":[{"label":["reported_age"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["computed_age"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["wanted_results"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["date_of_birth"],"name":[4],"type":["date"],"align":["right"]},{"label":["final_age"],"name":[5],"type":["dbl"],"align":["right"]}],"data":[{"1":"18","2":"18","3":"18","4":"2002-06-20","5":"18"},{"1":"NA","2":"18","3":"18","4":"2002-06-20","5":"18"},{"1":"18","2":"NA","3":"18","4":"<NA>","5":"18"},{"1":"NA","2":"NA","3":"NA","4":"<NA>","5":"NA"},{"1":"18","2":"19","3":"18","4":"2001-06-20","5":"18"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+{"columns":[{"label":["reported_age"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["computed_age"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["wanted_results"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["date_of_birth"],"name":[4],"type":["date"],"align":["right"]},{"label":["final_age"],"name":[5],"type":["dbl"],"align":["right"]}],"data":[{"1":"18","2":"18","3":"18","4":"2002-10-02","5":"18"},{"1":"NA","2":"18","3":"18","4":"2002-10-02","5":"18"},{"1":"18","2":"NA","3":"18","4":"<NA>","5":"18"},{"1":"NA","2":"NA","3":"NA","4":"<NA>","5":"NA"},{"1":"18","2":"19","3":"18","4":"2001-10-02","5":"18"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
 <p>Inoltre, <code>if_else()</code> permette anche gestire il caso in cui il test risulti
@@ -285,7 +285,7 @@ dei due vettori passati per costruire l’output!)</p>
   )</code></pre>
 <div data-pagedtable="false">
 <script data-pagedtable-source type="application/json">
-{"columns":[{"label":["reported_age"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["computed_age"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["wanted_results"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["date_of_birth"],"name":[4],"type":["date"],"align":["right"]},{"label":["final_age"],"name":[5],"type":["dbl"],"align":["right"]}],"data":[{"1":"18","2":"18","3":"18","4":"2002-06-20","5":"18"},{"1":"NA","2":"18","3":"18","4":"2002-06-20","5":"18"},{"1":"18","2":"NA","3":"18","4":"<NA>","5":"18"},{"1":"NA","2":"NA","3":"NA","4":"<NA>","5":"NA"},{"1":"18","2":"19","3":"18","4":"2001-06-20","5":"18"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+{"columns":[{"label":["reported_age"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["computed_age"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["wanted_results"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["date_of_birth"],"name":[4],"type":["date"],"align":["right"]},{"label":["final_age"],"name":[5],"type":["dbl"],"align":["right"]}],"data":[{"1":"18","2":"18","3":"18","4":"2002-10-02","5":"18"},{"1":"NA","2":"18","3":"18","4":"2002-10-02","5":"18"},{"1":"18","2":"NA","3":"18","4":"<NA>","5":"18"},{"1":"NA","2":"NA","3":"NA","4":"<NA>","5":"NA"},{"1":"18","2":"19","3":"18","4":"2001-10-02","5":"18"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
 <p>Come mai non funziona? Beh, la risposta in effetti è semplice: non
@@ -413,6 +413,10 @@ foreveryoung %&gt;%
       TRUE                         ~ reported_age
     )
   )
+#&gt; Warning: Problem with `mutate()` input `final_age`.
+#&gt; ℹ Alcuni soggetti hanno `reported_age` e `computed_age` entrambi presenti ma diversi.
+#&gt;  Il valore utilizzato è `reported_age`
+#&gt; ℹ Input `final_age` is `case_when(...)`.
 #&gt; Warning: Alcuni soggetti hanno `reported_age` e `computed_age` entrambi presenti ma diversi.
 #&gt;  Il valore utilizzato è `reported_age`</code></pre>
 <div data-pagedtable="false">
@@ -423,7 +427,7 @@ foreveryoung %&gt;%
 </div>
 <div id="bibliografia" class="section level2 unnumbered">
 <h2>Bibliografia</h2>
-<div id="refs" class="references">
+<div id="refs" class="references hanging-indent">
 <div id="ref-wickham2019advanced">
 <p>Wickham, H. 2019. <em>Advanced R, Second Edition</em>. Chapman &amp; Hall/Crc the R Series. Taylor &amp; Francis. <a href="https://adv-r.hadley.nz">https://adv-r.hadley.nz</a>.</p>
 </div>

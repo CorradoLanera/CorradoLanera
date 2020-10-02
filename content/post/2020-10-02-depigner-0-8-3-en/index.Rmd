@@ -1,0 +1,93 @@
+---
+title: depigner 0.8.3
+subtitle: ''
+summary: ''
+author: [admin]
+date: '2020-10-02'
+slug: depigner-0-8-1
+categories:
+  - depigner
+tags:
+  - r-packages
+  - rstats
+  - eng
+featured: yes
+image:
+  caption: '[Logo by Elisa Sovrano](https://www.elisasovrano.it)'
+  focal_point: 'center'
+bibliography: ["depigner-pkg.bib"]
+biblio-style: "apalike"
+link-citations: true
+output:
+  blogdown::html_page:
+    df_print: paged
+---
+
+I’m very exited to announce the second release of `{depigner}` to
+CRAN!
+
+> __Pigna__ [_pìn'n'a_] is the Italian word for pine cone.  In jargon,
+it is used to identify a task which is boring, banal, annoying, painful,
+frustrating and maybe even with a not so beautiful or rewarding result,
+just like the obstinate act of trying to challenge yourself in
+extracting pine nuts from a pine cone, provided that, in the end, you
+will find at least one inside it.
+
+The `{depigner}` aims to provide some useful functions to be used to
+solve small everyday problems of coding or analyzing data with R. The
+hope is to provide solutions to that kind of small-little problems which
+would be normally solved using quick-and-dirty (ugly and maybe even
+wrong) patches.
+
+[![](https://img.shields.io/badge/WEB%20site-click%20me-orange.svg)](https://corradolanera.github.io/depigner/)
+
+# Installation
+You can install the released version from
+[CRAN](https://cran.r-project.org/) directly calling:
+
+```{r, eval = FALSE}
+install.packages("depigner")
+```
+
+
+If you would like to be updated with the last development version 
+available, you can install it from it's
+[source](https://corradolanera.github.io/depigner/) on
+[GitHub](https://github.com/) by calling:
+
+```{r, eval = FALSE}
+# install.packages("devtools")
+devtools::install_github("CorradoLanera/depigner")
+```
+
+Next, you can attach it to your session as usual by:
+
+```{r}
+library(depigner)
+```
+
+
+
+# Provided Tools
+
+For all the provided tools you can look at the [`{depigner}` website](https://corradolanera.github.io/depigner/), or at the [previous post](https://www.corradolanera.it/2020/06/26/depigner-0-8-1/)
+
+
+# News from the previous version
+
+
+# Acknowledgements 
+The `{depigner}`'s logo was lovely designed by
+[Elisa Sovrano](https://elisasovrano.it).
+
+
+# References
+
+```{r bib, include=FALSE, eval = TRUE}
+# create a bib file for the R packages used in this document
+knitr::write_bib(
+  x    = c('depigner', 'rms', 'Hmisc', 'telegram.bot', 'progress',
+           'usethis', 'pander'),
+  file = 'depigner-pkg.bib'
+)
+```

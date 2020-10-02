@@ -5,9 +5,10 @@ authors: [admin]
 date: '2020-05-23'
 slug: accuratezza-sensibilità-specificità-prevalenza-e-valori-predittivi-positivo-e-negativo-di-un-test-diagnostico
 categories:
-  - biostatistica
+  - explanations
   - ita
 tags:
+  - biostats
   - test
   - accuratezza
 output:
