@@ -7,10 +7,9 @@ date: '2020-10-02'
 slug: depigner-0-8-1
 categories:
   - depigner
+  - eng
 tags:
   - r-packages
-  - rstats
-  - eng
 featured: yes
 image:
   caption: '[Logo by Elisa Sovrano](https://www.elisasovrano.it)'
@@ -28,31 +27,17 @@ output:
 <script src="/rmarkdown-libs/pagedtable/js/pagedtable.js"></script>
 
 
-<p>I’m very exited to announce the second release of <code>{depigner}</code> to
-CRAN!</p>
+<p>I’m very exited to announce the second release of <code>{depigner}</code> to CRAN, now in the version 0.8.3.</p>
 <blockquote>
-<p><strong>Pigna</strong> [<em>pìn’n’a</em>] is the Italian word for pine cone. In jargon,
-it is used to identify a task which is boring, banal, annoying, painful,
-frustrating and maybe even with a not so beautiful or rewarding result,
-just like the obstinate act of trying to challenge yourself in
-extracting pine nuts from a pine cone, provided that, in the end, you
-will find at least one inside it.</p>
+<p><strong>Pigna</strong> [<em>pìn’n’a</em>] is the Italian word for pine cone. In jargon, it is used to identify a task which is boring, banal, annoying, painful, frustrating and maybe even with a not so beautiful or rewarding result, just like the obstinate act of trying to challenge yourself in extracting pine nuts from a pine cone, provided that, in the end, you will find at least one inside it.</p>
 </blockquote>
-<p>The <code>{depigner}</code> aims to provide some useful functions to be used to
-solve small everyday problems of coding or analyzing data with R. The
-hope is to provide solutions to that kind of small-little problems which
-would be normally solved using quick-and-dirty (ugly and maybe even
-wrong) patches.</p>
+<p>The <code>{depigner}</code> aims to provide some useful functions to be used to solve small everyday problems of coding or analyzing data with R. The hope is to provide solutions to that kind of small-little problems which would be normally solved using quick-and-dirty (ugly and maybe even wrong) patches.</p>
 <p><a href="https://corradolanera.github.io/depigner/"><img src="https://img.shields.io/badge/WEB%20site-click%20me-orange.svg" /></a></p>
 <div id="installation" class="section level1">
 <h1>Installation</h1>
-<p>You can install the released version from
-<a href="https://cran.r-project.org/">CRAN</a> directly calling:</p>
+<p>You can install the released version from <a href="https://cran.r-project.org/">CRAN</a> directly calling:</p>
 <pre class="r"><code>install.packages(&quot;depigner&quot;)</code></pre>
-<p>If you would like to be updated with the last development version
-available, you can install it from it’s
-<a href="https://corradolanera.github.io/depigner/">source</a> on
-<a href="https://github.com/">GitHub</a> by calling:</p>
+<p>If you would like to be updated with the last development version available, you can install it from it’s <a href="https://corradolanera.github.io/depigner/">source</a> on <a href="https://github.com/">GitHub</a> by calling:</p>
 <pre class="r"><code># install.packages(&quot;devtools&quot;)
 devtools::install_github(&quot;CorradoLanera/depigner&quot;)</code></pre>
 <p>Next, you can attach it to your session as usual by:</p>
@@ -65,11 +50,17 @@ devtools::install_github(&quot;CorradoLanera/depigner&quot;)</code></pre>
 </div>
 <div id="news-from-the-previous-version" class="section level1">
 <h1>News from the previous version</h1>
+<ul>
+<li><p>Updates are related to the <code>{usethis}</code> wrapper to incorporate its user interface functions in a package. Now, a file <code>R/utils-depigner.R</code> is created for that purpose to avoid collision with the corresponding file that <code>{usethis}</code> creates.</p></li>
+<li><p>Now <code>paired_test_categorical()</code> can works with matrices too, and not only with data frames. Moreover, a bug is fixed that prevent the function to work when a value from one group to another pass from a zero value to a non zero value.</p></li>
+<li><p>The <code>{broom}</code> package stops to support <code>tidy()</code> for <code>{rms}</code> objects. A modification to the summary interact now permit to remove the dependency from <code>{broom}</code>.</p></li>
+</ul>
+<p>So, that is not a great update but it fixes many of annoying bugs and issues.</p>
+<p>Thanks to <a href="https://github.com/danielebottigliengo"><code>@danilebottigliengo</code></a> and <a href="https://github.com/lucavd"><code>@lucavd</code></a> to have highlighted most of those issues and have helped with discussions in solving them.</p>
 </div>
 <div id="acknowledgements" class="section level1">
 <h1>Acknowledgements</h1>
-<p>The <code>{depigner}</code>’s logo was lovely designed by
-<a href="https://elisasovrano.it">Elisa Sovrano</a>.</p>
+<p>The <code>{depigner}</code>’s logo was lovely designed by <a href="https://elisasovrano.it">Elisa Sovrano</a>.</p>
 </div>
 <div id="references" class="section level1">
 <h1>References</h1>

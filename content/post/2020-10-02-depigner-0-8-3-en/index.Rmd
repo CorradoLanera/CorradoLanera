@@ -7,10 +7,9 @@ date: '2020-10-02'
 slug: depigner-0-8-1
 categories:
   - depigner
+  - eng
 tags:
   - r-packages
-  - rstats
-  - eng
 featured: yes
 image:
   caption: '[Logo by Elisa Sovrano](https://www.elisasovrano.it)'
@@ -23,37 +22,23 @@ output:
     df_print: paged
 ---
 
-I’m very exited to announce the second release of `{depigner}` to
-CRAN!
+I'm very exited to announce the second release of `{depigner}` to CRAN, now in the version 0.8.3.
 
-> __Pigna__ [_pìn'n'a_] is the Italian word for pine cone.  In jargon,
-it is used to identify a task which is boring, banal, annoying, painful,
-frustrating and maybe even with a not so beautiful or rewarding result,
-just like the obstinate act of trying to challenge yourself in
-extracting pine nuts from a pine cone, provided that, in the end, you
-will find at least one inside it.
+> **Pigna** [*pìn'n'a*] is the Italian word for pine cone. In jargon, it is used to identify a task which is boring, banal, annoying, painful, frustrating and maybe even with a not so beautiful or rewarding result, just like the obstinate act of trying to challenge yourself in extracting pine nuts from a pine cone, provided that, in the end, you will find at least one inside it.
 
-The `{depigner}` aims to provide some useful functions to be used to
-solve small everyday problems of coding or analyzing data with R. The
-hope is to provide solutions to that kind of small-little problems which
-would be normally solved using quick-and-dirty (ugly and maybe even
-wrong) patches.
+The `{depigner}` aims to provide some useful functions to be used to solve small everyday problems of coding or analyzing data with R. The hope is to provide solutions to that kind of small-little problems which would be normally solved using quick-and-dirty (ugly and maybe even wrong) patches.
 
-[![](https://img.shields.io/badge/WEB%20site-click%20me-orange.svg)](https://corradolanera.github.io/depigner/)
+[![](https://img.shields.io/badge/WEB site-click me-orange.svg)](https://corradolanera.github.io/depigner/)
 
 # Installation
-You can install the released version from
-[CRAN](https://cran.r-project.org/) directly calling:
+
+You can install the released version from [CRAN](https://cran.r-project.org/) directly calling:
 
 ```{r, eval = FALSE}
 install.packages("depigner")
 ```
 
-
-If you would like to be updated with the last development version 
-available, you can install it from it's
-[source](https://corradolanera.github.io/depigner/) on
-[GitHub](https://github.com/) by calling:
+If you would like to be updated with the last development version available, you can install it from it's [source](https://corradolanera.github.io/depigner/) on [GitHub](https://github.com/) by calling:
 
 ```{r, eval = FALSE}
 # install.packages("devtools")
@@ -66,20 +51,25 @@ Next, you can attach it to your session as usual by:
 library(depigner)
 ```
 
-
-
 # Provided Tools
 
 For all the provided tools you can look at the [`{depigner}` website](https://corradolanera.github.io/depigner/), or at the [previous post](https://www.corradolanera.it/2020/06/26/depigner-0-8-1/)
 
-
 # News from the previous version
 
+-   Updates are related to the `{usethis}` wrapper to incorporate its user interface functions in a package. Now, a file `R/utils-depigner.R` is created for that purpose to avoid collision with the corresponding file that `{usethis}` creates.
 
-# Acknowledgements 
-The `{depigner}`'s logo was lovely designed by
-[Elisa Sovrano](https://elisasovrano.it).
+-   Now `paired_test_categorical()` can works with matrices too, and not only with data frames. Moreover, a bug is fixed that prevent the function to work when a value from one group to another pass from a zero value to a non zero value.
 
+-   The `{broom}` package stops to support `tidy()` for `{rms}` objects. A modification to the summary interact now permit to remove the dependency from `{broom}`.
+
+So, that is not a great update but it fixes many of annoying bugs and issues.
+
+Thanks to [`@danilebottigliengo`](<https://github.com/danielebottigliengo>) and [`@lucavd`](<https://github.com/lucavd>) to have highlighted most of those issues and have helped with discussions in solving them.
+
+# Acknowledgements
+
+The `{depigner}`'s logo was lovely designed by [Elisa Sovrano](https://elisasovrano.it).
 
 # References
 
