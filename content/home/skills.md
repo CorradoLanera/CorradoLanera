@@ -18,43 +18,43 @@ subtitle = ""
   icon = "r-project"
   icon_pack = "fab"
   name = "Programming"
-  description = "R Packages and R Shiny Apps development"
+  description = "Packages, [Shiny](https://shiny.rstudio.com/) Apps, and [`{learnr}`](https://rstudio.github.io/learnr/)<br>[RStudio](https://rstudio.com) [Certified Trainer](https://education.rstudio.com/trainers/) in the [`{tidyverse}`](https://www.tidyverse.org/)"
 
 [[feature]]
   icon = "code-branch"
   icon_pack = "fas"
   name = "Continuous Integration"
-  description = "Git/GitHub, Travis-CI, AppVeyor-CI, and Codecov"  
+  description = "[Git](https://git-scm.com/)/[GitHub](https://github.com/), [Travis-CI](https://travis-ci.com/), [AppVeyor-CI](https://www.appveyor.com/),<br>[Codecov](https://codecov.io/), [GitHub-Actions](https://github.com/features/actions)"
   
 [[feature]]
   icon = "markdown"
   icon_pack = "fab"
   name = "Reproducible Research"
-  description = "R Markdown and LaTeX"
+  description = "[R Markdown](https://rmarkdown.rstudio.com/articles_intro.html)<br>[$\\LaTeX$](https://www.latex-project.org/)"
   
 [[feature]]
   icon = "laptop-code"
   icon_pack = "fas"
   name = "Machine Learning"
-  description = "Supervised Strong-Validation"  
+  description = "Supervised Strong-Validation<br>Sequential Models"  
   
 [[feature]]
   icon = "notes-medical"
   icon_pack = "fas"
   name = "Text Mining"
-  description = "Electronic Health Records and registries for Clinical Trials"
+  description = "Electronic Health Records<br>Registries for Clinical Trials"
   
 [[feature]]
   icon = "file-medical-alt"
   icon_pack = "fas"
   name = "Biostatistics"
-  description = "Regression and Survival Analysis, Epidemiologic Study Design"
+  description = "Regression and Survival Analysis<br>Epidemiologic Study Design"
   
 [[feature]]
   icon = "chart-bar"
   icon_pack = "fas"
   name = "Graphics"
-  description = "ggplot2, plottly, and TikZ"
+  description = "[`{ggplot2}`](https://ggplot2.tidyverse.org/)"
   
 [[feature]]
   icon = "mountain"
@@ -67,7 +67,7 @@ subtitle = ""
   icon = "bed"
   icon_pack = "fas"
   name = "limitless sleeping"
-  description = "Record: 25.5 hours continuosly, can fall asleep anytime/where"  
+  description = "Record: 25.5 hours continuosly<br>can fall asleep anytime/where"  
   
   
   

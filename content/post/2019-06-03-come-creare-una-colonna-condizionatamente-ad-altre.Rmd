@@ -5,15 +5,11 @@ authors: [admin]
 date: '2019-06-03'
 slug: creazione-colonna-condizionale
 categories:
-  - R
+  - how-to
   - ita
 tags:
-  - mutate
   - dplyr
-  - if
-  - ifelse
-  - if_else
-  - case_when
+  - rstats
 image:
   caption: ''
   focal_point: ''

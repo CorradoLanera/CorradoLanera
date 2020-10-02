@@ -1,0 +1,85 @@
+---
+title: depigner 0.8.3
+subtitle: ''
+summary: ''
+author: [admin]
+date: '2020-10-02'
+slug: depigner-0-8-3
+categories:
+  - depigner
+  - eng
+tags:
+  - r-packages
+featured: yes
+image:
+  caption: '[Logo by Elisa Sovrano](https://www.elisasovrano.it)'
+  focal_point: 'center'
+bibliography: ["depigner-pkg.bib"]
+biblio-style: "apalike"
+link-citations: true
+output:
+  blogdown::html_page:
+    df_print: paged
+---
+
+I'm very exited to announce the second release of `{depigner}` to CRAN, now in the version 0.8.3.
+
+> **Pigna** [*pìn'n'a*] is the Italian word for pine cone. In jargon, it is used to identify a task which is boring, banal, annoying, painful, frustrating and maybe even with a not so beautiful or rewarding result, just like the obstinate act of trying to challenge yourself in extracting pine nuts from a pine cone, provided that, in the end, you will find at least one inside it.
+
+The `{depigner}` aims to provide some useful functions to be used to solve small everyday problems of coding or analyzing data with R. The hope is to provide solutions to that kind of small-little problems which would be normally solved using quick-and-dirty (ugly and maybe even wrong) patches.
+
+[![](https://img.shields.io/badge/WEB site-click me-orange.svg)](https://corradolanera.github.io/depigner/)
+
+# Installation
+
+You can install the released version from [CRAN](https://cran.r-project.org/) directly calling:
+
+```{r, eval = FALSE}
+install.packages("depigner")
+```
+
+If you would like to be updated with the last development version available, you can install it from it's [source](https://corradolanera.github.io/depigner/) on [GitHub](https://github.com/) by calling:
+
+```{r, eval = FALSE}
+# install.packages("remotes")
+remotes::install_github("CorradoLanera/depigner")
+```
+
+Next, you can attach it to your session as usual by:
+
+```{r}
+library(depigner)
+```
+
+# Provided Tools
+
+For all the provided tools you can look at the [`{depigner}` website](https://corradolanera.github.io/depigner/), or at the [previous post](https://www.corradolanera.it/2020/06/26/depigner-0-8-1/)
+
+# News from the previous version
+
+-   Updates are related to the `{usethis}` wrapper to incorporate its user interface functions in a package. Now, a file `R/utils-depigner.R` is created for that purpose to avoid collision with the corresponding file that `{usethis}` creates.
+
+-   Now `paired_test_categorical()` can works with matrices too, and not only with data frames. Moreover, a bug is fixed that prevent the function to work when a value from one group to another pass from a zero value to a non zero value.[^1]
+
+-   The `{broom}` package stops to support `tidy()` for `{rms}` objects. A modification to the summary interact now permit to remove the dependency from `{broom}`.
+
+[^1]: That required `{rms}` to be put into the IMPORTS of `{depigner}` (while it was SUGGESTS only earlier). Note that in the current CRAN version of the `{depigner}` (0.8.3) it still in the SUGGESTIONS for an accident. This should not be a great issue for someone which uses the Harrell's packages, anyway this is already hot-fixed in the development version of the package as well as from next release. In the meanwhile, if you want to relay on CRAN version of the package, you can call \`install.packages("depigner", dependencies = TRUE)\` to be sure everything you need is installed properly.
+
+So, that is not a great update but it fixes many of annoying bugs and issues.
+
+Thanks to [`@danilebottigliengo`](https://github.com/danielebottigliengo) and [`@lucavd`](https://github.com/lucavd) to have highlighted most of those issues and have helped with discussions in solving them.
+
+# Acknowledgements
+
+The `{depigner}`'s logo was lovely designed by [Elisa Sovrano](https://elisasovrano.it).
+
+# References
+
+```{r bib, include=FALSE, eval = TRUE}
+# create a bib file for the R packages used in this document
+knitr::write_bib(
+  x    = c('depigner', 'rms', 'Hmisc', 'telegram.bot', 'progress',
+           'usethis', 'pander'),
+  file = 'depigner-pkg.bib'
+)
+```

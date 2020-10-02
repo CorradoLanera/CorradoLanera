@@ -18,12 +18,27 @@ date_format = "Jan 2006"
 #   Leave `date_end` empty if it's your current employer.
 #   Begin/end multi-line descriptions with 3 quotes `"""`.
 [[experience]]
+  title = "Research Grant: Development of a monitoring, forecasting and decision support system for the post-pandemic phase of the COVID-19 epidemic in Veneto Region"
+  company = "University of Padova"
+  company_url = "https://www.unipd.it"
+  location = "Padova (IT)"
+  date_start = "2020-07-01"
+  date_end = "2021-06-30"
+  description = """
+  Responsibilities include:
+  
+  * Contribute to the collection of historical data on phase 1, interfacing with the various actors that hold the necessary information (Veneto Region, Azienda Zero, Health Authorities)
+  * Organize the databases so that they are interoperable with each other and verify their correctness with numerical and graphic statistical techniques;
+  * Construct Phase 2 impact scenarios through micro-simulation techniques. Given the dynamic aspect of updating the databases used, an interface will be developed that allows the constant updating of the database and an automatic analysis of the updated data.
+  """
+
+[[experience]]
   title = "Research Grant: Review and development of Machine Learning techniques applied in risk assessment related to food safety"
   company = "University of Padova"
   company_url = "https://www.unipd.it"
   location = "Padova (IT)"
   date_start = "2019-10-01"
-  date_end = "2020-09-30"
+  date_end = "2020-06-30"
   description = """
   Responsibilities include:
   

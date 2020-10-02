@@ -5,7 +5,7 @@ headless = true  # This file represents a page section.
 active = true  # Activate this widget? true/false
 weight = 80  # Order that this section will appear.
 
-title = "Certifications"
+title = "Accomplishments"
 subtitle = ""
 
 # Date format
@@ -18,6 +18,16 @@ date_format = "Jan 2006"
 #   Leave other parameters empty if not required.
 #   Begin/end multi-line descriptions with 3 quotes `"""`.
 [[item]]
+  organization = "RStudio"
+  organization_url = "https://rstudio.com/"
+  title = "RStudio Certified Trainer in the Tidyverse"
+  url = "https://education.rstudio.com/trainers/people/lanera+corrado/"
+  certificate_url = "img/lanera+corrado+tidyverse.pdf"
+  date_start = "2020-07-14"
+  date_end = "2020-09-14"
+  description = ""
+
+[[item]]
   organization = "Coursera/deeplearning.ai"
   organization_url = "https://www.coursera.org"
   title = "Deep Learning Specialization"
@@ -28,11 +38,11 @@ date_format = "Jan 2006"
   description = """
   Courses Included:
   
-  * Neural Network and Deep Learning ([certificate](https://www.coursera.org/account/accomplishments/verify/ZAHRWGQ8Q2HN))
-  * Improving Deep Neural Networks: Hyperparameter tuning, Regularization and Optimization ([certificate](https://www.coursera.org/account/accomplishments/verify/RDWAQXXV63NN))
-  * Structuring Machine Learning Projects ([certificate](https://www.coursera.org/account/accomplishments/verify/VAKPYA43KPPC))
-  * Convolutional Neural Networks ([certificate](https://www.coursera.org/account/accomplishments/verify/Y9ATEKUZVJ8T))
-  * Sequence Models (in progress) ([certificate](https://www.coursera.org/account/accomplishments/verify/8F8M22FPPYH7))
+  * Neural Network and Deep Learning ([certificate](https://www.coursera.org/account/accomplishments/certificate/ZAHRWGQ8Q2HN))
+  * Improving Deep Neural Networks: Hyperparameter tuning, Regularization and Optimization ([certificate](https://www.coursera.org/account/accomplishments/certificate/RDWAQXXV63NN))
+  * Structuring Machine Learning Projects ([certificate](https://www.coursera.org/account/accomplishments/certificate/VAKPYA43KPPC))
+  * Convolutional Neural Networks ([certificate](https://www.coursera.org/account/accomplishments/certificate/Y9ATEKUZVJ8T))
+  * Sequence Models (in progress) ([certificate](https://www.coursera.org/account/accomplishments/certificate/8F8M22FPPYH7))
 
   """
 
@@ -45,15 +55,15 @@ date_format = "Jan 2006"
   url = "https://www.coursera.org/specializations/r"
   certificate_url = "https://www.coursera.org/account/accomplishments/specialization/626NWU5G6NQM"
   date_start = "2019-04-01"
-  date_end = ""
+  date_end = "2019-04-22"
   description = """
   Courses Included:
   
-  * The R Programming Environment ([certificate](https://www.coursera.org/account/accomplishments/verify/775LAQ2QKAR4))
-  * Advanced R Programming ([certificate](https://www.coursera.org/account/accomplishments/verify/HNL7FLJBP4WU))
+  * The R Programming Environment ([certificate](https://www.coursera.org/account/accomplishments/certificate/775LAQ2QKAR4))
+  * Advanced R Programming ([certificate](https://www.coursera.org/account/accomplishments/certificate/HNL7FLJBP4WU))
   * Building R Packages ([certificate](https://www.coursera.org/account/accomplishments/verify/PA6DFG9LP3A4))
-  * Building Data Visualization Tools ([certificate](https://www.coursera.org/account/accomplishments/verify/H8QVSZZTZFB3))
-  * Mastering Software Development in R Capstone ([certificate](https://www.coursera.org/account/accomplishments/verify/PAMZ34RS3NUG))
+  * Building Data Visualization Tools ([certificate](https://www.coursera.org/account/accomplishments/certificate/H8QVSZZTZFB3))
+  * Mastering Software Development in R Capstone ([certificate](https://www.coursera.org/account/accomplishments/certificate/PAMZ34RS3NUG))
   """
 
 [[item]]
