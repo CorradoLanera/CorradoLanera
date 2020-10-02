@@ -10,9 +10,14 @@
 
 
 [[main]]
+  name = "Events"
+  url = "#talks"
+  weight = 20
+
+[[main]]
   name = "Posts"
   url = "#posts"
-  weight = 20
+  weight = 25
 
 [[main]]
   name = "Publications"
