@@ -1,0 +1,118 @@
+---
+title: depigner 0.8.4
+subtitle: ''
+summary: ''
+author: [admin]
+date: '2021-01-11'
+slug: depigner-0-8-4
+categories:
+  - depigner
+  - eng
+tags:
+  - r-packages
+featured: yes
+image:
+  caption: '[Logo by Elisa Sovrano](https://www.elisasovrano.it)'
+  focal_point: 'center'
+bibliography: ["depigner-pkg.bib"]
+biblio-style: "apalike"
+link-citations: true
+output:
+  blogdown::html_page:
+    df_print: paged
+---
+
+I'm very exited to announce the third release of `{depigner}`
+[@R-depigner] to CRAN, now in the version 0.8.4.
+
+> **Pigna** [*pìn'n'a*] is the Italian word for pine cone. In jargon, it is used to identify a task which is boring, banal, annoying, painful, frustrating and maybe even with a not so beautiful or rewarding result, just like the obstinate act of trying to challenge yourself in extracting pine nuts from a pine cone, provided that, in the end, you will find at least one inside it.
+
+The `{depigner}` aims to provide some useful functions to be used to solve small everyday problems of coding or analyzing data with R. The hope is to provide solutions to that kind of small-little problems which would be normally solved using quick-and-dirty (ugly and maybe even wrong) patches.
+
+[![](https://img.shields.io/badge/WEB site-click me-orange.svg)](https://corradolanera.github.io/depigner/)
+
+
+
+
+# Installation
+
+You can install the released version from [CRAN](https://cran.r-project.org/) directly calling:
+
+```{r, eval = FALSE}
+install.packages("depigner")
+```
+
+If you would like to be updated with the last development version available, you can install it from it's [source](https://corradolanera.github.io/depigner/) on [GitHub](https://github.com/) by calling:
+
+```{r, eval = FALSE}
+# install.packages("remotes")
+remotes::install_github("CorradoLanera/depigner")
+```
+
+Next, you can attach it to your session as usual by:
+
+```{r}
+library(depigner)
+```
+
+
+
+
+# Provided Tools
+
+For all the provided tools you can look at the [`{depigner}` website](https://corradolanera.github.io/depigner/), or at the previous posts [here-v0.8.1](https://www.corradolanera.it/2020/06/26/depigner-0-8-1/), and [here-v0.8.3](https://www.corradolanera.it/2020/10/02/depigner-0-8-3/)
+
+
+
+
+# News from the previous version
+
+## Improvements
+- Added a `digits` option to `tidy_summary()` (with a default to `3`).
+
+- Improved error messages for `adjust_p()` when `tidy_summary()` is
+  called without `prtest = TRUE` option.
+
+
+## Bug fixes.
+- Update the README file (and project's home page on GitHub too) has
+  been updated making all the code visible (some of them was hidden, and
+  some objects seamed to come from nowhere) (issue #39).
+
+- Fix an error in the examples provided in the documentation of
+  `tidy_summary()` (issue #38).
+
+- Finally move `{rms}` [@R-rms] to IMPORTS (which was not set but
+  required in the previous version).
+
+
+## Infrastructure
+- convert all implicit integers in explicit (e.g, 1L instead of 1).
+
+- convert all `$` extraction in `[[`.
+
+- Updated testing environment to `{testthat}` 3rd edition [@R-testthat]
+  (\#32).
+
+
+
+So, that is not a great update in term of new features, but it fixes
+some important bugs and issues, and restructure the internal
+implementation to be more robust.
+
+
+
+
+# Acknowledgements
+
+The `{depigner}`'s logo was lovely designed by [Elisa Sovrano](https://elisasovrano.it).
+
+# References
+
+```{r bib, include=FALSE, eval = TRUE}
+# create a bib file for the R packages used in this document
+knitr::write_bib(
+  x    = c('depigner', 'rms', 'testthat'),
+  file = 'depigner-pkg.bib'
+)
+```
