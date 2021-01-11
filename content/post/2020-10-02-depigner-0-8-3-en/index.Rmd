@@ -28,7 +28,7 @@ I'm very exited to announce the second release of `{depigner}` to CRAN, now in t
 
 The `{depigner}` aims to provide some useful functions to be used to solve small everyday problems of coding or analyzing data with R. The hope is to provide solutions to that kind of small-little problems which would be normally solved using quick-and-dirty (ugly and maybe even wrong) patches.
 
-[![](https://img.shields.io/badge/WEB site-click me-orange.svg)](https://corradolanera.github.io/depigner/)
+[![](https://img.shields.io/badge/WEB%20site-click%20me-orange.svg)](https://corradolanera.github.io/depigner/)
 
 # Installation
 
