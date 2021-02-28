@@ -30,7 +30,7 @@ subtitle = ""
   icon = "markdown"
   icon_pack = "fab"
   name = "Reproducible Research"
-  description = "[R Markdown](https://rmarkdown.rstudio.com/articles_intro.html)<br>[$\\LaTeX$](https://www.latex-project.org/)"
+  description = "[R Markdown](https://rmarkdown.rstudio.com/articles_intro.html), [$\\LaTeX$](https://www.latex-project.org/),<br>[`{renv}`](https://rstudio.github.io/renv/index.html), [Docker](https://www.docker.com/)"
   
 [[feature]]
   icon = "laptop-code"
@@ -66,7 +66,7 @@ subtitle = ""
 [[feature]]
   icon = "bed"
   icon_pack = "fas"
-  name = "limitless sleeping"
+  name = "Limitless sleeping"
   description = "Record: 25.5 hours continuosly<br>can fall asleep anytime/where"  
   
   

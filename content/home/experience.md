@@ -3,7 +3,7 @@
 widget = "experience"  # See https://sourcethemes.com/academic/docs/page-builder/
 headless = true  # This file represents a page section.
 active = true  # Activate this widget? true/false
-weight = 70  # Order that this section will appear.
+weight = 60  # Order that this section will appear.
 
 title = "Experience"
 subtitle = ""
@@ -23,7 +23,7 @@ date_format = "Jan 2006"
   company_url = "https://www.unipd.it"
   location = "Padova (IT)"
   date_start = "2020-07-01"
-  date_end = "2021-06-30"
+  date_end = ""
   description = """
   Responsibilities include:
   

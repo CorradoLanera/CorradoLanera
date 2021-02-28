@@ -22,7 +22,7 @@ output:
     df_print: paged
 ---
 
-I’m very exited to announce the first release of `{depigner}` to
+I’m very excited to announce the first release of `{depigner}` to
 CRAN!
 
 > __Pigna__ [_pìn'n'a_] is the Italian word for pine cone.  In jargon,

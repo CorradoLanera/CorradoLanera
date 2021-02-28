@@ -6,51 +6,57 @@
 [[main]]
   name = "Home"
   url = "#about"
-  weight = 10
+  weight = 20
 
 
 [[main]]
   name = "Events"
   url = "#talks"
-  weight = 20
+  weight = 30
 
 [[main]]
   name = "Posts"
   url = "#posts"
-  weight = 25
+  weight = 40
 
 [[main]]
-  name = "Publications"
-  url = "#publications"
-  weight = 30
+  name = "Shiny Apps"
+  url = "#shiny"
+  weight = 50
 
 [[main]]
   name = "Experiences"
   url = "#experience"
-  weight = 40
+  weight = 60
 
 [[main]]
   name = "Accomplishments"
   url = "#accomplishments"
-  weight = 50
+  weight = 70
+
+[[main]]
+  name = "Publications"
+  url = "#publications"
+  weight = 80
 
 [[main]]
   name = "Skills"
   url = "#skills"
-  weight = 60
+  weight = 90
+
+[[main]]
+   name = "CV (PDF)"
+   url = "files/cv_CL.pdf"
+   weight = 100
 
 [[main]]
   name = "Contacts"
   url = "#contact"
-  weight = 70
+  weight = 110
 
 # [[main]]
 #   name = "Bio"
 #   url = "bio/"
 #   weight = 50
 
-[[main]]
-   name = "CV (PDF)"
-   url = "files/cv_CL.pdf"
-   weight = 80
 
