@@ -2,7 +2,6 @@
 .Rhistory
 .RData
 /public/
-blogdown/
 .DS_Store
 Thumbs.db
 /resources/
