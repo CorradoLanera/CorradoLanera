@@ -22,7 +22,7 @@ output:
     df_print: paged
 ---
 
-I'm very exited to announce the second release of `{depigner}` to CRAN, now in the version 0.8.3.
+I'm very excited to announce the second release of `{depigner}` to CRAN, now in the version 0.8.3.
 
 > **Pigna** [*pìn'n'a*] is the Italian word for pine cone. In jargon, it is used to identify a task which is boring, banal, annoying, painful, frustrating and maybe even with a not so beautiful or rewarding result, just like the obstinate act of trying to challenge yourself in extracting pine nuts from a pine cone, provided that, in the end, you will find at least one inside it.
 
