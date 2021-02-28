@@ -2,15 +2,15 @@
 # A Projects section created with the Portfolio widget.
 widget = "portfolio"  # See https://sourcethemes.com/academic/docs/page-builder/
 headless = true  # This file represents a page section.
-active = false  # Activate this widget? true/false
-weight = 70  # Order that this section will appear.
+active = true  # Activate this widget? true/false
+weight = 50  # Order that this section will appear.
 
-title = "Projects"
+title = "Shiny Apps"
 subtitle = ""
 
 [content]
   # Page type to display. E.g. project.
-  page_type = "project"
+  page_type = "shiny"
   
   # Filter toolbar (optional).
   # Add or remove as many filters (`[[content.filter_button]]` instances) as you like.
