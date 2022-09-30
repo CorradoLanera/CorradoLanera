@@ -1,0 +1,122 @@
+---
+title: depigner 0.9.0
+subtitle: ''
+summary: ''
+author: [admin]
+date: '2022-10-01'
+slug: depigner-0-9-0
+categories:
+  - depigner
+  - eng
+tags:
+  - r-packages
+featured: yes
+image:
+  caption: '[Logo by Elisa Sovrano](https://www.elisasovrano.it)'
+  focal_point: 'center'
+bibliography: ["depigner-pkg.bib"]
+biblio-style: "apalike"
+link-citations: true
+output:
+  blogdown::html_page:
+    df_print: paged
+---
+
+I'm very excited to announce the new release of `{depigner}`
+[@R-depigner] to CRAN, now in the version 0.9.0.
+
+> **Pigna** [*pìn'n'a*] is the Italian word for pine cone. In jargon, it is used to identify a task which is boring, banal, annoying, painful, frustrating and maybe even with a not so beautiful or rewarding result, just like the obstinate act of trying to challenge yourself in extracting pine nuts from a pine cone, provided that, in the end, you will find at least one inside it.
+
+The `{depigner}` aims to provide some useful functions to be used to solve small everyday problems of coding or analyzing data with R. The hope is to provide solutions to that kind of small-little problems which would be normally solved using quick-and-dirty (ugly and maybe even wrong) patches.
+
+[![](https://img.shields.io/badge/WEB site-click me-orange.svg)](https://corradolanera.github.io/depigner/)
+
+
+
+
+# Installation
+
+You can install the released version from [CRAN](https://cran.r-project.org/) directly calling:
+
+```{r, eval = FALSE}
+install.packages("depigner")
+```
+
+If you would like to be updated with the last development version available, you can install it from it's [source](https://corradolanera.github.io/depigner/) on [GitHub](https://github.com/) by calling:
+
+```{r, eval = FALSE}
+# install.packages("remotes")
+remotes::install_github("CorradoLanera/depigner")
+```
+
+Next, you can attach it to your session as usual by:
+
+```{r}
+library(depigner)
+```
+
+
+
+
+# Provided Tools
+
+For all the provided tools you can look at the [`{depigner}` website](https://corradolanera.github.io/depigner/), or at the previous posts [here-v0.8.1](https://www.corradolanera.it/2020/06/26/depigner-0-8-1/), [here-v0.8.3](https://www.corradolanera.it/2020/10/02/depigner-0-8-3/), and [here-v0.8.3](https://www.corradolanera.it/2021/01/11/depigner-0-8-4/).
+
+
+
+
+# News from the previous version
+
+## Improvements
+- Added a `view_in_excel()` new function to view/open a data frame in MS Excel even in the middle of a pipe chain, and without disturbing the execution of the chain itself. This could be critically useful if you would like to inspect intermediate results. E.g.
+
+```{r, eval=FALSE}
+library(dplyr)
+library(depigner)
+
+res <- mtcars |> 
+  select(mpg, cyl) |> 
+  view_in_excel() |> # this will open an Excel with the current state
+  mutate(foo = paste(mpg, cyl)) |> 
+  view_in_excel() # this will open (another) Excel with the final state
+
+res # final result is returned as well
+```
+
+> Note: `view_in_excel()` avoids unwanted execution (interactive session only), embed the correct extension in the temporary file, add BOM for Excel pleasure, and return the output invisibly, in case it is the last element of the chain.
+
+
+- Now the documentation for `tidy_summary` explicitly stated that the output is supposed to be used as input to `pander`
+
+- Added `{progress}`, `{readxl}`, and `{writexl}` to `pkg_utils`; `{ggpubr}` to `pkg_docs`; `{ggeffects}`, and `{dlnm}` to `pkg_stat`; `{tarchetypes}`, and `{checkmate}`, removing `{fs}` (included in `{tarchetypes}`), from `pkg_devel`. (Thanks [\@Eligallo](https://github.com/Eligallo))
+
+
+## Bug fixes.
+- Now all the links inside the `README` are working.
+
+
+## Infrastructure
+- updated Roxygen Note for documentation settings to 7.2.0
+
+
+
+So, some minor improvements, updates, and bug fixes, and a brend new function I am really looking forward to have feedback about it!
+
+
+
+
+# Acknowledgements
+
+The `view_in_excel()` function was originated during the conversation on Twitter started [here](https://twitter.com/brodriguesco/status/1447468259725434886?s=20) by [\@brodriguesco](https://twitter.com/brodriguesco)
+
+The `{depigner}`'s logo was lovely designed by [Elisa Sovrano](https://elisasovrano.it).
+
+# References
+
+```{r bib, include=FALSE, eval = TRUE}
+# create a bib file for the R packages used in this document
+knitr::write_bib(
+  x    = c('depigner', 'rms', 'testthat'),
+  file = 'depigner-pkg.bib'
+)
+```
