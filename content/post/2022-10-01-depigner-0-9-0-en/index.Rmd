@@ -60,7 +60,7 @@ library(depigner)
 
 # Provided Tools
 
-For all the provided tools you can look at the [`{depigner}` website](https://corradolanera.github.io/depigner/), or at the previous posts [here-v0.8.1](https://www.corradolanera.it/2020/06/26/depigner-0-8-1/), [here-v0.8.3](https://www.corradolanera.it/2020/10/02/depigner-0-8-3/), and [here-v0.8.3](https://www.corradolanera.it/2021/01/11/depigner-0-8-4/).
+For all the provided tools you can look at the [`{depigner}` website](https://corradolanera.github.io/depigner/), or at the previous posts [here-v0.8.1](https://www.corradolanera.it/2020/06/26/depigner-0-8-1/), [here-v0.8.3](https://www.corradolanera.it/2020/10/02/depigner-0-8-3/), and [here-v0.8.4](https://www.corradolanera.it/2021/01/11/depigner-0-8-4/).
 
 
 
