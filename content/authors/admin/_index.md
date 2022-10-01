@@ -27,7 +27,7 @@ organizations:
 - name: Unit of Biostatistics, Epidemiology and Public Health
   url: "https://www.dctv.unipd.it/dipartimento/strutture/biostatistica"
 - name: Laboratory of Artificial Intelligence for Medical Sciences
-role: Fellow researcher, data scientist, and trainer
+role: Research Fellow (RTD-A), data scientist, and trainer
 social:
 - icon: envelope
   icon_pack: fas
