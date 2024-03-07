@@ -255,8 +255,9 @@ Another super useful function provided by `Hmisc` is `describe()`, which has a l
 `{depigner}` solve those problems with its family of `htypes()` functions, which seems to have "reasonable" results... __officially__:
 
 ```{r echo=FALSE}
-blogdown::shortcode('tweet', '1268881861746610176')
+blogdown::shortcode('tweet', user = 'f2harrell', id = '1268881861746610176')
 ```
+
 
 - **`htypes()`** and friends: get/check types of variable with respect 
   to the `{Hmisc}` ecosystem [@R-Hmisc].

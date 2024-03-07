@@ -32,7 +32,7 @@ knitr::opts_chunk$set(
 ## Il problema 
 
 ```{r, echo=FALSE}
-blogdown::shortcode('tweet', '1128367547785588737')
+blogdown::shortcode('tweet', user = "CorradoLanera", id = '1128367547785588737')
 ```
 
 ```{r}
@@ -60,7 +60,7 @@ array, lungo la terza dimensione.
 
 ## Primo suggerimento
 ```{r, echo=FALSE}
-blogdown::shortcode('tweet', '1128711941483106306')
+blogdown::shortcode('tweet', user = "CorradoLanera", id = '1128711941483106306')
 ```
 
 Hadley Wickham suggerisce di usare `pryr::aapern()`. proviamo a vedere 
@@ -126,7 +126,7 @@ PuffRbacco, sembra proprio di si ;-).
 Siamo sicuri che la soluzione proposta valga in generale? Secondo HW, probabilmente no:
 
 ```{r, echo=FALSE}
-blogdown::shortcode('tweet', '1128798436575330305')
+blogdown::shortcode('tweet', user = "CorradoLanera", id = '1128798436575330305')
 ```
 
 ```{r}

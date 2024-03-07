@@ -21,14 +21,13 @@ output:
     df_print: paged
 ---
 
-<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
 <link href="/rmarkdown-libs/pagedtable/css/pagedtable.css" rel="stylesheet" />
 <script src="/rmarkdown-libs/pagedtable/js/pagedtable.js"></script>
 
 
 <div id="il-problema" class="section level2">
 <h2>Il problema</h2>
-{{% tweet "1128367547785588737" %}}
+{{% tweet user="CorradoLanera" id="1128367547785588737" %}}
 <pre class="r"><code>apply(array(1:27, dim = c(3, 3, 3)), 3, function(x) x)
 #&gt;       [,1] [,2] [,3]
 #&gt;  [1,]    1   10   19
@@ -63,7 +62,7 @@ array, lungo la terza dimensione.</p>
 </div>
 <div id="primo-suggerimento" class="section level2">
 <h2>Primo suggerimento</h2>
-{{% tweet "1128711941483106306" %}}
+{{% tweet user="CorradoLanera" id="1128711941483106306" %}}
 <p>Hadley Wickham suggerisce di usare <code>pryr::aapern()</code>. proviamo a vedere
 come funziona (<code>?plyr::aapply</code>). La cui prima riga di descrizione sembra
 (come raramente accade con le sui funzioni…) risolvere precisamente e
@@ -103,7 +102,7 @@ sia di lunghezza <span class="math inline">\(2\)</span>, verrà chiamato
 <strong>matrix</strong>.<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a>.</p>
 <p>Inoltre, dalla sezione
 <a href="https://adv-r.hadley.nz/subsetting.html#subassignment" class="uri">https://adv-r.hadley.nz/subsetting.html#subassignment</a> di <strong>Advanced
-R</strong> (<span class="citation">Wickham (<a href="#ref-wickham2019advanced" role="doc-biblioref">2019</a>)</span>) sappiamo che sotto-selezionare un oggetto con
+R</strong> (<span class="citation">Wickham (<a href="#ref-wickham2019advanced">2019</a>)</span>) sappiamo che sotto-selezionare un oggetto con
 “nulla” ci permette di mantenerne la struttura, ovvero gli attributi, e
 questo è strautile sopratutto quando abbinato all’operatore di
 assegnamento <code>&lt;-</code>.</p>
@@ -120,7 +119,7 @@ identical(arr, y)
 <div id="cè-sempre-un-ma-generalizzazione" class="section level2">
 <h2>C’è sempre un <em>ma</em>… (generalizzazione)</h2>
 <p>Siamo sicuri che la soluzione proposta valga in generale? Secondo HW, probabilmente no:</p>
-{{% tweet "1128798436575330305" %}}
+{{% tweet user="CorradoLanera" id="1128798436575330305" %}}
 <pre class="r"><code>tentative &lt;- function(d, f) {
     y &lt;- array(dim = c(3, 3, 3))
     y[] &lt;- f(arr, d, function(x) x)
@@ -282,13 +281,13 @@ problema adottando questo approccio, teniamolo buono.</p>
 </div>
 <div id="references" class="section level2 unnumbered">
 <h2>References</h2>
-<div id="refs" class="references hanging-indent">
-<div id="ref-wickham2019advanced">
-<p>Wickham, H. 2019. <em>Advanced R, Second Edition</em>. Chapman &amp; Hall/Crc the R Series. Taylor &amp; Francis. <a href="https://adv-r.hadley.nz">https://adv-r.hadley.nz</a>.</p>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-wickham2019advanced" class="csl-entry">
+Wickham, H. 2019. <em>Advanced r, Second Edition</em>. Chapman &amp; Hall/CRC the r Series. Taylor &amp; Francis. <a href="https://adv-r.hadley.nz">https://adv-r.hadley.nz</a>.
 </div>
 </div>
 </div>
-<div class="footnotes">
+<div class="footnotes footnotes-end-of-document">
 <hr />
 <ol>
 <li id="fn1"><p><a href="https://adv-r.hadley.nz/vectors-chap.html#attributes" class="uri">https://adv-r.hadley.nz/vectors-chap.html#attributes</a><a href="#fnref1" class="footnote-back">↩︎</a></p></li>

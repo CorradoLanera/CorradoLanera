@@ -21,7 +21,7 @@ sharing_image = "profilo_CL.jpeg"
 
 # Twitter username (without @). Used when a vistor shares your site on
 # Twitter.
-twitter = "CorradoLanera"
+twitter = ""
 
 # Diplay a logo in navigation bar rather than title (optional).
 #   To enable, place an image in `static/img/` and reference its

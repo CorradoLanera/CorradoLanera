@@ -1,33 +1,26 @@
 ---
-authors: [admin]
-date: '2019-05-27'
-slug: annidare-map
+title: Dimostrazione della Coerenza Bayesiana e Frequentista nella definizione del
+  Valore Predittivo Positivo di un test
+author: [admin]
+date: '2024-03-07'
+slug: dimostrazione-della-coerenza-bayesiana-e-frequentista-nella-definizione-del-valore-predittivo-positivo-di-un-test
 categories:
   - explanations
   - ita
 tags:
   - biostat
-  - test
   - vpp
+  - test
 image:
   caption: ''
   focal_point: ''
-bibliography: ["biblio.bib"]
-biblio-style: "apalike"
-link-citations: true
-output:
-  blogdown::html_page:
-    df_print: paged
 ---
-# Dimostrazione della Coerenza Bayesiana e Frequentista nella definizione del Valore Predittivo Positivo di un test
 
 Questa dimostrazione mostra come il valore predittivo positivo ($VPP$) di un test diagnostico possa essere concettualizzato sia in un contesto frequentista ($VPP_f$) che bayesiano ($VPP_b$) e che le due, per quanto differenti in termini di ipotesi e propositi, siano due definizioni matematicamente coerenti tra loro. Ricordiamo che il $VPP$ misura la probabilità che un soggetto con un risultato positivo al test sia realmente affetto dalla condizione d'interesse.
 
-::: callout-note
 ## Nota preliminare
 
 In questo documento le uniche competenze di matematica utilizzate sono le operazioni di somma e moltiplicazione, con le loro proprietà base (commutativa, associativa, e distributiva) e le loro operazioni inverse (sottrazione e divisione). Non è richiesta alcuna conoscenza di calcolo differenziale o integrale, né di algebra lineare o di teoria della probabilità. Non verrà saltato alcun passaggio nelle semplificazioni delle espressioni.
-:::
 
 ## Preliminari
 
