@@ -1,0 +1,205 @@
+---
+authors: [admin]
+date: '2019-05-27'
+slug: annidare-map
+categories:
+  - explanations
+  - ita
+tags:
+  - biostat
+  - test
+  - vpp
+image:
+  caption: ''
+  focal_point: ''
+bibliography: ["biblio.bib"]
+biblio-style: "apalike"
+link-citations: true
+output:
+  blogdown::html_page:
+    df_print: paged
+---
+# Dimostrazione della Coerenza Bayesiana e Frequentista nella definizione del Valore Predittivo Positivo di un test
+
+Questa dimostrazione mostra come il valore predittivo positivo ($VPP$) di un test diagnostico possa essere concettualizzato sia in un contesto frequentista ($VPP_f$) che bayesiano ($VPP_b$) e che le due, per quanto differenti in termini di ipotesi e propositi, siano due definizioni matematicamente coerenti tra loro. Ricordiamo che il $VPP$ misura la probabilità che un soggetto con un risultato positivo al test sia realmente affetto dalla condizione d'interesse.
+
+::: callout-note
+## Nota preliminare
+
+In questo documento le uniche competenze di matematica utilizzate sono le operazioni di somma e moltiplicazione, con le loro proprietà base (commutativa, associativa, e distributiva) e le loro operazioni inverse (sottrazione e divisione). Non è richiesta alcuna conoscenza di calcolo differenziale o integrale, né di algebra lineare o di teoria della probabilità. Non verrà saltato alcun passaggio nelle semplificazioni delle espressioni.
+:::
+
+## Preliminari
+
+Partendo dalla classica tabella di contingenza per un test diagnostico:
+
+|               | Malato | Sano |
+|---------------|--------|------|
+| Test Positivo | VP     | FP   |
+| Test Negativo | FN     | VN   |
+
+definiamo innanzitutto gli oggetti che useremo:
+
+-   $VP$ è il numero di veri positivi,
+-   $FP$ è il numero di falsi positivi,
+-   $VN$ è il numero di veri negativi,
+-   $FN$ è il numero di falsi negativi,
+-   $Se$ è la sensibilità del test, cioè la probabilità che un soggetto affetto dalla malattia abbia un risultato positivo al test,
+-   $Sp$ è la specificità del test, cioè la probabilità che un soggetto non affetto dalla malattia abbia un risultato negativo al test,
+-   $P_b$ è la prevalenza della malattia, cioè la porzione di individui nella popolazione generale che ha la malattia, ovvero la probabilità a priori che un individuo preso a caso nella popolazione generale abbia la malattia.
+-   $P_f$ è la prevalenza frequentista, cioè la porzione di individui nella popolazione testata che ha la malattia, ovvero la probabilità a posteriori che un individuo preso a caso nella popolazione testata abbia la malattia.
+
+Notiamo che entrambe $Se$ e $Sp$ sono definite in modo indipendente dalla prevalenza della malattia, dato che si concentrano sulle prestazioni del test sulla sola popolazione di sani testati ($Se$) o di malati testati ($Sp$), ovvero in modo indipendente da quanto sia comune o rara la malattia nella popolazione generale o in quella testata.
+
+## Approccio Frequentista
+
+Il valore predittivo positivo $VPP$ in un contesto frequentista è calcolato come:
+
+$$
+VPP_f = \frac{VP}{VP + FP}
+$$
+
+Questa formula rappresenta la proporzione di veri positivi (persone effettivamente malate) rispetto al totale dei testati positivi (sia malati che non malati). In altri termini può essere visto come la probabilità a posteriori che un individuo con un test positivo nella popolazione testata abbia realmente la malattia, sulla base dei soli dati empirici osservati nello studio. In realtà, non offre una stima diretta della probabilità a priori che un individuo preso a caso nella popolazione generale, e che risulti positivo al test, abbia la malattia: è una stima basata solo sui dati osservati nello studio che offre una fotografia di quanto accaduto e osservato conducendolo, la cui generalizzazione alla popolazione generale è condizionata alla corrispondenza tra la popolazione testata e la popolazione generale, sopratutto in termini di relazione tra le prevalenze della malattia in queste due popolazioni.[^1]
+
+[^1]: Sopratutto, ricordiamo che da un lato la prevalenza di malattia nella popolazione generale può variare, in alcuni contesti anche significativamente, nel tempo, mentre nella popolazione testata, a posteriori, no; dall'altro lato che la prevalenza di malattia nella popolazione testata dipende dalla scelta del campione e in generale varierebbe scegliendo un campione differente, mentre quella riferita alla popolazione generale è (al netto del momento in cui si effettua la stima/misurazione) statica.
+
+## Generalizzazione Bayesiana
+
+Nell'approccio bayesiano, il $VPP$ si basa sui valori di sensibilità e specificità del test e sulla probabilità a priori della malattia, la quale generalmente si approssima (per lo meno in prima battuta) con la porzione di malati nella popolazione generale, cioè la prevalenza (che diremo *bayesiana*) della malattia in tale popolazione.[^2] La formula per il $VPP$ bayesiano è la seguente:
+
+[^2]: Sottolineiamo infatti che la probabilità individuale a priori della malattia non è in generale la prevalenza della malattia nella popolazione generale in quanto, la prima, potrebbe essere influenzata da altri fattori, per esempio la conoscenza di un test già precedentemente effettuato, una familiarità, eccetera. Normalmente si utilizza la prevalenza (nella presentazione della formula per il \$VPP_b\$) sulla popolazione generale in quanto si ipotizza la sua applicazione a una persona presa a caso nella popolazione generale senza alcuna altra conoscenza specifica su tale individuo, ovvero senza alterazioni tra la probailità individuale di malattia e la probabilità (frequentista) di trovare un malato selezionando un soggetto a caso nella popolazione generale in modo indipendente da ogni fattore (equivalente, per costruzione, alla prevalenza di mallatia nella popolazione generale).
+
+$$
+VPP_b = \frac{Se \cdot P_b}{Se \cdot P_b + (1 - Sp) \cdot (1 - P_b)}
+$$
+
+Questa formula incorpora la prevalenza della malattia ($P_b$) come probabilità a priori. In altre parole, il $VPP_b$ è la probabilità a posteriori che un individuo con un test positivo abbia realmente la malattia, sulla base dei dati osservati, della prevalenza della malattia nella popolazione generale e le caratteristiche del test (sensibilità e specificità).
+
+## Note generali
+
+Il $VPP_f$ offre una misura diretta basata sui risultati osservati, è semplice ma può essere fuorviante in popolazioni con bassa prevalenza di malattia. Può essere utile quando si hanno grandi set di dati e la prevalenza della malattia risulti o comunque si consideri relativamente stabile.
+
+Il $VPP_b$ fornisce una stima che tiene conto della prevalenza della malattia nella popolazione, offrendo una valutazione più completa e una stima più accurata del rischio individuale in contesti dove la prevalenza varia significativamente. Del resto, richiede dati aggiuntivi o derivati non sempre immediatamente disponibili o facilmente stimaibili. È di certo preferibile in contesti clinici o di screening dove la prevalenza può variare ampiamente ed è importante una stima personalizzata del rischio.
+
+Utilizzare $VPP_f$ in popolazioni con prevalenza molto bassa o molto variabile può portare a stime di $VPP$ poco accurate; così come $VPP_b$ può essere fuorviante se la prevalenza della malattia è sconosciuta e mal stimata, così come in presenza di valori inaccurati di sensibilità e specificità.
+
+In fin dei conti, il $VPP_b$ rispecchia l'importanza di considerare la prevalenza della malattia nella popolazione generale al momento di interpretare i risultati dei test, ovvero quindi anche in tempi diversi da quando la valutazione (in termini di sensibilità e specificità) del test è stata effettuata. Senza considerare la prevalenza, come nel calcolo frequentista, si potrebbe sopravvalutare o sottovalutare il rischio reale per individui specifici, soprattutto in popolazioni dove la prevalenza della condizione testata è significativamente diversa da quella osservata nello studio che ha portato alla determinazione di $Se$ e $Sp$ del test (per esempio per condizioni spaziali o temporali che differiscono da quelle in cui è stato valutato il test), cioè quindi in situazioni in cui il campione testato possa non essere rappresentativo della popolazione generale in termini di prevalenza della malattia.
+
+In realtà, la formula bayesiana per il $VPP$ non può essere semplificata in termini della corrispondente formula frequentista senza perdere l'essenza del suo significato, che è di aggiustare la stima del rischio individuale basandosi sulla prevalenza della malattia nella popolazione generale (o di appartenenza dell'individuo in questione) al momento della stima di tale rischio. Del resto, il legame fondamentale tra i due metodi risiede nel tentativo comune di quantificare la probabilità che un individuo sia malato dato un risultato positivo al test. In questo senso il metodo bayesiano fornisce un quadro più completo incorporando informazioni a priori (rispetto al test) della prevalenza della malattia, ovvero trascendendo le caratteristiche della popolazione testata e riferendosi alle condizioni al contorno nel momento in cui effettivamente si vuole valutare il rischio di malattia su un individuo specifico.
+
+I due approcci dunque da un lato si propongono di stimare la stessa quantità, cioè la probabilità che un individuo con un test positivo sia realmente malato, dall'altro lo fanno in modo diverso, e con differenti ipotesi e propositi. Detto questo, ci interessa dimostrare che i due approcci siano comunque coerenti tra loro, cioè che le stime (prettamente numeriche) del $VPP$ ottenute con i due metodi siano identiche sotto opportune ipotesi e condizioni.
+
+## Coerenza tra i Due Approcci (esempio)
+
+La dimostrazione della coerenza che offriamo si basa sull'ipotesi che, da un lato, il numero di soggetti testati sia molto grande, e dall'altro questa prevalenza sia stabile e uniforme; quindi potendo ipotizzare che le proporzioni frequentiste si avvicinino alle probabilità bayesiane. A livello estremo, potremmo pensare di conoscere il reale stato di ogni singolo individuo nella popolazione generale rispetto una malattia/caratteristica genetica, incurabile/immutabile e uniformemente distribuita, e ipotizzare di condurre lo studio su tutta quanta la popolazione generale. In tal caso, se le due definizioni $VPP_f$ e $VPP_b$ fossero coerenti, le proporzioni frequentiste dovrebbero risultare esattamente uguali alle probabilità bayesiane, e i risultati dei due metodi dovrebbero coincidere.
+
+Proviamo innanzitutto con un esempio numerico (che non dimostra nulla, ma potrebbe falsificare con poco sforzo la nostra tesi)
+
+```{r}
+# Definiamo un ipotetico risultato di uno studio
+
+VP <- 90
+FP <- 5
+VN <- 950
+FN <- 50
+
+# Calcoliamo i parametri frequentisti
+Se <- VP / (VP + FN)
+Sp <- VN / (VN + FP)
+P_f <- (VP + FN) / (VP + FP + VN + FN)
+
+# Ipotiziamo che P_b sia pari a P_f
+# Ovvero che la prevalenza nella popolazione generale
+# sia uguale a quella osservata nella popolazione testata
+P_b <- P_f
+
+# Calcoliamo VPP_f
+VPP_f <- VP / (VP + FP)
+
+# Calcoliamo VPP_b
+VPP_b <- (Se * P_b) /
+  (Se * P_b + (1 - Sp) * (1 - P_b))
+
+# E otteniamo
+
+message("Il VPP frequentista è: ", VPP_f)
+message("Il VPP bayesiano è: ", VPP_b)
+```
+
+Vediamo che i due valori del $VPP$ sono, per lo meno in questo esempio, numericamente identici (o molto vicini), mostrando (non *dimostrando*!) la plausibile coerenza tra i due approcci in un particolare esempio sotto particolari condizioni.
+
+## Coerenza tra i Due Approcci (in generale)
+
+In generale, la dimostrazione matematica di tale coerenza può essere condotta andando a considerare la prevalenza frequentista nei dati osservati, e ipotizzando che tale prevalenza sia esattamente la prevalenza della malattia nella popolazione generale, operando quindi semplicemente in astratto quanto fatto nell'esempio precedente.
+
+In questi termini, e con le notazioni introdotte, la prevalenza frequentista ricordiamo essere:
+
+$$
+P_f = \frac{VP + FN}{VP + FP + VN + FN}
+$$
+
+Ipotizzando dunque $P_b = P_f$, e sostituendo l'espressione per $P_f$ in luogo di quella per $P_b$ nella formula bayesiana del $VPP$, si ottiene:
+
+$$
+VPP_b = \frac{Se \cdot \frac{VP + FN}{VP + FP + VN + FN}}{Se \cdot \frac{VP + FN}{VP + FP + VN + FN} + (1 - Sp) \cdot (1- \frac{VP + FN}{VP + FP + VN + FN})}
+$$
+
+ovvero
+
+$$
+VPP_b = \frac{Se \cdot \frac{VP + FN}{VP + FP + VN + FN}}{Se \cdot \frac{VP + FN}{VP + FP + VN + FN} + (1 - Sp) \cdot \frac{VN + FP}{VP + FP + VN + FN}}
+$$
+
+Andando a sostiuire anche le espressioni $Se$, $Sp$ usando quelle in termini di $VP$, $VN$, $FP$, e $FN$ otteniamo:
+
+$$
+VPP_b = \frac{\frac{VP}{VP + FN} \cdot \frac{VP + FN}{VP + FP + VN + FN}}{\frac{VP}{VP + FN} \cdot \frac{VP + FN}{VP + FP + VN + FN} + (1 - \frac{VN}{VN + FP}) \cdot \frac{VN + FP}{VP + FP + VN + FN}}
+$$
+
+Semplificando il solo numeratore si ottiene:
+
+$$
+\begin{aligned}
+num & = \frac{VP}{VP + FN} \cdot \frac{VP + FN}{VP + FP + VN + FN}\\
+    & = \frac{VP}{VP + FP + VN + FN}
+\end{aligned}
+$$
+
+Semplificando il denominatore si ottiene:
+
+$$
+\begin{aligned}
+den & = \frac{VP}{VP + FN} \cdot \frac{VP + FN}{VP + FP + VN + FN} + (1 - \frac{VN}{VN + FP}) \cdot \frac{VN + FP}{VP + FP + VN + FN} \\
+    & = \frac{VP}{VP + FP + VN + FN} + \frac{FP}{VN + FP} \cdot \frac{VN + FP}{VP + FP + VN + FN}\\
+    & = \frac{VP}{VP + FP + VN + FN} + \frac{FP}{VP + FP + VN + FN}\\
+    & = \frac{VP + FP}{VP + FP + VN + FN}
+\end{aligned}
+$$
+
+Mettendo di nuovo assieme numeratore e denominatore otteniamo
+
+$$
+VPP_b = \frac{num}{den} =\frac{\frac{VP}{VP + FP + VN + FN}}{\frac{VP + FP}{VP + FP + VN + FN}}
+$$
+
+che, riorganizzando i termini, diventa
+
+$$
+\begin{aligned}
+VPP_b &= num / den \\
+& = num \cdot \frac{1}{den} \\
+& = \frac{VP}{VP + FP + VN + FN}\cdot\frac{VP + FP + VN + FN}{VP + FP}
+\end{aligned}
+$$
+
+E dunque, semplificando:
+
+$$
+VPP_b = \frac{VP}{VP + FP} = VPP_f
+$$
+
+CVD.
+
+## Conclusioni
+
+Abbiamo dimostrato dunque che, sotto l'ipotesi che la prevalenza della malattia nella popolazione generale sia esattamente quella osservata nella popolazione testata, le due definizioni di $VPP$ sono coerenti tra loro, cioè che le stime del $VPP$ ottenute con i due metodi sono identiche. Questo non significa che i due metodi siano equivalenti, ma solo, appunto, che le stime ottenute sono coerenti sotto ipotesi di esperimenti teorici astratti in condizioni ideali perfette (nelle quali, del resto, non servirebbe dunque nemmeno fare dei test, avendo già tutte le informazioni, stabili, su chiunque...). È importante sottolineare che tale coerenza è comunque e infatti basata su un'ipotesi molto forte, e che in generale i due metodi possono portare, e portano, a stime differenti, basate su ipotesi differenti, e utili a scopi differenti. A mio avviso, il metodo bayesiano è comunque preferibile in contesti clinici o di screening dove la prevalenza può variare ampiamente nel tempo o per sottopopolazioni e l'interesse è quello di ottenere una stima personalizzata del rischio individuale a partire dalla *reale* applicazione di un test su un soggetto di cui non si conosca, ma interessi, la probabilità del suo stato di malattia.
